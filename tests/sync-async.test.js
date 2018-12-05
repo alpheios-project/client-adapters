@@ -515,7 +515,7 @@ describe('sync-async.test.js', () => {
     return res
   }, 50000)
 
-  it('7 ClientAdapters - lexicons async getting data fetchShortDefs', async () => {
+  it.skip('7 ClientAdapters - lexicons async getting data fetchShortDefs', async () => {
     ClientAdapters.init()
     let res1 = await ClientAdapters.maAdapter({
       method: 'getHomonym',
@@ -709,7 +709,7 @@ describe('sync-async.test.js', () => {
     return res
   }, 50000)
 
-  it('9 ClientAdapters - lexicons sync getting data - fetchFullDefs', async () => {
+  it.skip('9 ClientAdapters - lexicons sync getting data - fetchFullDefs', async () => {
     ClientAdapters.init()
     let res1 = await ClientAdapters.maAdapter({
       method: 'getHomonym',
