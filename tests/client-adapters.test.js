@@ -217,7 +217,7 @@ describe('client-adapters.test.js', () => {
       params: {
         homonym: reHomonym.result,
         opts: {
-          allow: ['"https://github.com/alpheios-project/ls"']
+          allow: ['https://github.com/alpheios-project/ls']
         }
       }
     })
