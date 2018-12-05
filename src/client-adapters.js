@@ -160,11 +160,15 @@ class ClientAdapters {
   static async lexicons (options) {
     ClientAdapters.checkMethodParam('lexicon', 'alpheios', options)
 
-    let localLexiconsAdapter = new AlpheiosLexiconsAdapter({
+    let adapterParams = {
       category: 'lexicon',
       adapterName: 'alpheios',
-      method: options.method
-    })
+      method: options.method,
+      callBackEvtSuccess: options.params.callBackEvtSuccess,
+      callBackEvtFailed: options.params.callBackEvtFailed
+    }
+
+    let localLexiconsAdapter = new AlpheiosLexiconsAdapter(adapterParams)
 
     if (options.method === 'fetchShortDefs') {
       let res = await localLexiconsAdapter.fetchShortDefs(options.params.homonym, options.params.opts)

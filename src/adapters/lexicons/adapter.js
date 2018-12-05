@@ -33,29 +33,77 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
     let languageID = homonym.lexemes[0].lemma.languageID
     let urlKeys = this.getRequests(languageID).filter(url => this.options.allow.includes(url))
 
-    let defRes = false
     for (let urlKey of urlKeys) {
       if (lookupFunction === 'short') {
         let url = this.config[urlKey].urls.short
-        let res = await this.checkCachedData(url)
-        if (!res) {
-          continue
-        }
-        res = await this.updateShortDefs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
 
-        defRes = defRes || res
+        let resCheckCached = this.checkCachedData(url)
+        resCheckCached.then(
+          async (result) => {
+            if (result) {
+              await this.updateShortDefs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
+              if (this.config.callBackEvtSuccess) {
+                this.config.callBackEvtSuccess.pub({
+                  requestType: `${lookupFunction}Defs`,
+                  homonym: homonym
+                })
+              }
+            }
+          },
+          error => {
+            this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+            if (this.config.callBackEvtFailed) {
+              this.config.callBackEvtFailed.pub({
+                requestType: `${lookupFunction}Defs`,
+                homonym: homonym
+              })
+            }
+          }
+        )
       }
       if (lookupFunction === 'full') {
         let url = this.config[urlKey].urls.index
-        await this.checkCachedData(url)
-        let fullDefsRequests = this.collectFullDefURLs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
-        if (fullDefsRequests) {
-          let res = await this.updateFullDefs(fullDefsRequests, this.config[urlKey])
-          defRes = defRes || res
-        }
+        let resCheckCached = this.checkCachedData(url)
+        resCheckCached.then(
+          async (result) => {
+            let fullDefsRequests = this.collectFullDefURLs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
+            if (fullDefsRequests) {
+              let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey])
+              resFullDefs.then(
+                updateRes => {
+                  if (this.config.callBackEvtSuccess) {
+                    this.config.callBackEvtSuccess.pub({
+                      requestType: `${lookupFunction}Defs`,
+                      homonym: homonym
+                    })
+                  }
+                },
+                error => {
+                  this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+                  if (this.config.callBackEvtFailed) {
+                    this.config.callBackEvtFailed.pub({
+                      requestType: `${lookupFunction}Defs`,
+                      homonym: homonym
+                    })
+                  }
+                }
+              )
+            } else {
+              throw Error('No data')
+            }
+          },
+          error => {
+            this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+            if (this.config.callBackEvtFailed) {
+              this.config.callBackEvtFailed.pub({
+                requestType: `${lookupFunction}Defs`,
+                homonym: homonym
+              })
+            }
+          }
+        )
       }
     }
-    return defRes
   }
 
   async checkCachedData (url) {
@@ -91,6 +139,15 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
             this.addError(this.l10n.messages['LEXICONS_FAILED_APPEND_DEFS'].get(error.message))
             continue
           }
+        }
+      } else {
+        let url = config.urls.short
+        this.addError(this.l10n.messages['LEXICONS_NO_DATA_FROM_URL'].get(url))
+        if (this.config.callBackEvtFailed) {
+          this.config.callBackEvtFailed.pub({
+            requestType: 'shortDefs',
+            homonym: homonym
+          })
         }
       }
     }
@@ -146,7 +203,7 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   getRequests (languageID) {
     let languageCode = LMF.getLanguageCodeFromId(languageID)
-    return Object.keys(this.config).filter(url => this.config[url].langs && this.config[url].langs.source === languageCode)
+    return Object.keys(this.config).filter(url => this.config[url] && this.config[url].langs && this.config[url].langs.source === languageCode)
   }
 
   /**
