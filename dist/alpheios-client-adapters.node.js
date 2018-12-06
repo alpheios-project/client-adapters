@@ -8318,13 +8318,13 @@ class BaseAdapter {
             }
           })
           .catch((err) => {
-            console.log('fetch failed! ', err)
-            // Rejection already happened with setTimeout
+            this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
             if (didTimeOut) return
-            // Reject with error
             reject(err)
           })
       })
+    } else {
+      this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
     }
   }
 
@@ -9888,6 +9888,7 @@ class ClientAdapters {
       category: 'lexicon',
       adapterName: 'alpheios',
       method: options.method,
+      timeout: options.params.timeout ? options.params.timeout : 3000,
       callBackEvtSuccess: options.params.callBackEvtSuccess,
       callBackEvtFailed: options.params.callBackEvtFailed
     }

@@ -205,6 +205,7 @@ class ClientAdapters {
       category: 'lexicon',
       adapterName: 'alpheios',
       method: options.method,
+      timeout: options.params.timeout ? options.params.timeout : 3000,
       callBackEvtSuccess: options.params.callBackEvtSuccess,
       callBackEvtFailed: options.params.callBackEvtFailed
     }

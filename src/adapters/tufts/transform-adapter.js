@@ -44,7 +44,7 @@ class TransformAdapter {
   collectHdwdArray (data, term, direction) {
     let hdwd = []
 
-    if (data && !Array.isArray(data) && !data.hdwd && term) {
+    if (data && !Array.isArray(data) && (!data.hdwd || !data.hdwd.$) && term) {
       hdwd.push(term.prefix ? term.prefix.$ : '')
       hdwd.push(term.stem ? term.stem.$ : '')
       hdwd.push(term.suff ? term.suff.$ : '')
@@ -82,7 +82,7 @@ class TransformAdapter {
       let dictData = this.extractData(lexeme, 'dictData')
 
       let lemmaElements = this.checkToBeArray(dictData, inflectionsJSONTerm ? [ inflectionsJSONTerm ] : [])
-      let language = this.defineLanguage(dictData, inflectionsJSONTerm)
+      let language = this.defineLanguage(lemmaElements, inflectionsJSONTerm)
       if (!language) {
         console.log(`************************No language found`)
         continue

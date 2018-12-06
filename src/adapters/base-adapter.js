@@ -112,13 +112,13 @@ class BaseAdapter {
             }
           })
           .catch((err) => {
-            console.log('fetch failed! ', err)
-            // Rejection already happened with setTimeout
+            this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
             if (didTimeOut) return
-            // Reject with error
             reject(err)
           })
       })
+    } else {
+      this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
     }
   }
 
@@ -129,16 +129,20 @@ class BaseAdapter {
    *     @param {options.timeout} Number - timeout ms amount
   */
   async fetchAxios (url, options) {
-    try {
-      let res
-      if (options && options.timeout > 0) {
-        res = await axios.get(encodeURI(url), { timeout: options.timeout })
-      } else {
-        res = await axios.get(encodeURI(url))
+    if (url) {
+      try {
+        let res
+        if (options && options.timeout > 0) {
+          res = await axios.get(encodeURI(url), { timeout: options.timeout })
+        } else {
+          res = await axios.get(encodeURI(url))
+        }
+        return res.data
+      } catch (error) {
+        this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
       }
-      return res.data
-    } catch (error) {
-      this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
+    } else {
+      this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
     }
   }
 
@@ -153,21 +157,24 @@ class BaseAdapter {
   */
   async fetch (url, options) {
     let res
-
-    try {
-      if (typeof window !== 'undefined') {
-        if (options && options.timeout > 0) {
-          res = await this.fetchWindowTimeout(url, options)
+    if (url) {
+      try {
+        if (typeof window !== 'undefined') {
+          if (options && options.timeout > 0) {
+            res = await this.fetchWindowTimeout(url, options)
+          } else {
+            res = await this.fetchWindow(url, options)
+          }
         } else {
-          res = await this.fetchWindow(url, options)
+          res = await this.fetchAxios(url, options)
         }
-      } else {
-        res = await this.fetchAxios(url, options)
-      }
 
-      return res
-    } catch (error) {
-      this.addError(this.l10n.messages['BASIC_ADAPTER_UNKNOWN_ERROR'].get(error.message))
+        return res
+      } catch (error) {
+        this.addError(this.l10n.messages['BASIC_ADAPTER_UNKNOWN_ERROR'].get(error.message))
+      }
+    } else {
+      this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
     }
   }
 }
