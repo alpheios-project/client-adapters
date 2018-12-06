@@ -8433,11 +8433,14 @@ var _adapters_lexicons_config_json__WEBPACK_IMPORTED_MODULE_3___namespace = /*#_
 let cachedDefinitions = new Map()
 
 class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  /*
+  * Lexicons adapter uploads config data, defines default options and inits data
+  * @param {config} Object - properties with higher priority
+  */
   constructor (config = {}) {
     super()
     this.config = this.uploadConfig(config, _adapters_lexicons_config_json__WEBPACK_IMPORTED_MODULE_3__)
     this.options = { timeout: this.config.timeout ? this.config.timeout : 0 }
-    this.data = null
   }
 
   async fetchShortDefs (homonym, options = {}) {

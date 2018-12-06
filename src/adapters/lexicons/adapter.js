@@ -7,11 +7,14 @@ import DefaultConfig from '@/adapters/lexicons/config.json'
 let cachedDefinitions = new Map()
 
 class AlpheiosLexiconsAdapter extends BaseAdapter {
+  /*
+  * Lexicons adapter uploads config data, defines default options and inits data
+  * @param {config} Object - properties with higher priority
+  */
   constructor (config = {}) {
     super()
     this.config = this.uploadConfig(config, DefaultConfig)
     this.options = { timeout: this.config.timeout ? this.config.timeout : 0 }
-    this.data = null
   }
 
   async fetchShortDefs (homonym, options = {}) {
