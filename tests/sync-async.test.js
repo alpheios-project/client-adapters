@@ -422,7 +422,7 @@ describe('sync-async.test.js', () => {
     return res
   }, 50000)
 
-  it('6 ClientAdapters - lexicons sync getting data fetchShortDefs', async () => {
+  it.skip('6 ClientAdapters - lexicons sync getting data fetchShortDefs', async () => {
     ClientAdapters.init()
     let res1 = await ClientAdapters.maAdapter({
       method: 'getHomonym',
