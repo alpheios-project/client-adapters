@@ -125,7 +125,7 @@ describe('client-adapters.test.js', () => {
 
     expect(res.errors.length).toBeGreaterThan(0)
     expect(res.result).toBeUndefined()
-  })
+  }, 20000)
 
   it('10 ClientAdapters - tbAdapter returns homonym and empty errors if adapter returns correct data', async () => {
     ClientAdapters.init()
@@ -177,7 +177,7 @@ describe('client-adapters.test.js', () => {
     })
 
     expect(res.errors).toEqual([])
-  })
+  }, 10000)
 
   it('13 ClientAdapters - lemmaTranslations returns errors if adapter doesn\'t return correct data', async () => {
     ClientAdapters.init()

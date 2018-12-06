@@ -34,7 +34,7 @@ describe('tufts-example.test.js', () => {
     expect(adapter.engineSet.getEngineByCode(Constants.LANG_ARABIC).engine).toEqual('aramorph')
     expect(adapter.engineSet.getEngineByCode(Constants.LANG_PERSIAN).engine).toEqual('hazm')
     expect(adapter.engineSet.getEngineByCode(Constants.LANG_GEEZ).engine).toEqual('traces')
-  })
+  }, 5000)
 
   it('2 TuftsExample - returns correct default value', () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -49,7 +49,7 @@ describe('tufts-example.test.js', () => {
 
     expect(retrievedData.value).toEqual(defaultData.value)
     expect(retrievedData.type).toEqual(defaultData.type)
-  })
+  }, 10000)
 
   it('3 TuftsExample - returns correct mapped values', () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -64,7 +64,7 @@ describe('tufts-example.test.js', () => {
 
     expect(retrievedData.value).toEqual(defaultData.value)
     expect(retrievedData.type).toEqual(defaultData.type)
-  })
+  }, 10000)
 
   it('4 TuftsExample - unmapped values with no defaults throws an error if unknown values not allowed', () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -78,7 +78,7 @@ describe('tufts-example.test.js', () => {
       let engine = adapter.engineSet.getEngineByCode(Constants.LANG_GREEK)
       engine[Feature.types.person].get('1') // eslint-disable-line no-unused-vars
     }).toThrowError(/unknown value/i)
-  })
+  }, 10000)
 
   it('5 TuftsExample - unmapped values with no defaults still works if unknown values allowed', () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -93,7 +93,7 @@ describe('tufts-example.test.js', () => {
 
     expect(retrievedData.value).toEqual(defaultData.value)
     expect(retrievedData.type).toEqual(defaultData.type)
-  })
+  }, 10000)
 
   it('6 TuftsExample - check transform process for mare word', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -124,7 +124,7 @@ describe('tufts-example.test.js', () => {
       if (c.values.includes('vocative')) { vocative++ }
     }
     expect(vocative).toEqual(1)
-  })
+  }, 10000)
 
   it('7 TuftsExample - check transform process for cupidinibus data', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -145,7 +145,7 @@ describe('tufts-example.test.js', () => {
     expect(wordTest.length).toEqual(1)
     expect(wordTest[0].lemma.features.frequency.value).toEqual('frequent')
     expect(wordTest[0].lemma.features.frequency.items[0].sortOrder).toEqual(5)
-  })
+  }, 20000)
 
   it('8 TuftsExample - parses dialect stemtype derivtype morph', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -167,7 +167,7 @@ describe('tufts-example.test.js', () => {
     expect(homonym.lexemes[0].inflections[0].stemtype.value).toEqual('aw_fut')
     expect(homonym.lexemes[0].inflections[0].derivtype.value).toEqual('a_stem')
     expect(homonym.lexemes[0].inflections[0].morph.value).toEqual('contr')
-  })
+  }, 20000)
 
   it('9 TuftsExample - multiple dict and mean entries', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -195,7 +195,7 @@ describe('tufts-example.test.js', () => {
     expect(homonym.lexemes[4].meaning.shortDefs[0].lemmaText).toEqual('conditus')
     expect(homonym.lexemes[4].inflections.length).toEqual(4)
     expect(homonym.lexemes[0].meaning.shortDefs.length).toEqual(3)
-  })
+  }, 20000)
 
   it('10 TuftsExample - lemma from infl', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -216,7 +216,7 @@ describe('tufts-example.test.js', () => {
     expect(homonym.lexemes[5].lemma.features['part of speech'].value).toEqual('pronoun')
     expect(homonym.lexemes[5].lemma.features['declension'].value).toEqual('5th')
     expect(homonym.lexemes[5].lemma.features['frequency'].value).toEqual('very frequent')
-  })
+  }, 20000)
 
   it('11 TuftsExample - lemma filter latin', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -235,7 +235,7 @@ describe('tufts-example.test.js', () => {
     expect(homonym.lexemes.length).toEqual(2)
     expect(homonym.lexemes[0].lemma.word).toEqual('mellitus')
     expect(homonym.lexemes[1].lemma.word).toEqual('que')
-  })
+  }, 20000)
 
   it('12 TuftsExample - lemma filter persian', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -251,7 +251,7 @@ describe('tufts-example.test.js', () => {
     let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(1)
-  })
+  }, 10000)
 
   it('13 TuftsExample - multivalued features', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -268,7 +268,7 @@ describe('tufts-example.test.js', () => {
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(5)
     expect(homonym.lexemes[3].inflections[0].morph.values.length).toEqual(2)
-  })
+  }, 10000)
 
   it('14 TuftsExample - lemma declension feature not set if pofs differs', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -285,7 +285,7 @@ describe('tufts-example.test.js', () => {
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[0].lemma.features['part of speech'].value).toEqual('pronoun')
     expect(homonym.lexemes[0].lemma.features.declension).toBeFalsy()
-  })
+  }, 20000)
 
   it('15 TuftsExample - inflection created if no stem', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -302,7 +302,7 @@ describe('tufts-example.test.js', () => {
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[1].inflections[0].stem).toBeNull()
     expect(homonym.lexemes[1].inflections[0].suffix).toEqual('est')
-  })
+  }, 20000)
 
   it('16 TuftsExample - can parse gez', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -318,7 +318,7 @@ describe('tufts-example.test.js', () => {
     let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(10)
-  }, 10000)
+  }, 20000)
 
   it('17 TuftsExample - hdwd created if no hdwd suffix and no stem', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -334,7 +334,7 @@ describe('tufts-example.test.js', () => {
     let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[0].lemma.word).toEqual('ego')
-  })
+  }, 10000)
 
   it('18 TuftsExample - parses irregular conjugations', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -352,7 +352,7 @@ describe('tufts-example.test.js', () => {
 
     expect(homonym.lexemes[2].lemma.features['conjugation'].value).toEqual('irregular')
     expect(homonym.lexemes[2].inflections[0]['conjugation'].value).toEqual('irregular')
-  })
+  }, 20000)
 
   it('19 TuftsExample - aggregatesLexemes', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -372,7 +372,7 @@ describe('tufts-example.test.js', () => {
     expect(homonym.lexemes[0].altLemmas.length).toEqual(1)
     expect(homonym.lexemes[0].altLemmas[0].principalParts).toEqual(['absum', 'abesse', 'abfui', 'abfuturus'])
     expect(homonym.lexemes[0].lemma.principalParts).toEqual(['absum', 'abesse', 'afui', 'afuturus'])
-  })
+  }, 10000)
 
   it('20 TuftsExample - adsum', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -388,7 +388,7 @@ describe('tufts-example.test.js', () => {
     let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(2)
-  })
+  }, 10000)
 
   it('21 TuftsExample - overrides inflection with lemma for auditum', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -407,7 +407,7 @@ describe('tufts-example.test.js', () => {
     expect(homonym.lexemes[0].inflections.filter(i => i.conjugation.value === '4th').length).toEqual(5)
     expect(homonym.lexemes[0].inflections.filter(i => i.conjugation.value === '3rd').length).toEqual(0)
     expect(homonym.lexemes[0].lemma.features.conjugation.value).toEqual('4th')
-  })
+  }, 20000)
 
   it('22 TuftsExample - adds clientId to URL', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -418,5 +418,5 @@ describe('tufts-example.test.js', () => {
     })
 
     expect(adapter.prepareRequestUrl(Constants.LANG_LATIN, 'mare')).toEqual('https://morph.alpheios.net/api/v1/analysis/word?word=mare&engine=whitakerLat&lang=lat&clientId=fooClient')
-  })
+  }, 10000)
 })

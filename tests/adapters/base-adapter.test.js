@@ -92,7 +92,7 @@ describe('base-adapter.test.js', () => {
 
     let result = await adapter.fetchWindow('https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ls&lg=lat&out=html&n=n6614', { type: 'xml' })
     expect(typeof result).toBe('string')
-  })
+  }, 40000)
 
   it('8 BaseAdapter - fetchWindowTimeout adds error if url is not given', () => {
     let adapter = new BaseAdapter()
@@ -116,17 +116,17 @@ describe('base-adapter.test.js', () => {
     let adapter = new BaseAdapter()
     adapter.config = {}
 
-    let result = await adapter.fetchWindowTimeout('https://morph.alpheios.net/api/v1/analysis/word?word=cepit&engine=whitakerLat&lang=lat&clientId=undefined', { timeout: 3000 })
+    let result = await adapter.fetchWindowTimeout('https://morph.alpheios.net/api/v1/analysis/word?word=cepit&engine=whitakerLat&lang=lat&clientId=undefined', { timeout: 20000 })
     expect(result).toBeInstanceOf(Object)
-  })
+  }, 40000)
 
   it('11 BaseAdapter - fetchWindowTimeout returns string if type is defined as xml', async () => {
     let adapter = new BaseAdapter()
     adapter.config = {}
 
-    let result = await adapter.fetchWindowTimeout('https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ls&lg=lat&out=html&n=n6614', { type: 'xml', timeout: 3000 })
+    let result = await adapter.fetchWindowTimeout('https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ls&lg=lat&out=html&n=n6614', { type: 'xml', timeout: 20000 })
     expect(typeof result).toBe('string')
-  })
+  }, 40000)
 
   it('12 BaseAdapter - fetchAxios adds error if url is not given', () => {
     let adapter = new BaseAdapter()
@@ -152,7 +152,7 @@ describe('base-adapter.test.js', () => {
 
     let result = await adapter.fetchAxios('https://morph.alpheios.net/api/v1/analysis/word?word=cepit&engine=whitakerLat&lang=lat&clientId=undefined')
     expect(result).toBeInstanceOf(Object)
-  })
+  }, 40000)
 
   it('15 BaseAdapter - fetchAxios returns string if type is defined as xml', async () => {
     let adapter = new BaseAdapter()
@@ -160,7 +160,7 @@ describe('base-adapter.test.js', () => {
 
     let result = await adapter.fetchAxios('https://repos1.alpheios.net/exist/rest/db/xq/lexi-get.xq?lx=ls&lg=lat&out=html&n=n6614', { type: 'xml' })
     expect(typeof result).toBe('string')
-  })
+  }, 40000)
 
   it('16 BaseAdapter - fetch adds error if url is not given', () => {
     let adapter = new BaseAdapter()

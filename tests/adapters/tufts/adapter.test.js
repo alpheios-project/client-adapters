@@ -76,7 +76,7 @@ describe('tufts/adapter.test.js', () => {
     let res = await adapter.getHomonym(Constants.LANG_LATIN, 'fooword')
     expect(adapter.errors.length).toEqual(1)
     expect(res).toBeUndefined()
-  })
+  }, 20000)
 
   it('5 AlpheiosTuftsAdapter - getHomonym returns homonym if url returns correct answer', async () => {
     let adapter = new AlpheiosTuftsAdapter({
@@ -87,7 +87,7 @@ describe('tufts/adapter.test.js', () => {
 
     let res = await adapter.getHomonym(Constants.LANG_LATIN, 'placito')
     expect(res).toBeInstanceOf(Homonym)
-  })
+  }, 20000)
 
   it('6 AlpheiosTuftsAdapter - prepareRequestUrl returns null if engine is not defined for given languageID', async () => {
     let adapter = new AlpheiosTuftsAdapter({
