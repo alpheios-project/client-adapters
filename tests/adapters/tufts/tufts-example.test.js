@@ -106,7 +106,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(4)
@@ -137,7 +137,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(2)
@@ -158,7 +158,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_GREEK, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(1)
@@ -180,7 +180,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(6)
@@ -208,7 +208,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(6)
@@ -229,7 +229,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(2)
@@ -248,7 +248,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_PERSIAN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(1)
   })
@@ -264,7 +264,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_ARABIC, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(5)
     expect(homonym.lexemes[3].inflections[0].morph.values.length).toEqual(2)
@@ -281,7 +281,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_GREEK, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[0].lemma.features['part of speech'].value).toEqual('pronoun')
     expect(homonym.lexemes[0].lemma.features.declension).toBeFalsy()
@@ -298,7 +298,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[1].inflections[0].stem).toBeNull()
     expect(homonym.lexemes[1].inflections[0].suffix).toEqual('est')
@@ -315,7 +315,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_GEEZ, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(10)
   }, 10000)
@@ -331,7 +331,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[0].lemma.word).toEqual('ego')
   })
@@ -347,7 +347,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes[2].lemma.features['conjugation'].value).toEqual('irregular')
@@ -365,7 +365,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
 
     expect(homonym.lexemes.length).toEqual(1)
@@ -385,7 +385,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes.length).toEqual(2)
   })
@@ -401,7 +401,7 @@ describe('tufts-example.test.js', () => {
     let url = adapter.prepareRequestUrl(Constants.LANG_LATIN, word)
     let res = await adapter.fetch(url)
 
-    let transformAdapter = new TransformAdapter(adapter.engineSet, adapter.config)
+    let transformAdapter = new TransformAdapter(adapter)
     let homonym = transformAdapter.transformData(res, word)
     expect(homonym.lexemes[0].inflections.length).toEqual(5)
     expect(homonym.lexemes[0].inflections.filter(i => i.conjugation.value === '4th').length).toEqual(5)

@@ -1,11 +1,17 @@
 import { ResourceProvider, Definition, Lexeme, Constants, Feature, Inflection, Homonym } from 'alpheios-data-models'
 
 class TransformAdapter {
-  constructor (engineSet, config) {
-    this.engineSet = engineSet
-    this.config = config
+  constructor (adapter) {
+    this.engineSet = adapter.engineSet
+    this.config = adapter.config
+    this.adapter = adapter
   }
 
+  /*
+   * This method extract parameter by defined path
+   * @param {source} Object - json object to retrieve data from
+   * @param {nameParam} String - parameter name that should be retrieved
+  */
   extractData (source, nameParam) {
     let schema = {
       'providerUri': [ 'RDF', 'Annotation', 'creator', 'Agent', 'about' ],
@@ -29,6 +35,11 @@ class TransformAdapter {
     return res
   }
 
+  /*
+   * This method checks if data is array, if not - converts to array
+   * @param {data} ? - value that should be checked
+   * @param {defaultData} - default value, if data is null
+  */
   checkToBeArray (data, defaultData = []) {
     let resData = data
     if (!Array.isArray(data)) {
@@ -41,6 +52,12 @@ class TransformAdapter {
     return resData
   }
 
+  /*
+   * This method creates hdwd from source json object
+   * @param {data} Object - jsonObj from adapter
+   * @param {term} Object - data from inflections
+   * @param {direction} Symbol - define the word direction
+  */
   collectHdwdArray (data, term, direction) {
     let hdwd = []
 
@@ -57,6 +74,11 @@ class TransformAdapter {
     return hdwd
   }
 
+  /*
+   * This method defines language from dictData nd inflections data
+   * @param {data} Object - jsonObj from adapter
+   * @param {term} Object - data from inflections
+  */
   defineLanguage (data, term) {
     let lemmaData = Array.isArray(data) ? data[0] : data
     if (!lemmaData.hdwd && term) {
@@ -66,6 +88,11 @@ class TransformAdapter {
     return lemmaData.hdwd ? lemmaData.hdwd.lang : lemmaData.lang
   }
 
+  /*
+   * This method defines language from dictData nd inflections data
+   * @param {data} Object - jsonObj from adapter
+   * @param {term} Object - data from inflections
+  */
   transformData (jsonObj, targetWord) {
     let lexemes = []
     let annotationBody = this.checkToBeArray(jsonObj.RDF.Annotation.Body)
@@ -84,14 +111,14 @@ class TransformAdapter {
       let lemmaElements = this.checkToBeArray(dictData, inflectionsJSONTerm ? [ inflectionsJSONTerm ] : [])
       let language = this.defineLanguage(lemmaElements, inflectionsJSONTerm)
       if (!language) {
-        console.log(`************************No language found`)
+        this.adapter.addError(this.adapter.l10n.messages['MORPH_TRANSFORM_NO_LANGUAGE'])
         continue
       }
 
       // Get importer based on the language
       let mappingData = this.engineSet.getEngineByCodeFromLangCode(language)
       if (!mappingData) {
-        console.log(`************************No mapping data found for ${language}`)
+        this.adapter.addError(this.adapter.l10n.messages['MORPH_TRANSFORM_NO_MAPPING_DATA'].get(language))
         continue
       }
 
@@ -109,7 +136,7 @@ class TransformAdapter {
 
         let lemmaText = elem.hdwd ? elem.hdwd.$ : undefined
         if (!lemmaText) {
-          console.log('************************No lemma or language found')
+          this.adapter.addError(this.adapter.l10n.messages['MORPH_TRANSFORM_NO_LEMMA'])
           continue
         }
         let lemma = mappingData.parseLemma(lemmaText, language)

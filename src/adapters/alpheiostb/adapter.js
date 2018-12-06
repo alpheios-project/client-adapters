@@ -5,16 +5,25 @@ import DefaultConfig from '@/adapters/alpheiostb/config.json'
 import xmlToJSON from 'xmltojson'
 
 class AlpheiosTreebankAdapter extends BaseAdapter {
+  /*
+   * Treebank adapter uploads config data and fills model property
+   * @param {config} Object - properties with higher priority
+  */
   constructor (config = {}) {
     super()
     this.config = this.uploadConfig(config, DefaultConfig)
     this.models = { 'lat': LatinLanguageModel, 'grc': GreekLanguageModel }
   }
 
-  async getHomonym (languageID, word) {
-    let url = this.prepareRequestUrl(word)
+  /*
+   * This method gets data from adapter's engine. All errors are added to adapter.errors
+   * @param {languageID} Symbol - languageID for getting homonym
+   * @param {wordref} String - a word reference for getting homonym from Treebank
+  */
+  async getHomonym (languageID, wordref) {
+    let url = this.prepareRequestUrl(wordref)
     if (!url) {
-      this.addError(this.l10n.messages['MORPH_TREEBANK_NO_URL'].get(word))
+      this.addError(this.l10n.messages['MORPH_TREEBANK_NO_URL'].get(wordref))
       return
     }
     try {
@@ -34,7 +43,7 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
           let homonym = this.transform(jsonObj, jsonObj.words[0].word[0].form[0]._text)
           return homonym
         } else {
-          this.addError(this.l10n.messages['MORPH_TREEBANK_NO_ANSWER_FOR_WORD'].get(word))
+          this.addError(this.l10n.messages['MORPH_TREEBANK_NO_ANSWER_FOR_WORD'].get(wordref))
         }
       }
     } catch (error) {
@@ -42,8 +51,12 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
     }
   }
 
-  prepareRequestUrl (word) {
-    let [text, fragment] = word.split(/#/)
+  /*
+   * This method creates url with url from config and chosen engine
+   * @param {wordref} String - a word reference for getting homonym
+  */
+  prepareRequestUrl (wordref) {
+    let [text, fragment] = wordref.split(/#/)
     let url
 
     if (this.config.texts.includes(text)) {
@@ -53,6 +66,11 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
     return url
   }
 
+  /*
+   * This method transform data from adapter to Homonym
+   * @param {jsobObj} Object - data from adapter
+   * @param {targetWord} String - word
+  */
   transform (jsonObj, targetWord) {
     'use strict'
     let providerUri = this.config.providerUri

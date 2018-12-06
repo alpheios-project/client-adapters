@@ -53,7 +53,7 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
         return
       }
       if (res) {
-        let transformAdapter = new TransformAdapter(this.engineSet, this.config)
+        let transformAdapter = new TransformAdapter(this)
 
         let homonym = transformAdapter.transformData(res, word)
 
