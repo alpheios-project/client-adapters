@@ -34,7 +34,7 @@ describe('alpheiostb/adapter.test.js', () => {
     expect(adapter.models).toBeDefined()
   })
 
-  it('3 AlpheiosTreebankAdapter - getHomonym executes prepareRequestUrl and if url could not be constructed return undefined and adds error', async () => {
+  it('2 AlpheiosTreebankAdapter - getHomonym executes prepareRequestUrl and if url could not be constructed return undefined and adds error', async () => {
     let adapter = new AlpheiosTreebankAdapter({
       category: 'morphology',
       adapterName: 'alpheiosTreebank',
@@ -51,7 +51,7 @@ describe('alpheiostb/adapter.test.js', () => {
     expect(res).toBeUndefined()
   })
 
-  it('4 AlpheiosTreebankAdapter - getHomonym returns undefined if url doesn\'t return answer and adds error', async () => {
+  it('3 AlpheiosTreebankAdapter - getHomonym returns undefined if url doesn\'t return answer and adds error', async () => {
     let adapter = new AlpheiosTreebankAdapter({
       category: 'morphology',
       adapterName: 'alpheiosTreebank',
@@ -64,7 +64,7 @@ describe('alpheiostb/adapter.test.js', () => {
     expect(res).toBeUndefined()
   }, 20000)
 
-  it('5 AlpheiosTreebankAdapter - getHomonym returns homonym if url returns correct answer', async () => {
+  it('4 AlpheiosTreebankAdapter - getHomonym returns homonym if url returns correct answer', async () => {
     let adapter = new AlpheiosTreebankAdapter({
       category: 'morphology',
       adapterName: 'alpheiosTreebank',
@@ -75,7 +75,7 @@ describe('alpheiostb/adapter.test.js', () => {
     expect(res).toBeInstanceOf(Homonym)
   }, 20000)
 
-  it('6 AlpheiosTreebankAdapter - prepareRequestUrl returns undefined if wordref is not correctly defined', async () => {
+  it('5 AlpheiosTreebankAdapter - prepareRequestUrl returns undefined if wordref is not correctly defined', () => {
     let adapter = new AlpheiosTreebankAdapter({
       category: 'morphology',
       adapterName: 'alpheiosTreebank',
@@ -86,7 +86,7 @@ describe('alpheiostb/adapter.test.js', () => {
     expect(res).toBeUndefined()
   })
 
-  it('7 AlpheiosTreebankAdapter - prepareRequestUrl returns url if wordref is defined correctly', async () => {
+  it('6 AlpheiosTreebankAdapter - prepareRequestUrl returns url if wordref is defined correctly', () => {
     let adapter = new AlpheiosTreebankAdapter({
       category: 'morphology',
       adapterName: 'alpheiosTreebank',
@@ -95,5 +95,24 @@ describe('alpheiostb/adapter.test.js', () => {
 
     let res = adapter.prepareRequestUrl('phi0959.phi006.alpheios-text-lat1#1-2')
     expect(res).toEqual(expect.stringMatching(/tools.alpheios.net\/exist/))
+  })
+
+  it('7 AlpheiosTreebankAdapter - prepareRequestUrl returns correct url', () => {
+    let adapter = new AlpheiosTreebankAdapter({ clientId: 'fooClient' })
+    let url = adapter.prepareRequestUrl('1999.02.0066#1-2')
+    expect(url).toEqual('http://tools.alpheios.net/exist/rest/db/xq/treebank-getmorph.xq?f=1999.02.0066&w=1-2&clientId=fooClient')
+  })
+
+  it('8 AlpheiosTreebankAdapter - adapted a word properly', async () => {
+    let adapter = new AlpheiosTreebankAdapter()
+    let homonym = await adapter.getHomonym(Constants.LANG_LATIN, '1999.02.0066#1-2')
+    
+    expect(homonym.lexemes.length).toEqual(1)
+    expect(homonym.lexemes[0].lemma.word).toEqual('primus')
+    expect(homonym.lexemes[0].lemma.features['part of speech'].value).toEqual('adjective')
+    expect(homonym.lexemes[0].inflections[0]['part of speech'].value).toEqual('adjective')
+    expect(homonym.lexemes[0].inflections[0]['case'].value).toEqual('nominative')
+    expect(homonym.lexemes[0].inflections[0].gender.value).toEqual('feminine')
+    expect(homonym.lexemes[0].inflections[0].number.value).toEqual('singular')
   })
 })
