@@ -7,6 +7,9 @@ import enUS from '@/locales/en-us/messages.json'
 import enGB from '@/locales/en-gb/messages.json'
 
 class BaseAdapter {
+  /*
+   * Every adapter has errors array and L10n property for localizing messages
+  */
   constructor () {
     this.errors = []
     this.l10n = new L10n()
@@ -15,11 +18,20 @@ class BaseAdapter {
       .setLocale(Locales.en_US)
   }
 
+  /*
+   * This method is used for adding error meassage with additional data
+   * @param {message} [String] - message text for the error
+  */
   addError (message) {
     let error = new AdapterError(this.config.category, this.config.adapterName, this.config.method, message)
     this.errors.push(error)
   }
 
+  /*
+   * This method is used for uploding config property from current properties and default properties
+   * @param {config} Object - properties with higher priority
+   * @param {defaultConfig} Object - default properties
+  */
   uploadConfig (config, defaultConfig) {
     let configRes = {}
     Object.keys(config).forEach(configKey => {
@@ -35,10 +47,21 @@ class BaseAdapter {
     return configRes
   }
 
+  /*
+   * This method is used for creating timeout Promise
+   * @param {ms} Number - amount of ms for creation timeout
+  */
   timeout (ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
+  /*
+   * This method is used for fetching data using window.fetch
+   * @param {url} String - url for fetching data
+   * @param {options} Object
+   *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
+   *                                    xml - response.text(), otherwise - response.json()
+  */
   async fetchWindow (url, options = { type: 'json' }) {
     if (url) {
       try {
@@ -60,6 +83,14 @@ class BaseAdapter {
     }
   }
 
+  /*
+   * This method is used for fetching data using window.fetch with timeout reject
+   * @param {url} String - url for fetching data
+   * @param {options} Object
+   *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
+   *                                    xml - response.text(), otherwise - response.json()
+   *     @param {options.timeout} Number - timeout ms amount
+  */
   fetchWindowTimeout (url, options) {
     if (url) {
       let didTimeOut = false
@@ -73,8 +104,11 @@ class BaseAdapter {
           .then((response) => {
             clearTimeout(timeout)
             if (!didTimeOut) {
-              console.log('fetch good! ', response)
-              resolve(response)
+              if (options.type === 'xml') {
+                resolve(response.text())
+              } else {
+                resolve(response.json())
+              }
             }
           })
           .catch((err) => {
