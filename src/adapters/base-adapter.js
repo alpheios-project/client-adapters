@@ -122,6 +122,12 @@ class BaseAdapter {
     }
   }
 
+  /*
+   * This method is used for fetching data using axios
+   * @param {url} String - url for fetching data
+   * @param {options} Object
+   *     @param {options.timeout} Number - timeout ms amount
+  */
   async fetchAxios (url, options) {
     try {
       let res
@@ -136,6 +142,15 @@ class BaseAdapter {
     }
   }
 
+  /*
+   * This method is used for fetching data using different methods. If window is defined - than it would be used window.fetch.
+   * Otherwise axios would be used.
+   * @param {url} String - url for fetching data
+   * @param {options} Object
+   *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
+   *                                    xml - response.text(), otherwise - response.json()
+   *     @param {options.timeout} Number - timeout ms amount
+  */
   async fetch (url, options) {
     let res
 
