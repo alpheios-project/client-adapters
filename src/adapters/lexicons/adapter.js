@@ -10,6 +10,7 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
   /*
   * Lexicons adapter uploads config data, defines default options and inits data
   * @param {config} Object - properties with higher priority
+  * @param {options} Object - default values for options
   */
   constructor (config = {}) {
     super()
@@ -17,16 +18,93 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
     this.options = { timeout: this.config.timeout ? this.config.timeout : 0 }
   }
 
+  /*
+  * This method retrieves short definitions for given homonym
+  * @param {homonym} Homonym - homonym for retrieving definitions
+  * @param {options} Object - options
+  */
   async fetchShortDefs (homonym, options = {}) {
     let res = await this.fetchDefinitions(homonym, options, 'short')
     return res
   }
 
+  /*
+  * This method retrieves full definitions for given homonym
+  * @param {homonym} Homonym - homonym for retrieving definitions
+  * @param {options} Object - options
+  */
   async fetchFullDefs (homonym, options = {}) {
     let res = await this.fetchDefinitions(homonym, options, 'full')
     return res
   }
 
+  prepareShortDefPromise (url, languageID, homonym, urlKey, lookupFunction) {
+    let resCheckCached = this.checkCachedData(url)
+    return resCheckCached.then(
+      async (result) => {
+        if (result) {
+          await this.updateShortDefs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
+          this.prepareSuccessCallback(lookupFunction, homonym)
+        }
+      },
+      error => {
+        this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+        this.prepareFailedCallback(lookupFunction, homonym)
+      }
+    )
+  }
+
+  prepareFullDefPromise (url, languageID, homonym, urlKey, lookupFunction) {
+    let resCheckCached = this.checkCachedData(url)
+    resCheckCached.then(
+      async (result) => {
+        let fullDefsRequests = this.collectFullDefURLs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
+        if (fullDefsRequests) {
+          let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey])
+          resFullDefs.then(
+            updateRes => {
+              this.prepareSuccessCallback(lookupFunction, homonym)
+            },
+            error => {
+              this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+              this.prepareFailedCallback(lookupFunction, homonym)
+            }
+          )
+        } else {
+          throw Error('No data')
+        }
+      },
+      error => {
+        this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+        this.prepareFailedCallback(lookupFunction, homonym)
+      }
+    )
+  }
+
+  prepareSuccessCallback (lookupFunction, homonym) {
+    if (this.config.callBackEvtSuccess) {
+      this.config.callBackEvtSuccess.pub({
+        requestType: `${lookupFunction}Defs`,
+        homonym: homonym
+      })
+    }
+  }
+
+  prepareFailedCallback (lookupFunction, homonym) {
+    if (this.config.callBackEvtFailed) {
+      this.config.callBackEvtFailed.pub({
+        requestType: `${lookupFunction}Defs`,
+        homonym: homonym
+      })
+    }
+  }
+
+  /*
+  * This is generic method retrieves definitions for homonym
+  * @param {homonym} Homonym - homonym for retrieving definitions
+  * @param {options} Object - options
+  * @param {lookupFunction} Object - type of definitions - short, full
+  */
   async fetchDefinitions (homonym, options, lookupFunction) {
     Object.assign(this.options, options)
     if (!this.options.allow || this.options.allow.length === 0) {
@@ -39,72 +117,11 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
     for (let urlKey of urlKeys) {
       if (lookupFunction === 'short') {
         let url = this.config[urlKey].urls.short
-
-        let resCheckCached = this.checkCachedData(url)
-        resCheckCached.then(
-          async (result) => {
-            if (result) {
-              await this.updateShortDefs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
-              if (this.config.callBackEvtSuccess) {
-                this.config.callBackEvtSuccess.pub({
-                  requestType: `${lookupFunction}Defs`,
-                  homonym: homonym
-                })
-              }
-            }
-          },
-          error => {
-            this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
-            if (this.config.callBackEvtFailed) {
-              this.config.callBackEvtFailed.pub({
-                requestType: `${lookupFunction}Defs`,
-                homonym: homonym
-              })
-            }
-          }
-        )
+        this.prepareShortDefPromise(url, languageID, homonym, urlKey, lookupFunction)
       }
       if (lookupFunction === 'full') {
         let url = this.config[urlKey].urls.index
-        let resCheckCached = this.checkCachedData(url)
-        resCheckCached.then(
-          async (result) => {
-            let fullDefsRequests = this.collectFullDefURLs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
-            if (fullDefsRequests) {
-              let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey])
-              resFullDefs.then(
-                updateRes => {
-                  if (this.config.callBackEvtSuccess) {
-                    this.config.callBackEvtSuccess.pub({
-                      requestType: `${lookupFunction}Defs`,
-                      homonym: homonym
-                    })
-                  }
-                },
-                error => {
-                  this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
-                  if (this.config.callBackEvtFailed) {
-                    this.config.callBackEvtFailed.pub({
-                      requestType: `${lookupFunction}Defs`,
-                      homonym: homonym
-                    })
-                  }
-                }
-              )
-            } else {
-              throw Error('No data')
-            }
-          },
-          error => {
-            this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
-            if (this.config.callBackEvtFailed) {
-              this.config.callBackEvtFailed.pub({
-                requestType: `${lookupFunction}Defs`,
-                homonym: homonym
-              })
-            }
-          }
-        )
+        this.prepareFullDefPromise(url, languageID, homonym, urlKey, lookupFunction)
       }
     }
   }
