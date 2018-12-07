@@ -213,12 +213,12 @@ class ClientAdapters {
     let localLexiconsAdapter = new AlpheiosLexiconsAdapter(adapterParams)
 
     if (options.method === 'fetchShortDefs') {
-      let res = await localLexiconsAdapter.fetchShortDefs(options.params.homonym, options.params.opts)
-      return { result: res, errors: localLexiconsAdapter.errors }
+      await localLexiconsAdapter.fetchShortDefs(options.params.homonym, options.params.opts)
+      return { errors: localLexiconsAdapter.errors }
     }
     if (options.method === 'fetchFullDefs') {
-      let res = await localLexiconsAdapter.fetchFullDefs(options.params.homonym, options.params.opts)
-      return { result: res, errors: localLexiconsAdapter.errors }
+      await localLexiconsAdapter.fetchFullDefs(options.params.homonym, options.params.opts)
+      return { errors: localLexiconsAdapter.errors }
     }
     return null
   }

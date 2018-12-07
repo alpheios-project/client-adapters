@@ -246,4 +246,5 @@ describe('client-adapters.test.js', () => {
 
     expect(res.errors.length).toBeGreaterThan(0)
   })
+
 })

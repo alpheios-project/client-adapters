@@ -12725,7 +12725,7 @@ var _adapters_alpheiostb_config_json__WEBPACK_IMPORTED_MODULE_2___namespace = /*
 
 
 class AlpheiosTreebankAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODULE_1__["default"] {
-  /*
+  /**
    * Treebank adapter uploads config data and fills model property
    * @param {config} Object - properties with higher priority
   */
@@ -12735,10 +12735,13 @@ class AlpheiosTreebankAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     this.models = { 'lat': alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LatinLanguageModel"], 'grc': alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["GreekLanguageModel"] }
   }
 
-  /*
+  /**
    * This method gets data from adapter's engine. All errors are added to adapter.errors
    * @param {languageID} Symbol - languageID for getting homonym
    * @param {wordref} String - a word reference for getting homonym from Treebank
+   * Returned values:
+   *      - {Homonym} - if successed
+   *      - {undefined} - if failed
   */
   async getHomonym (languageID, wordref) {
     let url = this.prepareRequestUrl(wordref)
@@ -12771,9 +12774,10 @@ class AlpheiosTreebankAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     }
   }
 
-  /*
+  /**
    * This method creates url with url from config and chosen engine
    * @param {wordref} String - a word reference for getting homonym
+   * @return {String} - constructed url for getting data from Treebank
   */
   prepareRequestUrl (wordref) {
     let [text, fragment] = wordref.split(/#/)
@@ -12786,10 +12790,11 @@ class AlpheiosTreebankAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     return url
   }
 
-  /*
+  /**
    * This method transform data from adapter to Homonym
    * @param {jsobObj} Object - data from adapter
    * @param {targetWord} String - word
+   * @return {Homonym}
   */
   transform (jsonObj, targetWord) {
     'use strict'
@@ -12882,7 +12887,7 @@ class BaseAdapter {
       .setLocale(_locales_locales_js__WEBPACK_IMPORTED_MODULE_3__["default"].en_US)
   }
 
-  /*
+  /**
    * This method is used for adding error meassage with additional data
    * @param {message} [String] - message text for the error
   */
@@ -12891,10 +12896,11 @@ class BaseAdapter {
     this.errors.push(error)
   }
 
-  /*
+  /**
    * This method is used for uploding config property from current properties and default properties
    * @param {config} Object - properties with higher priority
    * @param {defaultConfig} Object - default properties
+   * @return {Object} - configuration data
   */
   uploadConfig (config, defaultConfig) {
     let configRes = {}
@@ -12911,20 +12917,22 @@ class BaseAdapter {
     return configRes
   }
 
-  /*
+  /**
    * This method is used for creating timeout Promise
    * @param {ms} Number - amount of ms for creation timeout
+   * @return {Promise}
   */
   timeout (ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  /*
+  /**
    * This method is used for fetching data using window.fetch
    * @param {url} String - url for fetching data
    * @param {options} Object
    *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
    *                                    xml - response.text(), otherwise - response.json()
+   * @return {Object, String}
   */
   async fetchWindow (url, options = { type: 'json' }) {
     if (url) {
@@ -12947,13 +12955,14 @@ class BaseAdapter {
     }
   }
 
-  /*
+  /**
    * This method is used for fetching data using window.fetch with timeout reject
    * @param {url} String - url for fetching data
    * @param {options} Object
    *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
    *                                    xml - response.text(), otherwise - response.json()
    *     @param {options.timeout} Number - timeout ms amount
+   * @return {Promise}
   */
   fetchWindowTimeout (url, options) {
     if (url) {
@@ -12986,11 +12995,12 @@ class BaseAdapter {
     }
   }
 
-  /*
+  /**
    * This method is used for fetching data using axios
    * @param {url} String - url for fetching data
    * @param {options} Object
    *     @param {options.timeout} Number - timeout ms amount
+   * @return {Object, String}
   */
   async fetchAxios (url, options) {
     if (url) {
@@ -13010,7 +13020,7 @@ class BaseAdapter {
     }
   }
 
-  /*
+  /**
    * This method is used for fetching data using different methods. If window is defined - than it would be used window.fetch.
    * Otherwise axios would be used.
    * @param {url} String - url for fetching data
@@ -13018,6 +13028,7 @@ class BaseAdapter {
    *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
    *                                    xml - response.text(), otherwise - response.json()
    *     @param {options.timeout} Number - timeout ms amount
+   * @return {Object, String}
   */
   async fetch (url, options) {
     let res
@@ -13073,7 +13084,7 @@ var _adapters_lexicons_config_json__WEBPACK_IMPORTED_MODULE_3___namespace = /*#_
 let cachedDefinitions = new Map()
 
 class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODULE_2__["default"] {
-  /*
+  /**
   * Lexicons adapter uploads config data, defines default options and inits data
   * @param {config} Object - properties with higher priority
   * @param {options} Object - default values for options
@@ -13084,92 +13095,114 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     this.options = { timeout: this.config.timeout ? this.config.timeout : 0 }
   }
 
-  /*
+  /**
   * This method retrieves short definitions for given homonym
   * @param {homonym} Homonym - homonym for retrieving definitions
   * @param {options} Object - options
+  * @return {Boolean} - result of fetching
   */
   async fetchShortDefs (homonym, options = {}) {
-    let res = await this.fetchDefinitions(homonym, options, 'short')
-    return res
+    await this.fetchDefinitions(homonym, options, 'short')
   }
 
-  /*
+  /**
   * This method retrieves full definitions for given homonym
   * @param {homonym} Homonym - homonym for retrieving definitions
   * @param {options} Object - options
+  * @return {Boolean} - result of fetching
   */
   async fetchFullDefs (homonym, options = {}) {
-    let res = await this.fetchDefinitions(homonym, options, 'full')
-    return res
+    await this.fetchDefinitions(homonym, options, 'full')
   }
 
-  prepareShortDefPromise (url, languageID, homonym, urlKey, lookupFunction) {
+  /**
+  * This method creates Promise for getting short definitions, for being able to parallel requests
+  * @param {homonym} Symbol - languageID of the homonym
+  * @param {urlKey} String - urlIndex for geting data from config
+  */
+  prepareShortDefPromise (homonym, urlKey) {
+    let url = this.config[urlKey].urls.short
+    let requestType = 'shortDefs'
+
     let resCheckCached = this.checkCachedData(url)
     return resCheckCached.then(
       async (result) => {
         if (result) {
-          await this.updateShortDefs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
-          this.prepareSuccessCallback(lookupFunction, homonym)
+          await this.updateShortDefs(cachedDefinitions.get(url), homonym, this.config[urlKey])
+          this.prepareSuccessCallback(requestType, homonym)
         }
       },
       error => {
         this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
-        this.prepareFailedCallback(lookupFunction, homonym)
+        this.prepareFailedCallback(requestType, homonym)
       }
     )
   }
 
-  prepareFullDefPromise (url, languageID, homonym, urlKey, lookupFunction) {
+  /**
+  * This method creates Promise for getting full definitions, for being able to parallel requests
+  * @param {homonym} Symbol - languageID of the homonym
+  * @param {urlKey} String - urlIndex for geting data from config
+  */
+  prepareFullDefPromise (homonym, urlKey) {
+    let url = this.config[urlKey].urls.full
+    let requestType = 'fullDefs'
+
     let resCheckCached = this.checkCachedData(url)
-    resCheckCached.then(
+    return resCheckCached.then(
       async (result) => {
-        let fullDefsRequests = this.collectFullDefURLs(languageID, cachedDefinitions.get(url), homonym, this.config[urlKey])
+        let fullDefsRequests = this.collectFullDefURLs(cachedDefinitions.get(url), homonym, this.config[urlKey])
         if (fullDefsRequests) {
-          let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey])
-          resFullDefs.then(
-            updateRes => {
-              this.prepareSuccessCallback(lookupFunction, homonym)
-            },
-            error => {
-              this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
-              this.prepareFailedCallback(lookupFunction, homonym)
-            }
-          )
+          let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey], homonym)
+          resFullDefs.catch(error => {
+            this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
+            this.prepareFailedCallback(requestType, homonym)
+          })
         } else {
           throw Error('No data')
         }
       },
       error => {
         this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
-        this.prepareFailedCallback(lookupFunction, homonym)
+        this.prepareFailedCallback(requestType, homonym)
       }
     )
   }
 
-  prepareSuccessCallback (lookupFunction, homonym) {
+  /**
+  * This method checks if there is a callBackEvtSuccess defined and publish it if exists
+  * @param {requestType} String - name of the request - shortDef and fullDef
+  * @param {homonym} Symbol - languageID of the homonym
+  */
+  prepareSuccessCallback (requestType, homonym) {
     if (this.config.callBackEvtSuccess) {
       this.config.callBackEvtSuccess.pub({
-        requestType: `${lookupFunction}Defs`,
+        requestType: requestType,
         homonym: homonym
       })
     }
   }
 
-  prepareFailedCallback (lookupFunction, homonym) {
+  /**
+  * This method checks if there is a callBackEvtFailed defined and publish it if exists
+  * @param {requestType} String - name of the request - shortDef and fullDef
+  * @param {homonym} Symbol - languageID of the homonym
+  */
+  prepareFailedCallback (requestType, homonym) {
     if (this.config.callBackEvtFailed) {
       this.config.callBackEvtFailed.pub({
-        requestType: `${lookupFunction}Defs`,
+        requestType: requestType,
         homonym: homonym
       })
     }
   }
 
-  /*
-  * This is generic method retrieves definitions for homonym
+  /**
+  * This is a generic method that retrieves definitions for homonym
   * @param {homonym} Homonym - homonym for retrieving definitions
   * @param {options} Object - options
   * @param {lookupFunction} Object - type of definitions - short, full
+  * @return {Boolean} - result of fetching
   */
   async fetchDefinitions (homonym, options, lookupFunction) {
     Object.assign(this.options, options)
@@ -13182,16 +13215,19 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
 
     for (let urlKey of urlKeys) {
       if (lookupFunction === 'short') {
-        let url = this.config[urlKey].urls.short
-        this.prepareShortDefPromise(url, languageID, homonym, urlKey, lookupFunction)
+        this.prepareShortDefPromise(homonym, urlKey, lookupFunction)
       }
       if (lookupFunction === 'full') {
-        let url = this.config[urlKey].urls.index
-        this.prepareFullDefPromise(url, languageID, homonym, urlKey, lookupFunction)
+        this.prepareFullDefPromise(homonym, urlKey, lookupFunction)
       }
     }
   }
 
+  /**
+  * This method checks if data from url is already cached and if not - it uploads data from url to cache
+  * @param {url} String - url from what we need to cache data
+  * @return {Boolean} - true - if cached is successed
+  */
   async checkCachedData (url) {
     if (!cachedDefinitions.has(url)) {
       try {
@@ -13207,9 +13243,15 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     return true
   }
 
-  async updateShortDefs (languageID, data, homonym, config) {
+  /**
+  * This method searches for definitions in cached text, creates definitions and updates lexemes
+  * @param {data} Map - cached data from definition's url
+  * @param {homonym} Homonym - homonym we search definitions for
+  * @param {config} Object - config data for url
+  */
+  async updateShortDefs (data, homonym, config) {
+    let languageID = homonym.lexemes[0].lemma.languageID
     let model = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageModel(languageID)
-    let finalRes = false
 
     for (let lexeme of homonym.lexemes) {
       let deftexts = this.lookupInDataIndex(data, lexeme.lemma, model)
@@ -13220,7 +13262,6 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
             let def = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Definition"](d, config.langs.target, 'text/plain', lexeme.lemma.word)
             let definition = await alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["ResourceProvider"].getProxy(this.provider, def)
             lexeme.meaning['appendShortDefs'](definition)
-            finalRes = true
           } catch (error) {
             this.addError(this.l10n.messages['LEXICONS_FAILED_APPEND_DEFS'].get(error.message))
             continue
@@ -13229,19 +13270,20 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
       } else {
         let url = config.urls.short
         this.addError(this.l10n.messages['LEXICONS_NO_DATA_FROM_URL'].get(url))
-        if (this.config.callBackEvtFailed) {
-          this.config.callBackEvtFailed.pub({
-            requestType: 'shortDefs',
-            homonym: homonym
-          })
-        }
+        this.prepareFailedCallback('shortDefs', homonym)
       }
     }
-
-    return finalRes
   }
 
-  collectFullDefURLs (languageID, data, homonym, config) {
+  /**
+  * This method creates requests to full definitions url for each lexeme and given config
+  * @param {data} Map - cached data from definition's index url
+  * @param {homonym} Homonym - homonym we search definitions for
+  * @param {config} Object - config data for url
+  * @return {[String]} - array of urls for retrieving data
+  */
+  collectFullDefURLs (data, homonym, config) {
+    let languageID = homonym.lexemes[0].lemma.languageID
     let model = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageModel(languageID)
     let urlFull = config.urls.full
 
@@ -13264,29 +13306,36 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     return requests
   }
 
-  async updateFullDefs (fullDefsRequests, config) {
-    let finalRes = false
-
+  /**
+  * This method fetches data from request and update homonym with full definition - it is made as Promises with calback to make it parallel
+  * @param {fullDefsRequests} [String] - array of full definitions url
+  * @param {config} Object - config data for url
+  * @param {homonym} Homonym - homonym we search definitions for
+  */
+  async updateFullDefs (fullDefsRequests, config, homonym) {
+    this.fullDefResult = false
     for (let request of fullDefsRequests) {
-      let fullDefData = await this.fetch(request.url, { type: 'xml' })
-      if (!fullDefData) {
-        this.addError(this.l10n.messages['LEXICONS_NO_DATA_FROM_URL'].get(request.url))
-        continue
-      }
-      try {
-        let def = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Definition"](fullDefData, config.langs.target, 'text/plain', request.lexeme.lemma.word)
-        let definition = await alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["ResourceProvider"].getProxy(this.provider, def)
-        request.lexeme.meaning['appendFullDefs'](definition)
-        finalRes = true
-      } catch (error) {
-        this.addError(this.l10n.messages['LEXICONS_FAILED_APPEND_DEFS'].get(error.message))
-        continue
-      }
-    }
+      let fullDefDataRes = this.fetch(request.url, { type: 'xml' })
 
-    return finalRes
+      fullDefDataRes.then(
+        async (fullDefData) => {
+          let def = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["Definition"](fullDefData, config.langs.target, 'text/plain', request.lexeme.lemma.word)
+          let definition = await alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["ResourceProvider"].getProxy(this.provider, def)
+          request.lexeme.meaning['appendFullDefs'](definition)
+          this.prepareSuccessCallback('fullDefs', homonym)
+          this.fullDefResult = true
+        },
+        error => {
+          this.addError(this.l10n.messages['LEXICONS_FAILED_APPEND_DEFS'].get(error.message))
+        }
+      )
+    }
   }
 
+  /*
+  * This method retrieves urls from config for given languageCode
+  * @param {languageID} Symbol
+  */
   getRequests (languageID) {
     let languageCode = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageCodeFromId(languageID)
     return Object.keys(this.config).filter(url => this.config[url] && this.config[url].langs && this.config[url].langs.source === languageCode)
@@ -13522,7 +13571,7 @@ var _adapters_tufts_config_json__WEBPACK_IMPORTED_MODULE_3___namespace = /*#__PU
 
 
 class AlpheiosTuftsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODULE_1__["default"] {
-  /*
+  /**
    * Tufts adapter uploads config data, uploads available engines and creates EnginesSet from them
    * @param {config} Object - properties with higher priority
   */
@@ -13533,7 +13582,7 @@ class AlpheiosTuftsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODU
     this.engineSet = new _adapters_tufts_engines_set__WEBPACK_IMPORTED_MODULE_4__["default"](this.engines)
   }
 
-  /*
+  /**
    * This method creates engines object with the following format:
    * LanguageID: array of available engines from config files, for example Symbol(Latin): ["whitakerLat"]
    * @param {config} Object - properties with higher priority
@@ -13551,10 +13600,13 @@ class AlpheiosTuftsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODU
     })
   }
 
-  /*
+  /**
    * This method gets data from adapter's engine. All errors are added to adapter.errors
    * @param {languageID} Symbol - languageID for getting homonym
    * @param {word} String - a word for getting homonym
+   * Returned values:
+   *      - {Homonym} - if successed
+   *      - {undefined} - if failed
   */
   async getHomonym (languageID, word) {
     let url = this.prepareRequestUrl(languageID, word)
@@ -13588,10 +13640,13 @@ class AlpheiosTuftsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODU
     }
   }
 
-  /*
+  /**
    * This method creates url with url from config and chosen engine
    * @param {languageID} Symbol - languageID for getting homonym
    * @param {word} String - a word for getting homonym
+   * Returned url:
+   *     - {String} - constructed url for getting data from Tufts if engine is correct
+   *     - {null} - if engine is not correct
   */
   prepareRequestUrl (languageID, word) {
     let langCode = alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["LanguageModelFactory"].getLanguageCodeFromId(languageID)
@@ -13876,16 +13931,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class EnginesSet {
-  /*
+  /**
    * @param {adapterConfigEngines} Object - it is the following format - Symbol(Latin): ["whitakerLat"]
   */
   constructor (adapterConfigEngines) {
     this.engine = adapterConfigEngines
   }
 
-  /*
+  /**
    * This method returns engine class by languageID
    * @param {languageID} Symbol
+   * @return {Engine Class}
   */
   getEngineByCode (languageID) {
     if (this.engine[languageID]) {
@@ -13895,9 +13951,10 @@ class EnginesSet {
     }
   }
 
-  /*
+  /**
    * This method returns engine class by languageCode
    * @param {languageCode} String
+   * @return {Engine Class}
   */
   getEngineByCodeFromLangCode (languageCode) {
     let languageID = alpheios_data_models__WEBPACK_IMPORTED_MODULE_5__["LanguageModelFactory"].getLanguageIdFromCode(languageCode)
@@ -14163,10 +14220,11 @@ class TransformAdapter {
     this.adapter = adapter
   }
 
-  /*
+  /**
    * This method extract parameter by defined path
    * @param {source} Object - json object to retrieve data from
    * @param {nameParam} String - parameter name that should be retrieved
+   * @return {String, Object} - extracted data
   */
   extractData (source, nameParam) {
     let schema = {
@@ -14191,10 +14249,11 @@ class TransformAdapter {
     return res
   }
 
-  /*
+  /**
    * This method checks if data is array, if not - converts to array
    * @param {data} ? - value that should be checked
    * @param {defaultData} - default value, if data is null
+   * @return {Array}
   */
   checkToBeArray (data, defaultData = []) {
     let resData = data
@@ -14208,11 +14267,12 @@ class TransformAdapter {
     return resData
   }
 
-  /*
+  /**
    * This method creates hdwd from source json object
    * @param {data} Object - jsonObj from adapter
    * @param {term} Object - data from inflections
    * @param {direction} Symbol - define the word direction
+   * @return {Array} - array with parts for hdwr
   */
   collectHdwdArray (data, term, direction) {
     let hdwd = []
@@ -14230,10 +14290,11 @@ class TransformAdapter {
     return hdwd
   }
 
-  /*
+  /**
    * This method defines language from dictData nd inflections data
    * @param {data} Object - jsonObj from adapter
    * @param {term} Object - data from inflections
+   * @return {String}  - language code
   */
   defineLanguage (data, term) {
     let lemmaData = Array.isArray(data) ? data[0] : data
@@ -14244,10 +14305,13 @@ class TransformAdapter {
     return lemmaData.hdwd ? lemmaData.hdwd.lang : lemmaData.lang
   }
 
-  /*
+  /**
    * This method defines language from dictData nd inflections data
    * @param {data} Object - jsonObj from adapter
    * @param {term} Object - data from inflections
+   * Returned values:
+   *     - {Homonym}
+   *     - {undefined}
   */
   transformData (jsonObj, targetWord) {
     let lexemes = []
@@ -14636,12 +14700,12 @@ class ClientAdapters {
     let localLexiconsAdapter = new _adapters_lexicons_adapter__WEBPACK_IMPORTED_MODULE_3__["default"](adapterParams)
 
     if (options.method === 'fetchShortDefs') {
-      let res = await localLexiconsAdapter.fetchShortDefs(options.params.homonym, options.params.opts)
-      return { result: res, errors: localLexiconsAdapter.errors }
+      await localLexiconsAdapter.fetchShortDefs(options.params.homonym, options.params.opts)
+      return { errors: localLexiconsAdapter.errors }
     }
     if (options.method === 'fetchFullDefs') {
-      let res = await localLexiconsAdapter.fetchFullDefs(options.params.homonym, options.params.opts)
-      return { result: res, errors: localLexiconsAdapter.errors }
+      await localLexiconsAdapter.fetchFullDefs(options.params.homonym, options.params.opts)
+      return { errors: localLexiconsAdapter.errors }
     }
     return null
   }

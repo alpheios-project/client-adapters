@@ -5,7 +5,7 @@ import DefaultConfig from '@/adapters/alpheiostb/config.json'
 import xmlToJSON from 'xmltojson'
 
 class AlpheiosTreebankAdapter extends BaseAdapter {
-  /*
+  /**
    * Treebank adapter uploads config data and fills model property
    * @param {config} Object - properties with higher priority
   */
@@ -15,10 +15,13 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
     this.models = { 'lat': LatinLanguageModel, 'grc': GreekLanguageModel }
   }
 
-  /*
+  /**
    * This method gets data from adapter's engine. All errors are added to adapter.errors
    * @param {languageID} Symbol - languageID for getting homonym
    * @param {wordref} String - a word reference for getting homonym from Treebank
+   * Returned values:
+   *      - {Homonym} - if successed
+   *      - {undefined} - if failed
   */
   async getHomonym (languageID, wordref) {
     let url = this.prepareRequestUrl(wordref)
@@ -51,9 +54,10 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
     }
   }
 
-  /*
+  /**
    * This method creates url with url from config and chosen engine
    * @param {wordref} String - a word reference for getting homonym
+   * @return {String} - constructed url for getting data from Treebank
   */
   prepareRequestUrl (wordref) {
     let [text, fragment] = wordref.split(/#/)
@@ -66,10 +70,11 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
     return url
   }
 
-  /*
+  /**
    * This method transform data from adapter to Homonym
    * @param {jsobObj} Object - data from adapter
    * @param {targetWord} String - word
+   * @return {Homonym}
   */
   transform (jsonObj, targetWord) {
     'use strict'

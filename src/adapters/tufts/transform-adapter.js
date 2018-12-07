@@ -7,10 +7,11 @@ class TransformAdapter {
     this.adapter = adapter
   }
 
-  /*
+  /**
    * This method extract parameter by defined path
    * @param {source} Object - json object to retrieve data from
    * @param {nameParam} String - parameter name that should be retrieved
+   * @return {String, Object} - extracted data
   */
   extractData (source, nameParam) {
     let schema = {
@@ -35,10 +36,11 @@ class TransformAdapter {
     return res
   }
 
-  /*
+  /**
    * This method checks if data is array, if not - converts to array
    * @param {data} ? - value that should be checked
    * @param {defaultData} - default value, if data is null
+   * @return {Array}
   */
   checkToBeArray (data, defaultData = []) {
     let resData = data
@@ -52,11 +54,12 @@ class TransformAdapter {
     return resData
   }
 
-  /*
+  /**
    * This method creates hdwd from source json object
    * @param {data} Object - jsonObj from adapter
    * @param {term} Object - data from inflections
    * @param {direction} Symbol - define the word direction
+   * @return {Array} - array with parts for hdwr
   */
   collectHdwdArray (data, term, direction) {
     let hdwd = []
@@ -74,10 +77,11 @@ class TransformAdapter {
     return hdwd
   }
 
-  /*
+  /**
    * This method defines language from dictData nd inflections data
    * @param {data} Object - jsonObj from adapter
    * @param {term} Object - data from inflections
+   * @return {String}  - language code
   */
   defineLanguage (data, term) {
     let lemmaData = Array.isArray(data) ? data[0] : data
@@ -88,10 +92,13 @@ class TransformAdapter {
     return lemmaData.hdwd ? lemmaData.hdwd.lang : lemmaData.lang
   }
 
-  /*
+  /**
    * This method defines language from dictData nd inflections data
    * @param {data} Object - jsonObj from adapter
    * @param {term} Object - data from inflections
+   * Returned values:
+   *     - {Homonym}
+   *     - {undefined}
   */
   transformData (jsonObj, targetWord) {
     let lexemes = []
