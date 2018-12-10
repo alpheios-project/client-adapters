@@ -179,8 +179,8 @@ class ClientAdapters {
     })
 
     if (options.method === 'fetchTranslations') {
-      let res = await localLemmasAdapter.getTranslationsList(options.params.homonym, options.params.browserLang)
-      return { result: res, errors: localLemmasAdapter.errors }
+      await localLemmasAdapter.getTranslationsList(options.params.homonym, options.params.browserLang)
+      return { errors: localLemmasAdapter.errors }
     }
     return null
   }

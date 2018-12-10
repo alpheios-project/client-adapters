@@ -157,3 +157,45 @@ let result = ClientAdapters.lexicon.alpheios({
 | ara |   | + | https://github.com/alpheios-project/lan | "The Arabic-English Lexicon" (Edward Lane) |
 | ara |   | + | https://github.com/alpheios-project/sal | "An Advanced Learner's Arabic Dictionary" (H. Anthony Salmone) |
 | per | + |   | https://github.com/alpheios-project/stg | "A Comprehensive Persian-English Dictionary" (Francis Joseph Steingass) |
+
+
+
+## Lemmatranslation.alpheios Adapter
+
+This adapter retrieves translations to different languages.
+
+```
+let result = ClientAdapters.lemmatranslation.alpheios({
+  method: 
+  params: {
+    homonym: 
+    browserLang: 
+  }
+})
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| method | Symbol | There is one available methods - 'fetchTranslations' |
+| homonym | Homonym | Input Homonym for getting definitions |
+| browserLang | String | Available languages for translation |
+
+**Result: Promise**
+
+| Name | Type | Description |
+|------|------|-------------|
+| errors | Array | Array of AdapterError objects |
+
+**Available languages**
+
+| Name | Description |
+|------|-------------|
+| en-US | English |
+| it | Italian |
+| pt | Portuguese |
+| ca | Catalan |
+| fr | French |
+| de | German |
+| es | Spain |
