@@ -56,7 +56,7 @@ describe('lexicons/adapter.test.js', () => {
     expect(adapter.provider).toBeDefined()
   })
 
-  it('2 AlpheiosLemmaTranslationsAdapter - getTranslationsList gets translations and adds no error', async () => {
+  it.skip('2 AlpheiosLemmaTranslationsAdapter - getTranslationsList gets translations and adds no error', async () => {
     let adapter = new AlpheiosLemmaTranslationsAdapter({
       category: 'lexicon',
       adapterName: 'alpheios',

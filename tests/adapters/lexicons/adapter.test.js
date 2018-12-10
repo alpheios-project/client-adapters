@@ -453,8 +453,13 @@ describe('lexicons/adapter.test.js', () => {
     let timeoutRes = await timeout(15000)
 
     let testMeaning = homonymMare.lexemes[0].meaning
-    console.info('*****************testMeaning', testMeaning)
+
+    expect(testMeaning.fullDefs[0].text).toBeDefined()
+    expect(testMeaning.fullDefs[0].text).toEqual(expect.stringContaining('however, refers these words to root'))
+    
     let testMeaning2 = homonymMare.lexemes[1].meaning
+    expect(testMeaning2.fullDefs[0].text).toBeDefined()
+    expect(testMeaning2.fullDefs[0].text).toEqual(expect.stringContaining('mare et femineum sexus,'))
 
     return timeoutRes
   }, 60000)
