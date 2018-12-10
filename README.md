@@ -31,16 +31,19 @@
 }
 ```
 
+
 ## Morphology.tufts Adapter
+
+This adapter retrieves morphology data for the input word (https://morph.alpheios.net/api/v1/analysis/word)
 
 **Format of execution**
 
 ```
 let result = ClientAdapters.morphology.tufts({
-  method: 'getHomonym',
+  method: 
   params: {
-    languageID: Constants.LANG_LATIN,
-    word: 'placito'
+    languageID: 
+    word: 
   }
 })
 ```
@@ -49,8 +52,9 @@ let result = ClientAdapters.morphology.tufts({
 
 | Name | Type | Description |
 |------|------|-------------|
-| languageID | Symbol | Language ID for the input word |
-| word | String | Input word |
+| method | Symbol | There is only one available method - 'getHomonym' |
+| languageID | Symbol | Language ID for the input word, for example - Constants.LANG_LATIN |
+| word | String | Input word, for example - 'mare' |
 
 
 **Result: Promise**
@@ -71,16 +75,20 @@ let result = ClientAdapters.morphology.tufts({
 | Constants.LANG_PERSIAN | hazm | [hazm.js](https://github.com/alpheios-project/client-adapters/blob/master/src/adapters/tufts/engine/hazm.js) |
 | Constants.LANG_GEEZ | traces | [traces.js](https://github.com/alpheios-project/client-adapters/blob/master/src/adapters/tufts/engine/traces.js) |
 
+
+
 ## Morphology.alpheiosTreebank Adapter
+
+This adapter retrieves morphology data for the input word reference from Treebank (http://tools.alpheios.net/exist/rest/db/xq/treebank-getmorph.xq)
 
 **Format of execution**
 
 ```
 let result = ClientAdapters.morphology.alpheiosTreebank({
-  method: 'getHomonym',
+  method: 
   params: {
-    languageID: Constants.LANG_LATIN,
-    wordref: 'phi0959.phi006.alpheios-text-lat1#1-2'
+    languageID: 
+    wordref: 
   }
 })
 ```
@@ -89,8 +97,9 @@ let result = ClientAdapters.morphology.alpheiosTreebank({
 
 | Name | Type | Description |
 |------|------|-------------|
-| languageID | Symbol | Language ID for the input word |
-| wordref | String | Reference for the input word |
+| method | Symbol | There is only one available method - 'getHomonym' |
+| languageID | Symbol | Language ID for the input word, for example - Constants.LANG_LATIN |
+| wordref | String | Reference for the input word, for example - 'phi0959.phi006.alpheios-text-lat1#1-2' |
 
 **Result: Promise**
 
@@ -98,3 +107,53 @@ let result = ClientAdapters.morphology.alpheiosTreebank({
 |------|------|-------------|
 | homonym | Homonym | The result of morphology analyzer |
 | errors | Array | Array of AdapterError objects |
+
+
+
+## Lexicon.alpheios Adapter
+
+This adapter retrieves definitions data for the input word from different Dictionaries.
+
+**Format of execution**
+
+```
+let result = ClientAdapters.lexicon.alpheios({
+  method: 
+  params: {
+    opts: 
+    homonym: 
+    callBackEvtSuccess: 
+    callBackEvtFailed: 
+  }
+})
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| method | Symbol | There is two available methods - 'fetchShortDefs' and 'fetchFullDefs' |
+| opts | Object | Options with allow property - array with dictionaries urls for definitions |
+| homonym | Homonym | Input Homonym for getting definitions |
+| callBackEvtSuccess | PsEvent | PsEvent to publish on getting definitions - for example 'LexicalQuery.evt.DEFS_READY' |
+| callBackEvtFailed | PsEvent | PsEvent to publish on failing to get definitions - for example 'LexicalQuery.evt.DEFS_NOT_FOUND' |
+
+**Result: Promise**
+
+| Name | Type | Description |
+|------|------|-------------|
+| errors | Array | Array of AdapterError objects |
+
+**Available Dictionaries**
+
+| Language | Short | Full | Url | Description |
+|------|------|------|------|-------------|
+| grc | + | + | https://github.com/alpheios-project/lsj | "A Greek-English Lexicon" (Henry George Liddell, Robert Scott) |
+| grc | + | + | https://github.com/alpheios-project/aut | "Autenrieth Homeric Dictionary" (Geoerge Autenrieth) |
+| grc | + | + | https://github.com/alpheios-project/ml | "Middle Liddell" |
+| grc | + | + | https://github.com/alpheios-project/as | "A Manual Greek Lexicon of the New Testament" |
+| grc | + |   | https://github.com/alpheios-project/dod | "Dodson" |
+| lat |   | + | https://github.com/alpheios-project/ls | "A Latin Dictionary" (Charlton T. Lewis, Charles Short) |
+| ara |   | + | https://github.com/alpheios-project/lan | "The Arabic-English Lexicon" (Edward Lane) |
+| ara |   | + | https://github.com/alpheios-project/sal | "An Advanced Learner's Arabic Dictionary" (H. Anthony Salmone) |
+| per | + |   | https://github.com/alpheios-project/stg | "A Comprehensive Persian-English Dictionary" (Francis Joseph Steingass) |
