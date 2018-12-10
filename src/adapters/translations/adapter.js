@@ -34,7 +34,6 @@ class AlpheiosLemmaTranslationsAdapter extends BaseAdapter {
 
     try {
       let urlLang = await this.getAvailableResLang(inLang, outLang)
-
       if (urlLang && urlLang.constructor.name === 'AdapterError') {
         return
       }
@@ -43,7 +42,6 @@ class AlpheiosLemmaTranslationsAdapter extends BaseAdapter {
         try {
           let url = urlLang + '?input=' + input
           let translationsList = await this.fetch(url)
-
           if (translationsList && translationsList.constructor.name === 'AdapterError') {
             return
           }
@@ -61,15 +59,8 @@ class AlpheiosLemmaTranslationsAdapter extends BaseAdapter {
   }
 
   prepareInput (lemmaList) {
-    let input = ''
-
-    for (let lemma of lemmaList) {
-      input += lemma.word + ','
-    }
-    if (input.length > 0) {
-      input = input.substr(0, input.length - 1)
-    }
-    return input.length > 0 ? input : undefined
+    let inputList = lemmaList.map(lemma => lemma.word).filter((item, index, self) => self.indexOf(item) === index)
+    return inputList.length > 0 ? inputList.join(',') : undefined
   }
 
   async getAvailableResLang (inLang, outLang) {

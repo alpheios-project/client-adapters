@@ -74,15 +74,13 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
     let resCheckCached = this.checkCachedData(url)
     return resCheckCached.then(
       async (result) => {
-        let fullDefsRequests = this.collectFullDefURLs(cachedDefinitions.get(url), homonym, this.config[urlKey])
-        if (fullDefsRequests) {
+        if (result) {
+          let fullDefsRequests = this.collectFullDefURLs(cachedDefinitions.get(url), homonym, this.config[urlKey])
           let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey], homonym)
           resFullDefs.catch(error => {
             this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
             this.prepareFailedCallback(requestType, homonym)
           })
-        } else {
-          throw Error('No data')
         }
       },
       error => {
@@ -236,7 +234,6 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
   * @param {homonym} Homonym - homonym we search definitions for
   */
   async updateFullDefs (fullDefsRequests, config, homonym) {
-    this.fullDefResult = false
     for (let request of fullDefsRequests) {
       let fullDefDataRes = this.fetch(request.url, { type: 'xml' })
 
@@ -246,7 +243,6 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
           let definition = await ResourceProvider.getProxy(this.provider, def)
           request.lexeme.meaning['appendFullDefs'](definition)
           this.prepareSuccessCallback('fullDefs', homonym)
-          this.fullDefResult = true
         },
         error => {
           this.addError(this.l10n.messages['LEXICONS_FAILED_APPEND_DEFS'].get(error.message))
