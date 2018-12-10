@@ -30,12 +30,13 @@
     }
 }
 ```
+
 ## Morphology.tufts Adapter
 
 **Format of execution**
 
 ```
-let result = ClientAdapters.maAdapter({
+let result = ClientAdapters.morphology.tufts({
   method: 'getHomonym',
   params: {
     languageID: Constants.LANG_LATIN,
@@ -69,3 +70,31 @@ let result = ClientAdapters.maAdapter({
 | Constants.LANG_ARABIC | aramorph | [aramorph.js](https://github.com/alpheios-project/client-adapters/blob/master/src/adapters/tufts/engine/aramorph.js) |
 | Constants.LANG_PERSIAN | hazm | [hazm.js](https://github.com/alpheios-project/client-adapters/blob/master/src/adapters/tufts/engine/hazm.js) |
 | Constants.LANG_GEEZ | traces | [traces.js](https://github.com/alpheios-project/client-adapters/blob/master/src/adapters/tufts/engine/traces.js) |
+
+## Morphology.alpheiosTreebank Adapter
+
+**Format of execution**
+
+```
+let result = ClientAdapters.morphology.alpheiosTreebank({
+  method: 'getHomonym',
+  params: {
+    languageID: Constants.LANG_LATIN,
+    wordref: 'phi0959.phi006.alpheios-text-lat1#1-2'
+  }
+})
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| languageID | Symbol | Language ID for the input word |
+| wordref | String | Reference for the input word |
+
+**Result: Promise**
+
+| Name | Type | Description |
+|------|------|-------------|
+| homonym | Homonym | The result of morphology analyzer |
+| errors | Array | Array of AdapterError objects |
