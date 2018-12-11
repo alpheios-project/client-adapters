@@ -7,7 +7,7 @@ import enUS from '@/locales/en-us/messages.json'
 import enGB from '@/locales/en-gb/messages.json'
 
 class BaseAdapter {
-  /*
+  /**
    * Every adapter has errors array and L10n property for localizing messages
   */
   constructor () {
@@ -20,7 +20,7 @@ class BaseAdapter {
 
   /**
    * This method is used for adding error meassage with additional data
-   * @param {message} [String] - message text for the error
+   * @param {String} message  - message text for the error
   */
   addError (message) {
     let error = new AdapterError(this.config.category, this.config.adapterName, this.config.method, message)
@@ -29,8 +29,8 @@ class BaseAdapter {
 
   /**
    * This method is used for uploding config property from current properties and default properties
-   * @param {config} Object - properties with higher priority
-   * @param {defaultConfig} Object - default properties
+   * @param {Object} config - properties with higher priority
+   * @param {Object} defaultConfig - default properties
    * @return {Object} - configuration data
   */
   uploadConfig (config, defaultConfig) {
@@ -50,7 +50,7 @@ class BaseAdapter {
 
   /**
    * This method is used for creating timeout Promise
-   * @param {ms} Number - amount of ms for creation timeout
+   * @param {Number} ms - amount of ms for creation timeout
    * @return {Promise}
   */
   timeout (ms) {
@@ -59,11 +59,11 @@ class BaseAdapter {
 
   /**
    * This method is used for fetching data using window.fetch
-   * @param {url} String - url for fetching data
-   * @param {options} Object
-   *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
+   * @param {String} url - url for fetching data
+   * @param {Object} options
+   *     @param {String} options.type - json is default, also it could be xml. This property defines output format.
    *                                    xml - response.text(), otherwise - response.json()
-   * @return {Object, String}
+   * @return {Object|String}
   */
   async fetchWindow (url, options = { type: 'json' }) {
     if (url) {
@@ -88,11 +88,11 @@ class BaseAdapter {
 
   /**
    * This method is used for fetching data using window.fetch with timeout reject
-   * @param {url} String - url for fetching data
-   * @param {options} Object
-   *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
+   * @param {String} url - url for fetching data
+   * @param {Object} options
+   *     @param {String} options.type - json is default, also it could be xml. This property defines output format.
    *                                    xml - response.text(), otherwise - response.json()
-   *     @param {options.timeout} Number - timeout ms amount
+   *     @param {Number} options.timeout - timeout ms amount
    * @return {Promise}
   */
   fetchWindowTimeout (url, options) {
@@ -128,10 +128,10 @@ class BaseAdapter {
 
   /**
    * This method is used for fetching data using axios
-   * @param {url} String - url for fetching data
-   * @param {options} Object
-   *     @param {options.timeout} Number - timeout ms amount
-   * @return {Object, String}
+   * @param {String} url - url for fetching data
+   * @param {Object} options
+   *     @param {Number} options.timeout - timeout ms amount
+   * @return {Object|String}
   */
   async fetchAxios (url, options) {
     if (url) {
@@ -154,12 +154,12 @@ class BaseAdapter {
   /**
    * This method is used for fetching data using different methods. If window is defined - than it would be used window.fetch.
    * Otherwise axios would be used.
-   * @param {url} String - url for fetching data
-   * @param {options} Object
-   *     @param {options.type} String - json is default, also it could be xml. This property defines output format.
+   * @param {String} url - url for fetching data
+   * @param {Object} options
+   *     @param {String} options.type - json is default, also it could be xml. This property defines output format.
    *                                    xml - response.text(), otherwise - response.json()
-   *     @param {options.timeout} Number - timeout ms amount
-   * @return {Object, String}
+   *     @param {Number} options.timeout - timeout ms amount
+   * @return {Object|String}
   */
   async fetch (url, options) {
     let res

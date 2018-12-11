@@ -9,7 +9,7 @@ import EnginesSet from '@/adapters/tufts/engines-set'
 class AlpheiosTuftsAdapter extends BaseAdapter {
   /**
    * Tufts adapter uploads config data, uploads available engines and creates EnginesSet from them
-   * @param {config} Object - properties with higher priority
+   * @param {Object} config - properties with higher priority
   */
   constructor (config = {}) {
     super()
@@ -21,7 +21,7 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
   /**
    * This method creates engines object with the following format:
    * LanguageID: array of available engines from config files, for example Symbol(Latin): ["whitakerLat"]
-   * @param {config} Object - properties with higher priority
+   * @param {Object} engineConfig - engines config data
   */
   uploadEngines (engineConfig) {
     if (this.engine === undefined) {
@@ -38,8 +38,8 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
 
   /**
    * This method gets data from adapter's engine. All errors are added to adapter.errors
-   * @param {languageID} Symbol - languageID for getting homonym
-   * @param {word} String - a word for getting homonym
+   * @param {Symbol} languageID - languageID for getting homonym
+   * @param {String} word - a word for getting homonym
    * Returned values:
    *      - {Homonym} - if successed
    *      - {undefined} - if failed
@@ -78,8 +78,8 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
 
   /**
    * This method creates url with url from config and chosen engine
-   * @param {languageID} Symbol - languageID for getting homonym
-   * @param {word} String - a word for getting homonym
+   * @param {Symbol} languageID - languageID for getting homonym
+   * @param {String} word - a word for getting homonym
    * Returned url:
    *     - {String} - constructed url for getting data from Tufts if engine is correct
    *     - {null} - if engine is not correct

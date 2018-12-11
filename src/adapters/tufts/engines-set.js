@@ -8,7 +8,7 @@ import { LanguageModelFactory as LMF } from 'alpheios-data-models'
 
 class EnginesSet {
   /**
-   * @param {adapterConfigEngines} Object - it is the following format - Symbol(Latin): ["whitakerLat"]
+   * @param {Object} adapterConfigEngines - it is the following format - Symbol(Latin): ["whitakerLat"]
   */
   constructor (adapterConfigEngines) {
     this.engine = adapterConfigEngines
@@ -16,7 +16,7 @@ class EnginesSet {
 
   /**
    * This method returns engine class by languageID
-   * @param {languageID} Symbol
+   * @param {Symbol} languageID
    * @return {Engine Class}
   */
   getEngineByCode (languageID) {
@@ -29,7 +29,7 @@ class EnginesSet {
 
   /**
    * This method returns engine class by languageCode
-   * @param {languageCode} String
+   * @param {String} languageCode
    * @return {Engine Class}
   */
   getEngineByCodeFromLangCode (languageCode) {

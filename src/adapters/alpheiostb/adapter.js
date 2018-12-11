@@ -7,7 +7,7 @@ import xmlToJSON from 'xmltojson'
 class AlpheiosTreebankAdapter extends BaseAdapter {
   /**
    * Treebank adapter uploads config data and fills model property
-   * @param {config} Object - properties with higher priority
+   * @param {Object} config - properties with higher priority
   */
   constructor (config = {}) {
     super()
@@ -17,8 +17,8 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
 
   /**
    * This method gets data from adapter's engine. All errors are added to adapter.errors
-   * @param {languageID} Symbol - languageID for getting homonym
-   * @param {wordref} String - a word reference for getting homonym from Treebank
+   * @param {Symbol} languageID - languageID for getting homonym
+   * @param {String} wordref - a word reference for getting homonym from Treebank
    * Returned values:
    *      - {Homonym} - if successed
    *      - {undefined} - if failed
@@ -56,7 +56,7 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
 
   /**
    * This method creates url with url from config and chosen engine
-   * @param {wordref} String - a word reference for getting homonym
+   * @param {String} wordref - a word reference for getting homonym
    * @return {String} - constructed url for getting data from Treebank
   */
   prepareRequestUrl (wordref) {
@@ -72,8 +72,8 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
 
   /**
    * This method transform data from adapter to Homonym
-   * @param {jsobObj} Object - data from adapter
-   * @param {targetWord} String - word
+   * @param {Object} jsobObj - data from adapter
+   * @param {String} targetWord - word
    * @return {Homonym}
   */
   transform (jsonObj, targetWord) {

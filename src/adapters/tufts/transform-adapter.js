@@ -9,9 +9,9 @@ class TransformAdapter {
 
   /**
    * This method extract parameter by defined path
-   * @param {source} Object - json object to retrieve data from
-   * @param {nameParam} String - parameter name that should be retrieved
-   * @return {String, Object} - extracted data
+   * @param {Object} source - json object to retrieve data from
+   * @param {String} nameParam - parameter name that should be retrieved
+   * @return {String|Object} - extracted data
   */
   extractData (source, nameParam) {
     let schema = {
@@ -38,8 +38,8 @@ class TransformAdapter {
 
   /**
    * This method checks if data is array, if not - converts to array
-   * @param {data} ? - value that should be checked
-   * @param {defaultData} - default value, if data is null
+   * @param {?} data - value that should be checked
+   * @param {?} defaultData - default value, if data is null
    * @return {Array}
   */
   checkToBeArray (data, defaultData = []) {
@@ -56,9 +56,9 @@ class TransformAdapter {
 
   /**
    * This method creates hdwd from source json object
-   * @param {data} Object - jsonObj from adapter
-   * @param {term} Object - data from inflections
-   * @param {direction} Symbol - define the word direction
+   * @param {Object} data - jsonObj from adapter
+   * @param {Object} term - data from inflections
+   * @param {Symbol} direction - define the word direction
    * @return {Array} - array with parts for hdwr
   */
   collectHdwdArray (data, term, direction) {
@@ -79,8 +79,8 @@ class TransformAdapter {
 
   /**
    * This method defines language from dictData nd inflections data
-   * @param {data} Object - jsonObj from adapter
-   * @param {term} Object - data from inflections
+   * @param {Object} data - jsonObj from adapter
+   * @param {Object} term - data from inflections
    * @return {String}  - language code
   */
   defineLanguage (data, term) {
@@ -94,8 +94,8 @@ class TransformAdapter {
 
   /**
    * This method defines language from dictData nd inflections data
-   * @param {data} Object - jsonObj from adapter
-   * @param {term} Object - data from inflections
+   * @param {Object} data - jsonObj from adapter
+   * @param {Object} term - data from inflections
    * Returned values:
    *     - {Homonym}
    *     - {undefined}

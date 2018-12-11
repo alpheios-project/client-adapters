@@ -9,8 +9,7 @@ let cachedDefinitions = new Map()
 class AlpheiosLexiconsAdapter extends BaseAdapter {
   /**
   * Lexicons adapter uploads config data, defines default options and inits data
-  * @param {config} Object - properties with higher priority
-  * @param {options} Object - default values for options
+  * @param {Object} config - properties with higher priority
   */
   constructor (config = {}) {
     super()
@@ -20,8 +19,8 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method retrieves short definitions for given homonym
-  * @param {homonym} Homonym - homonym for retrieving definitions
-  * @param {options} Object - options
+  * @param {Homonym} homonym - homonym for retrieving definitions
+  * @param {Object} options - options
   * @return {Boolean} - result of fetching
   */
   async fetchShortDefs (homonym, options = {}) {
@@ -30,8 +29,8 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method retrieves full definitions for given homonym
-  * @param {homonym} Homonym - homonym for retrieving definitions
-  * @param {options} Object - options
+  * @param {Homonym} homonym - homonym for retrieving definitions
+  * @param {Object} options - options
   * @return {Boolean} - result of fetching
   */
   async fetchFullDefs (homonym, options = {}) {
@@ -40,8 +39,8 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method creates Promise for getting short definitions, for being able to parallel requests
-  * @param {homonym} Symbol - languageID of the homonym
-  * @param {urlKey} String - urlIndex for geting data from config
+  * @param {Homonym} homonym - homonym for retrieving definitions
+  * @param {String} urlKey - urlIndex for geting data from config
   */
   prepareShortDefPromise (homonym, urlKey) {
     let url = this.config[urlKey].urls.short
@@ -64,8 +63,8 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method creates Promise for getting full definitions, for being able to parallel requests
-  * @param {homonym} Symbol - languageID of the homonym
-  * @param {urlKey} String - urlIndex for geting data from config
+  * @param {Homonym} homonym - homonym for retrieving definitions
+  * @param {String} urlKey - urlIndex for geting data from config
   */
   prepareFullDefPromise (homonym, urlKey) {
     let url = this.config[urlKey].urls.full
@@ -92,8 +91,8 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method checks if there is a callBackEvtSuccess defined and publish it if exists
-  * @param {requestType} String - name of the request - shortDef and fullDef
-  * @param {homonym} Symbol - languageID of the homonym
+  * @param {String} requestType - name of the request - shortDef and fullDef
+  * @param {Homonym} homonym - homonym for retrieving definitions
   */
   prepareSuccessCallback (requestType, homonym) {
     if (this.config.callBackEvtSuccess) {
@@ -106,8 +105,8 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method checks if there is a callBackEvtFailed defined and publish it if exists
-  * @param {requestType} String - name of the request - shortDef and fullDef
-  * @param {homonym} Symbol - languageID of the homonym
+  * @param {String} requestType - name of the request - shortDef and fullDef
+  * @param {Homonym} homonym - homonym for retrieving definitions
   */
   prepareFailedCallback (requestType, homonym) {
     if (this.config.callBackEvtFailed) {
@@ -120,9 +119,9 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This is a generic method that retrieves definitions for homonym
-  * @param {homonym} Homonym - homonym for retrieving definitions
-  * @param {options} Object - options
-  * @param {lookupFunction} Object - type of definitions - short, full
+  * @param {Homonym} homonym - homonym for retrieving definitions
+  * @param {Object} options - options
+  * @param {Object} lookupFunction - type of definitions - short, full
   * @return {Boolean} - result of fetching
   */
   async fetchDefinitions (homonym, options, lookupFunction) {
@@ -146,7 +145,7 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method checks if data from url is already cached and if not - it uploads data from url to cache
-  * @param {url} String - url from what we need to cache data
+  * @param {String} url - url from what we need to cache data
   * @return {Boolean} - true - if cached is successed
   */
   async checkCachedData (url) {
@@ -166,9 +165,9 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method searches for definitions in cached text, creates definitions and updates lexemes
-  * @param {data} Map - cached data from definition's url
-  * @param {homonym} Homonym - homonym we search definitions for
-  * @param {config} Object - config data for url
+  * @param {Map} data - cached data from definition's url
+  * @param {Homonym} homonym - homonym we search definitions for
+  * @param {Object} config - config data for url
   */
   async updateShortDefs (data, homonym, config) {
     let languageID = homonym.lexemes[0].lemma.languageID
@@ -198,9 +197,9 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method creates requests to full definitions url for each lexeme and given config
-  * @param {data} Map - cached data from definition's index url
-  * @param {homonym} Homonym - homonym we search definitions for
-  * @param {config} Object - config data for url
+  * @param {Map} data - cached data from definition's index url
+  * @param {Homonym} homonym - homonym we search definitions for
+  * @param {Object} config - config data for url
   * @return {[String]} - array of urls for retrieving data
   */
   collectFullDefURLs (data, homonym, config) {
@@ -229,9 +228,9 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /**
   * This method fetches data from request and update homonym with full definition - it is made as Promises with calback to make it parallel
-  * @param {fullDefsRequests} [String] - array of full definitions url
-  * @param {config} Object - config data for url
-  * @param {homonym} Homonym - homonym we search definitions for
+  * @param {[String]} fullDefsRequests - array of full definitions url
+  * @param {Object} config - config data for url
+  * @param {Homonym} homonym - homonym we search definitions for
   */
   async updateFullDefs (fullDefsRequests, config, homonym) {
     for (let request of fullDefsRequests) {
@@ -253,7 +252,7 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
 
   /*
   * This method retrieves urls from config for given languageCode
-  * @param {languageID} Symbol
+  * @param {Symbol} languageID
   */
   getRequests (languageID) {
     let languageCode = LMF.getLanguageCodeFromId(languageID)
