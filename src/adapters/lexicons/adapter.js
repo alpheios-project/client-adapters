@@ -21,7 +21,6 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
   * This method retrieves short definitions for given homonym
   * @param {Homonym} homonym - homonym for retrieving definitions
   * @param {Object} options - options
-  * @return {Boolean} - result of fetching
   */
   async fetchShortDefs (homonym, options = {}) {
     await this.fetchDefinitions(homonym, options, 'short')
@@ -31,7 +30,6 @@ class AlpheiosLexiconsAdapter extends BaseAdapter {
   * This method retrieves full definitions for given homonym
   * @param {Homonym} homonym - homonym for retrieving definitions
   * @param {Object} options - options
-  * @return {Boolean} - result of fetching
   */
   async fetchFullDefs (homonym, options = {}) {
     await this.fetchDefinitions(homonym, options, 'full')
