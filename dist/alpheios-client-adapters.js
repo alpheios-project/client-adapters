@@ -12792,7 +12792,7 @@ class AlpheiosTreebankAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
 
   /**
    * This method transform data from adapter to Homonym
-   * @param {Object} jsobObj - data from adapter
+   * @param {Object} jsonObj - data from adapter
    * @param {String} targetWord - word
    * @return {Homonym}
   */

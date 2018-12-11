@@ -72,7 +72,7 @@ class AlpheiosTreebankAdapter extends BaseAdapter {
 
   /**
    * This method transform data from adapter to Homonym
-   * @param {Object} jsobObj - data from adapter
+   * @param {Object} jsonObj - data from adapter
    * @param {String} targetWord - word
    * @return {Homonym}
   */
