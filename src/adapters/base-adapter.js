@@ -68,9 +68,7 @@ class BaseAdapter {
   async fetchWindow (url, options = { type: 'json' }) {
     if (url) {
       try {
-        console.info('****************inside fetchWindow before fetch', url)
         let response = await window.fetch(url)
-        console.info('****************inside fetchWindow after fetch', response)
         if (!response.ok) {
           this.addError(this.l10n.messages['BASIC_ADAPTER_URL_RESPONSE_FAILED'].get(response.status, response.statusText))
           return
@@ -189,7 +187,7 @@ class BaseAdapter {
     if (url) {
       console.info('****************inside fetch', url)
       try {
-        if (typeof window !== 'undefined' && !options.axios) {
+        if (typeof window !== 'undefined') {
           if (options && options.timeout > 0) {
             res = await this.fetchWindowTimeout(url, options)
           } else {
