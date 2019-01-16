@@ -68,7 +68,9 @@ class BaseAdapter {
   async fetchWindow (url, options = { type: 'json' }) {
     if (url) {
       try {
+        console.info('****************inside fetchWindow before fetch', url)
         let response = await window.fetch(url)
+        console.info('****************inside fetchWindow after fetch', response)
         if (!response.ok) {
           this.addError(this.l10n.messages['BASIC_ADAPTER_URL_RESPONSE_FAILED'].get(response.status, response.statusText))
           return
@@ -145,10 +147,30 @@ class BaseAdapter {
         return res.data
       } catch (error) {
         this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
+        // this.printError(error)
       }
     } else {
       this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
     }
+  }
+
+  printError (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.info(error.response.data)
+      console.info(error.response.status)
+      console.info(error.response.headers)
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.info(error.request)
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.info('Error', error.message)
+    }
+    console.info(error.config)
   }
 
   /**
@@ -163,12 +185,15 @@ class BaseAdapter {
   */
   async fetch (url, options) {
     let res
+
     if (url) {
+      console.info('****************inside fetch', url)
       try {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && !options.axios) {
           if (options && options.timeout > 0) {
             res = await this.fetchWindowTimeout(url, options)
           } else {
+            console.info('****************inside fetch before fetchWindow', url)
             res = await this.fetchWindow(url, options)
           }
         } else {
