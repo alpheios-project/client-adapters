@@ -6470,7 +6470,7 @@ module.exports = Array.isArray || function (arr) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* @license
 Papa Parse
-v4.6.2
+v4.6.3
 https://github.com/mholt/PapaParse
 License: MIT
 */
@@ -6758,7 +6758,7 @@ if (!Array.isArray)
 
 		unpackConfig();
 
-		var quoteCharRegex = new RegExp(_quoteChar, 'g');
+		var quoteCharRegex = new RegExp(escapeRegExp(_quoteChar), 'g');
 
 		if (typeof _input === 'string')
 			_input = JSON.parse(_input);
@@ -7728,7 +7728,7 @@ if (!Array.isArray)
 
 					if (typeof fieldCountPrevRow === 'undefined')
 					{
-						fieldCountPrevRow = fieldCount;
+						fieldCountPrevRow = 0;
 						continue;
 					}
 					else if (fieldCount > 1)
@@ -7741,7 +7741,7 @@ if (!Array.isArray)
 				if (preview.data.length > 0)
 					avgFieldCount /= (preview.data.length - emptyLinesCount);
 
-				if ((typeof bestDelta === 'undefined' || delta < bestDelta)
+				if ((typeof bestDelta === 'undefined' || delta > bestDelta)
 					&& avgFieldCount > 1.99)
 				{
 					bestDelta = delta;
@@ -7900,7 +7900,7 @@ if (!Array.isArray)
 
 			var nextDelim = input.indexOf(delim, cursor);
 			var nextNewline = input.indexOf(newline, cursor);
-			var quoteCharRegex = new RegExp(escapeChar.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&') + quoteChar, 'g');
+			var quoteCharRegex = new RegExp(escapeRegExp(escapeChar) + escapeRegExp(quoteChar), 'g');
 			var quoteSearch;
 
 			// Parser loop
@@ -12949,6 +12949,7 @@ class BaseAdapter {
         }
       } catch (error) {
         this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
+        this.printError(error)
       }
     } else {
       this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
@@ -13014,10 +13015,30 @@ class BaseAdapter {
         return res.data
       } catch (error) {
         this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
+        this.printError(error)
       }
     } else {
       this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
     }
+  }
+
+  printError (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.info(error.response.data)
+      console.info(error.response.status)
+      console.info(error.response.headers)
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.info(error.request)
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.info('Error', error.message)
+    }
+    console.info(error.config)
   }
 
   /**
@@ -13032,12 +13053,15 @@ class BaseAdapter {
   */
   async fetch (url, options) {
     let res
+
     if (url) {
+      console.info('****************inside fetch', url)
       try {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && !options.axios) {
           if (options && options.timeout > 0) {
             res = await this.fetchWindowTimeout(url, options)
           } else {
+            console.info('****************inside fetch before fetchWindow', url)
             res = await this.fetchWindow(url, options)
           }
         } else {

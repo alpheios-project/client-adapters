@@ -80,6 +80,7 @@ class BaseAdapter {
         }
       } catch (error) {
         this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
+        this.printError(error)
       }
     } else {
       this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
@@ -145,7 +146,7 @@ class BaseAdapter {
         return res.data
       } catch (error) {
         this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
-        // this.printError(error)
+        this.printError(error)
       }
     } else {
       this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
