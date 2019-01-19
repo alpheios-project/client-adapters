@@ -5,6 +5,7 @@ import { ResourceProvider } from 'alpheios-data-models'
 import BaseAdapter from '@/adapters/base-adapter'
 
 import Author from '@/adapters/concordance/lib/author'
+import WordUsageExample from '@/adapters/concordance/lib/word-usage-example'
 
 class AlpheiosConcordanceAdapter extends BaseAdapter {
   /**
@@ -34,9 +35,10 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
       let url = this.createFetchURL(homonym, filters, pagination, sort)
       console.info('**********url', url)
       let wordUsageListRes = await this.fetch(url)
-      console.info('*****************wordUsageList', wordUsageListRes)
-
-      return wordUsageListRes
+      // console.info('*****************wordUsageList', wordUsageListRes)
+      let parsedWordUsageList = this.parseWordUsageResult(wordUsageListRes, homonym, filters.author, filters.textWork)
+      // console.info('*****************parsedWordUsageList', parsedWordUsageList)
+      return parsedWordUsageList
     } catch (error) {
       console.info('**************error', error)
       // this.addError(this.l10n.messages['TRANSLATION_UNKNOWN_ERROR'].get(error.message))
@@ -47,15 +49,33 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
     let filterFormatted = this.formatFilter(filters)
     let paginationFormatted = this.formatPagination(pagination)
 
-    return `${this.config.url}${homonym.targetWord}${filterFormatted}?${paginationFormatted}`
+    return `${this.config.url}${homonym.targetWord}${filterFormatted}${paginationFormatted}`
   }
 
   formatFilter (filters) {
-    return `[${filters.author.ID}:${filters.textWork.ID}]`
+    if (filters.author) {
+      if (filters.textWork) {
+        return `[${filters.author.ID}:${filters.textWork.ID}]`
+      }
+      return `[${filters.author.ID}]`
+    }
+    return ''
   }
 
   formatPagination (pagination) {
-    return `${pagination.property}=${pagination.value}`
+    if (pagination && pagination.property && pagination.value) {
+      return `?${pagination.property}=${pagination.value}`
+    }
+    return ''
+  }
+
+  parseWordUsageResult (jsonObj, homonym, author, textWork) {
+    let wordUsageExamples = []
+    for (let jsonObjItem of jsonObj) {
+      let wordUsageExample = WordUsageExample.readObject(jsonObjItem, homonym, author, textWork, this.config.sourceTextUrl)
+      wordUsageExamples.push(wordUsageExample)
+    }
+    return wordUsageExamples
   }
 }
 

@@ -186,13 +186,11 @@ class BaseAdapter {
     let res
 
     if (url) {
-      console.info('****************inside fetch', url)
       try {
         if (typeof window !== 'undefined') {
           if (options && options.timeout > 0) {
             res = await this.fetchWindowTimeout(url, options)
           } else {
-            console.info('****************inside fetch before fetchWindow', url)
             res = await this.fetchWindow(url, options)
           }
         } else {
