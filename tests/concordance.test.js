@@ -1,6 +1,7 @@
 /* eslint-env jest */
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
+import { mount } from '@vue/test-utils'
 import { Constants } from 'alpheios-data-models'
 
 import ClientAdapters from '@/client-adapters.js'
@@ -8,6 +9,8 @@ import AlpheiosConcordanceAdapter from '@/adapters/concordance/adapter.js'
 import Author from '@/adapters/concordance/lib/author'
 import TextWork from '@/adapters/concordance/lib/text-work'
 import WordUsageExample from '@/adapters/concordance/lib/word-usage-example'
+
+import WordUsageExamplesBlock from '@/adapters/concordance/vue-components/word-usage-examples-block.vue'
 
 describe('concordance.test.js', () => {
   console.error = function () {}
@@ -110,7 +113,7 @@ describe('concordance.test.js', () => {
     return timeoutRes
   }, 50000)
 
-  it('2 ConcordanceService - getWordUsageExamples returns a list of text links with filter by authorID, textID', async () => {
+  it.skip('2 ConcordanceService - getWordUsageExamples returns a list of text links with filter by authorID, textID', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -175,6 +178,33 @@ describe('concordance.test.js', () => {
 
     let timeoutRes = await timeout(3000)
     
+    return timeoutRes
+  }, 50000)
+
+  it('3 ConcordanceService - wordUsageExamplesBlock - shows all word usage examples', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getWordUsageExamples'
+    })
+
+    let filterOptions = {
+      author: testAuthor,
+      textWork: testTextWork
+    }
+
+    let paginationOptions =  {
+      property: 'max',
+      value: defaultPagination
+    }
+
+    let resWordList = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions)
+    console.info('******************resWordList', resWordList)
+
+    let cmp = mount(WordUsageExamplesBlock)
+    expect(cmp.isVueInstance()).toBeTruthy()
+
+    let timeoutRes = await timeout(3000)
     return timeoutRes
   }, 50000)
 })

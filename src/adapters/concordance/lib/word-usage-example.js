@@ -2,7 +2,7 @@ import { TextQuoteSelector } from 'alpheios-data-models'
 
 export default class WordUsageExample extends TextQuoteSelector {
   createContext () {
-    return null
+    return null // not implemented in the current child-class
   }
   static readObject (jsonObj, homonym, author, wordText, sourceLink) {
     let wordUsageExample = new WordUsageExample(homonym.language, jsonObj.target)
