@@ -12959,10 +12959,10 @@ else if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () { return xmlToJSON
 /*!***************************************!*\
   !*** ./adapters/adapters-config.json ***!
   \***************************************/
-/*! exports provided: morphology, lexicon, lemmatranslation, default */
+/*! exports provided: morphology, lexicon, lemmatranslation, wordusageExamples, default */
 /***/ (function(module) {
 
-module.exports = {"morphology":{"alpheiosTreebank":{"adapter":"tbAdapter","methods":["getHomonym"],"params":{"getHomonym":["languageID","wordref"]}},"tufts":{"adapter":"maAdapter","methods":["getHomonym"],"params":{"getHomonym":["languageID","word"]}}},"lexicon":{"alpheios":{"adapter":"lexicons","methods":["fetchShortDefs","fetchFullDefs"],"params":{"fetchShortDefs":["homonym","opts"],"fetchFullDefs":["homonym","opts"]}}},"lemmatranslation":{"alpheios":{"adapter":"lemmaTranslations","methods":"fetchTranslations","params":{"fetchTranslations":["homonym","browserLang"]}}}};
+module.exports = {"morphology":{"alpheiosTreebank":{"adapter":"tbAdapter","methods":["getHomonym"],"params":{"getHomonym":["languageID","wordref"]}},"tufts":{"adapter":"maAdapter","methods":["getHomonym"],"params":{"getHomonym":["languageID","word"]}}},"lexicon":{"alpheios":{"adapter":"lexicons","methods":["fetchShortDefs","fetchFullDefs"],"params":{"fetchShortDefs":["homonym","opts"],"fetchFullDefs":["homonym","opts"]}}},"lemmatranslation":{"alpheios":{"adapter":"lemmaTranslations","methods":"fetchTranslations","params":{"fetchTranslations":["homonym","browserLang"]}}},"wordusageExamples":{"concordance":{"adapter":"wordUsageExamples","methods":["getAuthorsWorks","getWordUsageExamples"],"params":{"getAuthorsWorks":[],"getWordUsageExamples":["homonym"]}}}};
 
 /***/ }),
 
@@ -13279,7 +13279,6 @@ class BaseAdapter {
         return res.data
       } catch (error) {
         this.addError(this.l10n.messages['BASIC_ADAPTER_NO_DATA_FROM_URL'].get(url))
-        this.printError(error)
       }
     } else {
       this.addError(this.l10n.messages['BASIC_ADAPTER_EMPTY_URL'])
@@ -13341,6 +13340,287 @@ class BaseAdapter {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (BaseAdapter);
+
+
+/***/ }),
+
+/***/ "./adapters/concordance/adapter.js":
+/*!*****************************************!*\
+  !*** ./adapters/concordance/adapter.js ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _adapters_concordance_config_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/adapters/concordance/config.json */ "./adapters/concordance/config.json");
+var _adapters_concordance_config_json__WEBPACK_IMPORTED_MODULE_0___namespace = /*#__PURE__*/__webpack_require__.t(/*! @/adapters/concordance/config.json */ "./adapters/concordance/config.json", 1);
+/* harmony import */ var _adapters_concordance_author_work_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/adapters/concordance/author-work.json */ "./adapters/concordance/author-work.json");
+var _adapters_concordance_author_work_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpack_require__.t(/*! @/adapters/concordance/author-work.json */ "./adapters/concordance/author-work.json", 1);
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _adapters_base_adapter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/adapters/base-adapter */ "./adapters/base-adapter.js");
+/* harmony import */ var _adapters_concordance_lib_author__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @/adapters/concordance/lib/author */ "./adapters/concordance/lib/author.js");
+/* harmony import */ var _adapters_concordance_lib_word_usage_example__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @/adapters/concordance/lib/word-usage-example */ "./adapters/concordance/lib/word-usage-example.js");
+
+
+
+
+
+
+
+
+
+class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  /**
+   * Adapter uploads config data, creates provider and inits mapLangUri (Object for storing data for available languages)
+   * @param {Object} config - properties with higher priority
+  */
+  constructor (config = {}) {
+    super()
+    this.config = this.uploadConfig(config, _adapters_concordance_config_json__WEBPACK_IMPORTED_MODULE_0__)
+    this.provider = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["ResourceProvider"](this.config.url, this.config.rights)
+    this.authors = []
+  }
+
+  async getAuthorsWorks (config = {}) {
+    this.authorWorkData = await this.uploadConfig(config, _adapters_concordance_author_work_json__WEBPACK_IMPORTED_MODULE_1__)
+
+    this.authors = []
+    for (let authorWorkDataItem of Object.values(this.authorWorkData.authors)) {
+      let author = _adapters_concordance_lib_author__WEBPACK_IMPORTED_MODULE_4__["default"].create(authorWorkDataItem)
+      this.authors.push(author)
+    }
+    return this.authors
+  }
+
+  async getWordUsageExamples (homonym, filters = {}, pagination = {}, sort = {}) {
+    try {
+      let url = this.createFetchURL(homonym, filters, pagination, sort)
+      console.info('**********url', url)
+      let wordUsageListRes = await this.fetch(url)
+      // console.info('*****************wordUsageList', wordUsageListRes)
+      let parsedWordUsageList = this.parseWordUsageResult(wordUsageListRes, homonym, filters.author, filters.textWork)
+      // console.info('*****************parsedWordUsageList', parsedWordUsageList)
+      return parsedWordUsageList
+    } catch (error) {
+      this.addError(this.l10n.messages['TRANSLATION_UNKNOWN_ERROR'].get(error.message))
+    }
+  }
+
+  createFetchURL (homonym, filters, pagination, sort) {
+    let filterFormatted = this.formatFilter(filters)
+    let paginationFormatted = this.formatPagination(pagination)
+
+    return `${this.config.url}${homonym.targetWord}${filterFormatted}${paginationFormatted}`
+  }
+
+  formatFilter (filters) {
+    if (filters.author) {
+      if (filters.textWork) {
+        return `[${filters.author.ID}:${filters.textWork.ID}]`
+      }
+      return `[${filters.author.ID}]`
+    }
+    return ''
+  }
+
+  formatPagination (pagination) {
+    if (pagination && pagination.property && pagination.value) {
+      return `?${pagination.property}=${pagination.value}`
+    }
+    return ''
+  }
+
+  parseWordUsageResult (jsonObj, homonym, author, textWork) {
+    let wordUsageExamples = []
+    for (let jsonObjItem of jsonObj) {
+      let wordUsageExample = _adapters_concordance_lib_word_usage_example__WEBPACK_IMPORTED_MODULE_5__["default"].readObject(jsonObjItem, homonym, author, textWork, this.config.sourceTextUrl)
+      wordUsageExamples.push(wordUsageExample)
+    }
+    return wordUsageExamples
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (AlpheiosConcordanceAdapter);
+
+
+/***/ }),
+
+/***/ "./adapters/concordance/author-work.json":
+/*!***********************************************!*\
+  !*** ./adapters/concordance/author-work.json ***!
+  \***********************************************/
+/*! exports provided: authors, default */
+/***/ (function(module) {
+
+module.exports = {"authors":[{"urn":"urn:cts:latinLit:phi0959","title":[{"@lang":"eng","@value":"Ovid"}],"works":[{"urn":"urn:cts:latinLit:phi0959.phi001","title":[{"@lang":"lat","@value":"Amores"},{"@lang":"eng","@value":"The Art of Love"}]},{"urn":"urn:cts:latinLit:phi0959.phi006","title":[{"@lang":"lat","@value":"Metamorphoses"},{"@lang":"eng","@value":"Metamorphoses"}]}]},{"urn":"urn:cts:latinLit:phi0690","title":[{"@lang":"eng","@value":"Virgil"}],"works":[{"urn":"urn:cts:latinLit:phi0690.phi003","title":[{"@lang":"lat","@value":"Aeneid"},{"@lang":"eng","@value":"Aeneid"}]}]}]};
+
+/***/ }),
+
+/***/ "./adapters/concordance/config.json":
+/*!******************************************!*\
+  !*** ./adapters/concordance/config.json ***!
+  \******************************************/
+/*! exports provided: url, sourceTextUrl, rights, default */
+/***/ (function(module) {
+
+module.exports = {"url":"https://latin.packhum.org/rst/concordance/","sourceTextUrl":"https://latin.packhum.org","rights":"Word usage examples are extracted from data provided under the GNU GPL v3 license by the Concordance Project (https://packhum.org/), which is developed and maintained by The Packard Humanities Institute."};
+
+/***/ }),
+
+/***/ "./adapters/concordance/lib/author.js":
+/*!********************************************!*\
+  !*** ./adapters/concordance/lib/author.js ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _adapters_concordance_lib_text_work__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/adapters/concordance/lib/text-work */ "./adapters/concordance/lib/text-work.js");
+
+
+class Author {
+  constructor (urn, titles) {
+    this.urn = urn
+    this.titles = titles
+    this.ID = this.extractIDFromURN()
+  }
+
+  static get defaultLang () {
+    return 'eng'
+  }
+
+  static get defaultIDPrefix () {
+    return 'phi'
+  }
+
+  get title () {
+    if (this.titles[Author.defaultLang]) {
+      return this.titles[Author.defaultLang]
+    }
+
+    return Object.values(this.titles)[0]
+  }
+
+  static create (jsonObj) {
+    let titles = {}
+    jsonObj.title.forEach(titleItem => {
+      titles[titleItem['@lang']] = titleItem['@value']
+    })
+
+    let author = new Author(jsonObj.urn, titles)
+    let works = []
+
+    jsonObj.works.forEach(workItem => {
+      works.push(_adapters_concordance_lib_text_work__WEBPACK_IMPORTED_MODULE_0__["default"].create(author, workItem))
+    })
+
+    author.works = works
+    return author
+  }
+
+  extractIDFromURN () {
+    let partsUrn = this.urn.split(':')
+    let workIDPart = partsUrn[3].indexOf('.') === -1 ? partsUrn[3] : partsUrn[3].substr(0, partsUrn[3].indexOf('.'))
+    return parseInt(workIDPart.replace(Author.defaultIDPrefix, ''))
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Author);
+
+
+/***/ }),
+
+/***/ "./adapters/concordance/lib/text-work.js":
+/*!***********************************************!*\
+  !*** ./adapters/concordance/lib/text-work.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class TextWork {
+  constructor (author, urn, titles) {
+    this.urn = urn
+    this.titles = titles
+    this.author = author
+    this.ID = this.extractIDFromURN()
+  }
+
+  static get defaultLang () {
+    return 'eng'
+  }
+
+  static get defaultIDPrefix () {
+    return 'phi'
+  }
+
+  get title () {
+    if (this.titles[TextWork.defaultLang]) {
+      return this.titles[TextWork.defaultLang]
+    }
+
+    return Object.values(this.titles)[0]
+  }
+
+  static create (author, jsonObj) {
+    let titles = {}
+    jsonObj.title.forEach(titleItem => {
+      titles[titleItem['@lang']] = titleItem['@value']
+    })
+
+    return new TextWork(author, jsonObj.urn, titles)
+  }
+
+  extractIDFromURN () {
+    let partsUrn = this.urn.split(':')
+    let workIDPart = partsUrn[3].indexOf('.') === -1 ? partsUrn[3] : partsUrn[3].substr(partsUrn[3].indexOf('.') + 1)
+    return parseInt(workIDPart.replace(TextWork.defaultIDPrefix, ''))
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (TextWork);
+
+
+/***/ }),
+
+/***/ "./adapters/concordance/lib/word-usage-example.js":
+/*!********************************************************!*\
+  !*** ./adapters/concordance/lib/word-usage-example.js ***!
+  \********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return WordUsageExample; });
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpheios-data-models */ "alpheios-data-models");
+/* harmony import */ var alpheios_data_models__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__);
+
+
+class WordUsageExample extends alpheios_data_models__WEBPACK_IMPORTED_MODULE_0__["TextQuoteSelector"] {
+  createContext () {
+    return null // not implemented in the current child-class
+  }
+  static readObject (jsonObj, homonym, author, textWork, sourceLink) {
+    let wordUsageExample = new WordUsageExample(homonym.language, jsonObj.target)
+    wordUsageExample.prefix = jsonObj.left
+    wordUsageExample.suffix = jsonObj.right
+    wordUsageExample.source = sourceLink + jsonObj.link
+    wordUsageExample.cit = jsonObj.cit
+    wordUsageExample.author = author
+    wordUsageExample.textWork = textWork
+
+    return wordUsageExample
+  }
+
+  get htmlExample () {
+    return `${this.prefix}<span class="">${this.normalizedText}</span>${this.suffix}`
+  }
+}
 
 
 /***/ }),
@@ -14766,10 +15046,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _adapters_alpheiostb_adapter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/adapters/alpheiostb/adapter */ "./adapters/alpheiostb/adapter.js");
 /* harmony import */ var _adapters_translations_adapter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/adapters/translations/adapter */ "./adapters/translations/adapter.js");
 /* harmony import */ var _adapters_lexicons_adapter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/adapters/lexicons/adapter */ "./adapters/lexicons/adapter.js");
-/* harmony import */ var _errors_wrong_method_error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @/errors/wrong-method-error */ "./errors/wrong-method-error.js");
-/* harmony import */ var _errors_no_required_param_error__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @/errors/no-required-param-error */ "./errors/no-required-param-error.js");
-/* harmony import */ var _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/adapters/adapters-config.json */ "./adapters/adapters-config.json");
-var _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_6___namespace = /*#__PURE__*/__webpack_require__.t(/*! @/adapters/adapters-config.json */ "./adapters/adapters-config.json", 1);
+/* harmony import */ var _adapters_concordance_adapter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @/adapters/concordance/adapter */ "./adapters/concordance/adapter.js");
+/* harmony import */ var _errors_wrong_method_error__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @/errors/wrong-method-error */ "./errors/wrong-method-error.js");
+/* harmony import */ var _errors_no_required_param_error__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/errors/no-required-param-error */ "./errors/no-required-param-error.js");
+/* harmony import */ var _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @/adapters/adapters-config.json */ "./adapters/adapters-config.json");
+var _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_7___namespace = /*#__PURE__*/__webpack_require__.t(/*! @/adapters/adapters-config.json */ "./adapters/adapters-config.json", 1);
+
 
 
 
@@ -14789,10 +15071,10 @@ class ClientAdapters {
   */
   static init () {
     if (cachedConfig.size === 0) {
-      for (let category in _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_6__) {
+      for (let category in _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_7__) {
         let adapters = {}
-        for (let adapterKey in _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_6__[category]) {
-          let adapterData = _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_6__[category][adapterKey]
+        for (let adapterKey in _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_7__[category]) {
+          let adapterData = _adapters_adapters_config_json__WEBPACK_IMPORTED_MODULE_7__[category][adapterKey]
 
           adapters[adapterKey] = {
             adapter: ClientAdapters[adapterData.adapter],
@@ -14835,6 +15117,12 @@ class ClientAdapters {
     ClientAdapters.init()
     return cachedAdaptersList.get('lemmatranslation')
   }
+
+  static get wordusageExamples () {
+    ClientAdapters.init()
+    return cachedAdaptersList.get('wordusageExamples')
+  }
+
   /**
   * This method checks if given method is registered in config for category.adapterName
   * @param {String} category - category name - morphology, lemmatranslation, lexicon
@@ -14843,7 +15131,7 @@ class ClientAdapters {
   */
   static checkMethod (category, adapterName, methodName) {
     if (!cachedConfig.get(category)[adapterName].methods.includes(methodName)) {
-      throw new _errors_wrong_method_error__WEBPACK_IMPORTED_MODULE_4__["default"](category, adapterName, methodName)
+      throw new _errors_wrong_method_error__WEBPACK_IMPORTED_MODULE_5__["default"](category, adapterName, methodName)
     }
   }
 
@@ -14858,7 +15146,7 @@ class ClientAdapters {
     if (cachedConfig.get(category)[adapterName].params) {
       cachedConfig.get(category)[adapterName].params[methodName].forEach(paramName => {
         if (!params[paramName]) {
-          throw new _errors_no_required_param_error__WEBPACK_IMPORTED_MODULE_5__["default"](category, adapterName, methodName, paramName)
+          throw new _errors_no_required_param_error__WEBPACK_IMPORTED_MODULE_6__["default"](category, adapterName, methodName, paramName)
         }
       })
     }
@@ -14954,6 +15242,28 @@ class ClientAdapters {
       await localLemmasAdapter.getTranslationsList(options.params.homonym, options.params.browserLang)
       return { errors: localLemmasAdapter.errors }
     }
+    return null
+  }
+
+  static async wordUsageExamples (options) {
+    ClientAdapters.checkMethodParam('wordusageExamples', 'concordance', options)
+
+    let localLemmasAdapter = new _adapters_concordance_adapter__WEBPACK_IMPORTED_MODULE_4__["default"]({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: options.method
+    })
+
+    if (options.method === 'getAuthorsWorks') {
+      let res = await localLemmasAdapter.getAuthorsWorks()
+      return { result: res, errors: localLemmasAdapter.errors }
+    }
+
+    if (options.method === 'getWordUsageExamples') {
+      let res = await localLemmasAdapter.getWordUsageExamples(options.params.homonym, options.params.filters, options.params.pagination, options.params.sort)
+      return { result: res, errors: localLemmasAdapter.errors }
+    }
+
     return null
   }
 
