@@ -11,6 +11,7 @@ import TextWork from '@/adapters/concordance/lib/text-work'
 import WordUsageExample from '@/adapters/concordance/lib/word-usage-example'
 
 import WordUsageExamplesBlock from '@/adapters/concordance/vue-components/word-usage-examples-block.vue'
+import WordUsageExampleItem from '@/adapters/concordance/vue-components/word-usage-example-item.vue'
 
 describe('concordance.test.js', () => {
   console.error = function () {}
@@ -74,6 +75,12 @@ describe('concordance.test.js', () => {
 
   function timeout (ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  function html2text( html ) {
+    var d = document.createElement( 'div' );
+    d.innerHTML = html;
+    return d.textContent;
   }
 
   it.skip('1 ConcordanceService - getAuthorsWorks returns a list of author with a list of Works', async () => {
@@ -181,7 +188,7 @@ describe('concordance.test.js', () => {
     return timeoutRes
   }, 50000)
 
-  it('3 ConcordanceService - wordUsageExamplesBlock - shows all word usage examples', async () => {
+  it.skip('3 ConcordanceService - wordUsageExamplesBlock - shows all word usage examples', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -198,13 +205,62 @@ describe('concordance.test.js', () => {
       value: defaultPagination
     }
 
-    let resWordList = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions)
-    console.info('******************resWordList', resWordList)
+    let resWordUsageList = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions)
 
-    let cmp = mount(WordUsageExamplesBlock)
+    let cmp = mount(WordUsageExamplesBlock, {
+      propsData: {
+        wordUsageList: resWordUsageList,
+        targetWord: testHomonym2.targetWord,
+        language: testHomonym2.language
+      }
+    })
     expect(cmp.isVueInstance()).toBeTruthy()
+
+    expect(cmp.contains('.alpheios_word_usage_list_title')).toBeTruthy()
+    expect(cmp.find('.alpheios_word_usage_list_title').text()).toEqual(`${testHomonym2.targetWord} (${testHomonym2.language})`)
+
+    expect(cmp.findAll('.alpheios_word_usage_list_item').length).toEqual(5)
+
+    expect(cmp.vm.wordUsageList).toEqual(resWordUsageList)
+    expect(cmp.vm.targetWord).toEqual(testHomonym2.targetWord)
+    expect(cmp.vm.language).toEqual(testHomonym2.language)
 
     let timeoutRes = await timeout(3000)
     return timeoutRes
   }, 50000)
+
+  it('4 ConcordanceService - WordUsageExampleItem - shows details of one word usage example', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getWordUsageExamples'
+    })
+
+    let filterOptions = {
+      author: testAuthor,
+      textWork: testTextWork
+    }
+
+    let paginationOptions =  {
+      property: 'max',
+      value: defaultPagination
+    }
+
+    let resWordUsageList = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions)
+
+    let cmp = mount(WordUsageExampleItem, {
+      propsData: {
+        wordUsageItem: resWordUsageList[0]
+      }
+    })
+
+    expect(cmp.isVueInstance()).toBeTruthy()
+    expect(cmp.vm.wordUsageItem).toEqual(resWordUsageList[0])
+
+    expect(cmp.find('.alpheios_word_usage_list_item__source').text()).toEqual(`${resWordUsageList[0].source} ${resWordUsageList[0].cit}`)
+    expect(cmp.find('.alpheios_word_usage_list_item__text').element.textContent).toEqual(html2text(resWordUsageList[0].htmlExample))
+    let timeoutRes = await timeout(3000)
+    return timeoutRes
+  }, 50000)
 })
+
