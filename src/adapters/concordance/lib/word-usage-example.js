@@ -4,16 +4,15 @@ export default class WordUsageExample extends TextQuoteSelector {
   createContext () {
     return null // not implemented in the current child-class
   }
-  static readObject (jsonObj, homonym, author, textWord, sourceLink) {
+  static readObject (jsonObj, homonym, author, textWork, sourceLink) {
     let wordUsageExample = new WordUsageExample(homonym.language, jsonObj.target)
     wordUsageExample.prefix = jsonObj.left
     wordUsageExample.suffix = jsonObj.right
     wordUsageExample.source = sourceLink + jsonObj.link
     wordUsageExample.cit = jsonObj.cit
     wordUsageExample.author = author
-    wordUsageExample.textWord = textWord
+    wordUsageExample.textWork = textWork
 
-    // console.info('********************jsonObj', jsonObj)
     return wordUsageExample
   }
 

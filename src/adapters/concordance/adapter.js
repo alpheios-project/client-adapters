@@ -40,8 +40,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
       // console.info('*****************parsedWordUsageList', parsedWordUsageList)
       return parsedWordUsageList
     } catch (error) {
-      console.info('**************error', error)
-      // this.addError(this.l10n.messages['TRANSLATION_UNKNOWN_ERROR'].get(error.message))
+      this.addError(this.l10n.messages['TRANSLATION_UNKNOWN_ERROR'].get(error.message))
     }
   }
 

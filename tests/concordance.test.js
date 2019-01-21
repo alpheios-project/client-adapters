@@ -229,7 +229,7 @@ describe('concordance.test.js', () => {
     return timeoutRes
   }, 50000)
 
-  it('4 ConcordanceService - WordUsageExampleItem - shows details of one word usage example', async () => {
+  it.skip('4 ConcordanceService - WordUsageExampleItem - shows details of one word usage example', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -262,5 +262,73 @@ describe('concordance.test.js', () => {
     let timeoutRes = await timeout(3000)
     return timeoutRes
   }, 50000)
+/*
+  it('5 ConcordanceService - ClientAdapters - init correct adapter method', async () => {
+    let adapterConcordanceRes = await ClientAdapters.wordusageExamples.alpheios({
+      method: 'getAuthorsWorks',
+      params: {}
+    })
+  })
+*/
+  it('5 ClientAdapters - wordusageExamples executes init and returns object with alpheios', () => {
+    jest.spyOn(ClientAdapters, 'init')
+
+    let concordanceRes = ClientAdapters.wordusageExamples
+
+    expect(ClientAdapters.init).toHaveBeenCalled()
+    expect(concordanceRes.concordance).toBeDefined()
+    expect(concordanceRes.concordance).toBeInstanceOf(Function)
+  })
+
+  it('6 ClientAdapters - wordusageExamples - getAuthorsWorks returns array of authors with wordTexts', async () => {
+    ClientAdapters.init()
+
+    let res = await ClientAdapters.wordUsageExamples({
+      method: 'getAuthorsWorks',
+      params: {}
+    })
+
+    expect(res.errors).toEqual([])
+
+    expect(Array.isArray(res.result)).toBeTruthy()
+    for (let resItem of res.result) {
+      expect(resItem).toBeInstanceOf(Author)
+    }
+
+    let adapterConcordanceRes = await ClientAdapters.wordusageExamples.concordance({
+      method: 'getAuthorsWorks',
+      params: {}
+    })
+
+    expect(res.result).toEqual(adapterConcordanceRes.result)
+  })
+
+  it('7 ClientAdapters - wordusageExamples - getWordUsageExamples returns array of wordUsageExample', async () => {
+    ClientAdapters.init()
+
+    let res = await ClientAdapters.wordUsageExamples({
+      method: 'getWordUsageExamples',
+      params: { homonym: testHomonym1 }
+    })
+
+    expect(res.errors).toEqual([])
+
+    expect(Array.isArray(res.result)).toBeTruthy()
+    for (let resItem of res.result) {
+      expect(resItem).toBeInstanceOf(WordUsageExample)
+    }
+
+    let adapterConcordanceRes = await ClientAdapters.wordusageExamples.concordance({
+      method: 'getWordUsageExamples',
+      params: { homonym: testHomonym1 }
+    })
+
+    let i = 0
+    for (let resItem of res.result) {
+      expect(resItem.source).toEqual(adapterConcordanceRes.result[i].source)
+      i++
+    }
+  })
+
 })
 
