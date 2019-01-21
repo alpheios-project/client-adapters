@@ -36,6 +36,8 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^5.1.0",
+    "html-loader": "^0.5.5",
+    "html-loader-jest": "^0.2.1",
     "intl-messageformat": "^2.2.0",
     "jest": "^23.6.0",
     "jest-fetch-mock": "1.6.5",
@@ -53,11 +55,20 @@
     "testPathIgnorePatterns": [
       "<rootDir>/node_modules/"
     ],
+    "transform": {
+      "^.+\\.htmlf$": "html-loader-jest",
+      "^.+\\.jsx?$": "babel-jest",
+      ".*\\.(vue)$": "<rootDir>/node_modules/jest-vue-preprocessor",
+      ".*\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/fileTransform.js"
+    },
     "transformIgnorePatterns": [
       "!node_modules/alpheios-data-models/"
     ],
     "moduleNameMapper": {
-      "^@[/](.+)": "<rootDir>/src/$1"
+      "^vue$": "vue/dist/vue.common.js",
+      "^@[/](.+)": "<rootDir>/src/$1",
+      "alpheios-morph-client": "<rootDir>/node_modules/alpheios-morph-client/dist/alpheios-morph-client.js",
+      "alpheios-inflection-tables": "<rootDir>/node_modules/alpheios-inflection-tables/dist/alpheios-inflection-tables.js"
     },
     "moduleFileExtensions": [
       "js",
@@ -74,7 +85,7 @@
       "node": true
     },
     "parserOptions": {
-      "ecmaVersion": 2017,
+      "ecmaVersion": 2018,
       "sourceType": "module",
       "experimentalObjectRestSpread": true
     }
@@ -82,10 +93,5 @@
   "eslintIgnore": [
     "**/dist",
     "**/support"
-  ],
-  "standard": {
-    "ignore": [
-      "**/dist"
-    ]
-  }
+  ]
 }
