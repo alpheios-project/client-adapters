@@ -1,16 +1,54 @@
 /* eslint-env jest */
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
+import ClientAdapters from '@/client-adapters.js'
 import AlpheiosConcordanceAdapter from '@/adapters/concordance/adapter'
 
-import { Author } from 'alpheios-data-models'
+import { Constants, Author, TextWork, WordUsageExample } from 'alpheios-data-models'
 
 describe('concordance.test.js', () => {
   console.error = function () {}
   console.log = function () {}
   console.warn = function () {}
 
+  let testHomonym1, testHomonym2, testHomonym3
+  let testWord1 = 'submersasque'
+  let testWord2 = 'regemque'
+  let testWord3 = 'magno'
+
+  let testAuthor = new Author('urn:cts:latinLit:phi0690', { "eng": "Virgil" })
+  let testTextWork = new TextWork(testAuthor, 'urn:cts:latinLit:phi0690.phi003', { "eng": "Aeneid" })
+
   beforeAll(async () => {
+    let testHomonymRes1 = await ClientAdapters.morphology.tufts({
+      method: 'getHomonym',
+      params: {
+        languageID: Constants.LANG_LATIN,
+        word: testWord1
+      }
+    })
+
+    testHomonym1 = testHomonymRes1.result
+
+    let testHomonymRes2 = await ClientAdapters.morphology.tufts({
+      method: 'getHomonym',
+      params: {
+        languageID: Constants.LANG_LATIN,
+        word: testWord2
+      }
+    })
+
+    testHomonym2 = testHomonymRes2.result
+
+    let testHomonymRes3 = await ClientAdapters.morphology.tufts({
+      method: 'getHomonym',
+      params: {
+        languageID: Constants.LANG_LATIN,
+        word: testWord3
+      }
+    })
+
+    testHomonym3 = testHomonymRes3.result
   })
 
   beforeEach(() => {
@@ -78,12 +116,184 @@ describe('concordance.test.js', () => {
     expect(result.filter(author => author.ID === checkAuthorItem.ID).length).toEqual(1)
   })
 
-  it('3 AlpheiosConcordanceAdapter - getWordUsageExamples method fetches data from concordance API and converts it to WordUsageExamplesObject', async () => {
+  it('3 AlpheiosConcordanceAdapter - getAuthorsWorks adds an error on any problem with fetching data to errors array', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
       method: 'getAuthorsWorks'
     })
+
+    adapter.uploadConfig = jest.fn()
+
+    let res = await adapter.getAuthorsWorks()
+
+    expect(adapter.errors.length).toBeGreaterThan(0)
+  })
+
+  it('4 AlpheiosConcordanceAdapter - getWordUsageExamples method fetches data from concordance API and converts it to WordUsageExamplesObject', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let filterOptions = {
+      author: testAuthor,
+      textWork: testTextWork
+    }
+
+    let paginationOptions =  {
+      property: 'max',
+      value: 5
+    }
+
+    // single item result
+    let res1 = await adapter.getWordUsageExamples(testHomonym1, filterOptions, paginationOptions) 
+
+    expect(Array.isArray(res1.wordUsageExamples)).toBeTruthy()
+    expect(res1.wordUsageExamples.length).toEqual(1)
+
+    expect(res1.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+
+    let res2 = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions) // multiple usage
+
+    expect(Array.isArray(res2.wordUsageExamples)).toBeTruthy()
+    expect(res2.wordUsageExamples.length).toEqual(5)
+
+    expect(res2.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+
+    // multiple usage in different texts of the same author - 1 case - filter by author and text, no pagination
+    let res3 = await adapter.getWordUsageExamples(testHomonym3, filterOptions) 
+
+    // console.info('*******************res3', res3.length, res3[0])
+    expect(Array.isArray(res3.wordUsageExamples)).toBeTruthy()
+    expect(res3.wordUsageExamples.length).toEqual(62)
+
+    expect(res3.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+
+    // multiple usage in different texts of the same author - 1 case - filter by author and text, with pagination
+    let res4 = await adapter.getWordUsageExamples(testHomonym3, filterOptions, paginationOptions)
+    expect(Array.isArray(res4.wordUsageExamples)).toBeTruthy()
+    expect(res4.wordUsageExamples.length).toBeLessThanOrEqual(5)
+
+    expect(res4.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+
+    // multiple usage in different texts of the same author - 1 case - filter by author, no pagination
+    let filterOptionsOnlyAuthor = { author: filterOptions.author }
+    let res5 = await adapter.getWordUsageExamples(testHomonym3, filterOptionsOnlyAuthor)
+    expect(Array.isArray(res5.wordUsageExamples)).toBeTruthy()
+    expect(res5.wordUsageExamples.length).toBeGreaterThan(res4.wordUsageExamples.length)
+
+    expect(res5.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+
+    // multiple usage in different texts of the same author - 1 case - no filter, no pagination
+    let res6 = await adapter.getWordUsageExamples(testHomonym3)
+    expect(Array.isArray(res6.wordUsageExamples)).toBeTruthy()
+    expect(res6.wordUsageExamples.length).toBeGreaterThan(res5.wordUsageExamples.length)
+
+    expect(res6.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+
+    expect(adapter.errors.length).toEqual(0)
+  })
+
+
+  it('5 AlpheiosConcordanceAdapter - getWordUsageExamples adds an error on any problem with fetching data to errors array', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let res = await adapter.getWordUsageExamples()
+
+    expect(adapter.errors.length).toBeGreaterThan(0)
+  })
+
+  it('6 AlpheiosConcordanceAdapter - createFetchURL method returns final url for getting word usage examples', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let filterOptions = {
+      author: testAuthor,
+      textWork: testTextWork
+    }
+
+    let paginationOptions =  {
+      property: 'max',
+      value: 5
+    }
+
+    jest.spyOn(adapter, 'formatFilter')
+    jest.spyOn(adapter, 'formatPagination')
+
+    let resURL = adapter.createFetchURL(testHomonym1, filterOptions, paginationOptions)
     
+    expect(adapter.formatFilter).toHaveBeenCalled()
+    expect(adapter.formatPagination).toHaveBeenCalled()
+    expect(resURL).toEqual('https://latin.packhum.org/rst/concordance/submersasque[690:3]?max=5')
+  })
+
+  it('7 AlpheiosConcordanceAdapter - formatFilter method returns formatted filter part of the url', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let res1 = adapter.formatFilter()
+    expect(res1).toEqual('')
+
+    let res2 = adapter.formatFilter({author: testAuthor})
+    expect(res2).toEqual('[690]')
+
+    let res3 = adapter.formatFilter({author: testAuthor, textWork: testTextWork})
+    expect(res3).toEqual('[690:3]')
+  })
+
+  it('8 AlpheiosConcordanceAdapter - formatPagination method returns formatted pagination part of the url', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let res1 = adapter.formatPagination()
+    expect(res1).toEqual('')
+
+    let res2 = adapter.formatPagination({ property: 'max' })
+    expect(res2).toEqual('')
+
+    let res3 = adapter.formatPagination({ property: 'max', value: 10 })
+    expect(res3).toEqual('?max=10')
+  })
+
+  it('9 AlpheiosConcordanceAdapter - parseWordUsageResult method returns parsed WordUsageExample objects', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let testJsonObj = [{
+      cit: 'SenPhil.Med.484',
+      left: 'felix uicem. ex opibus illis, quas procul raptas Scythae ',
+      link: '/loc/1017/4/9/2890-2895',
+      right: ' a perustis Indiae populis agunt, quas quia referta uix',
+      target: 'usque'
+    }]
+
+    let testHomonym = { language: 'lat', targetWord: 'usque' }
+    let testAuthor = 'fooAuthor'
+    let testTextWork = 'fooTextWork'
+
+    jest.spyOn(WordUsageExample, 'readObject')
+    let res = adapter.parseWordUsageResult(testJsonObj, testHomonym, testAuthor, testTextWork)
+    
+    expect(WordUsageExample.readObject).toHaveBeenCalled()
+    expect(Array.isArray(res)).toBeTruthy()
+    expect(res[0]).toBeInstanceOf(WordUsageExample)
   })
 })

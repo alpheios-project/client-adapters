@@ -61,7 +61,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
         language: homonym.language
       }
     } catch (error) {
-      this.addError(this.l10n.messages['TRANSLATION_UNKNOWN_ERROR'].get(error.message))
+      this.addError(this.l10n.messages['CONCORDANCE_WORD_USAGE_FETCH_ERROR'].get(error.message))
     }
   }
 
@@ -88,7 +88,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
   * @return {String}
   */
   formatFilter (filters) {
-    if (filters.author) {
+    if (filters && filters.author) {
       if (filters.textWork) {
         return `[${filters.author.ID}:${filters.textWork.ID}]`
       }
@@ -103,8 +103,8 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
   * @return {String}
   */
   formatPagination (pagination) {
-    if (pagination && pagination.property && pagination.value) {
-      return `?${pagination.property}=${pagination.value}`
+    if (pagination && pagination.property && (pagination.property === 'max') && pagination.value) {
+      return `?${pagination.property}=${parseInt(pagination.value)}`
     }
     return ''
   }
