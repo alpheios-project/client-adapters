@@ -7,7 +7,7 @@ import AlpheiosConcordanceAdapter from '@/adapters/concordance/adapter'
 import { Constants, Author, TextWork, WordUsageExample } from 'alpheios-data-models'
 
 describe('concordance.test.js', () => {
-  console.error = function () {}
+  // console.error = function () {}
   console.log = function () {}
   console.warn = function () {}
 
@@ -90,24 +90,34 @@ describe('concordance.test.js', () => {
 
     let result = await adapter.getAuthorsWorks()
     let testAuthorJson = { "urn": "urn:cts:latinLit:phi0690",
-      "title": [
-          { "@lang": "eng",
-            "@value": "Virgil"
-          }
-      ],
-      "works": [
-        { "urn": "urn:cts:latinLit:phi0690.phi003",
-          "title": [
-            { "@lang":"lat",
-              "@value": "Aeneid"
-            },
-            { "@lang":"eng",
-              "@value": "Aeneid"
-            }
-          ]
+    "title": [
+        { "@lang": "eng",
+          "@value": "Virgil"
         }
-      ]
-    }
+    ],
+    "abbreviations": [
+       { "@lang": "eng",
+          "@value": "Verg."
+       }
+     ],
+    "works": [
+      { "urn": "urn:cts:latinLit:phi0690.phi003",
+        "title": [
+          { "@lang":"lat",
+            "@value": "Aeneid"
+          },
+          { "@lang":"eng",
+            "@value": "Aeneid"
+          }
+        ],
+        "abbreviations": [
+         { "@lang": "eng",
+          "@value": "A."
+         }
+       ]
+      }
+    ]
+  }
     let checkAuthorItem = Author.create(testAuthorJson)
 
     expect(adapter.uploadConfig).toHaveBeenCalled()
@@ -188,6 +198,7 @@ describe('concordance.test.js', () => {
 
     // multiple usage in different texts of the same author - 1 case - no filter, no pagination
     let res6 = await adapter.getWordUsageExamples(testHomonym3)
+
     expect(Array.isArray(res6.wordUsageExamples)).toBeTruthy()
     expect(res6.wordUsageExamples.length).toBeGreaterThan(res5.wordUsageExamples.length)
 
@@ -195,7 +206,6 @@ describe('concordance.test.js', () => {
 
     expect(adapter.errors.length).toEqual(0)
   })
-
 
   it('5 AlpheiosConcordanceAdapter - getWordUsageExamples adds an error on any problem with fetching data to errors array', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
@@ -290,10 +300,43 @@ describe('concordance.test.js', () => {
     let testTextWork = 'fooTextWork'
 
     jest.spyOn(WordUsageExample, 'readObject')
-    let res = adapter.parseWordUsageResult(testJsonObj, testHomonym, testAuthor, testTextWork)
+    let res = await adapter.parseWordUsageResult(testJsonObj, testHomonym, testAuthor, testTextWork)
     
     expect(WordUsageExample.readObject).toHaveBeenCalled()
     expect(Array.isArray(res)).toBeTruthy()
     expect(res[0]).toBeInstanceOf(WordUsageExample)
   })
+
+  it('10 AlpheiosConcordanceAdapter - getAuthorByAbbr and getTextWorkByAbbr extracts author and textWork by abbreviation', async () => {
+    let adapter = new AlpheiosConcordanceAdapter({
+      category: 'wordUsage',
+      adapterName: 'concordance',
+      method: 'getAuthorsWorks'
+    })
+
+    let authors = await adapter.getAuthorsWorks()
+
+    let testJsonObj = {
+      "link":"/loc/959/6/219/77-81",
+      "cit":"Ov.Met.14.528",
+      "left":"Hinc ubi legati rediere, negata ferentes ",
+      "right":" Aetola sibi, Rutuli sine viribus illis bella instructa",
+      "target":"arma"
+    }
+
+    let authorAbbr = testJsonObj.cit.split('.')[0]
+    let author = authors.find(author => author.abbreviation === authorAbbr)
+
+    let textWorkAbbr = testJsonObj.cit.split('.')[1]
+    let textWork = author.works.find(textWork => textWork.abbreviation === textWorkAbbr)
+
+    let methodAuthor = await adapter.getAuthorByAbbr(testJsonObj)
+    expect(methodAuthor).not.toBeNull()
+    expect(methodAuthor).toEqual(author)
+
+    let methodTextWork = adapter.getTextWorkByAbbr(methodAuthor, testJsonObj)
+    expect(methodTextWork).not.toBeNull()
+    expect(methodTextWork).toEqual(textWork)
+  })
+  
 })

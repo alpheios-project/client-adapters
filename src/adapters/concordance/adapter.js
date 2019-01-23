@@ -54,7 +54,8 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
     try {
       let url = this.createFetchURL(homonym, filters, pagination, sort)
       let wordUsageListRes = await this.fetch(url)
-      let parsedWordUsageList = this.parseWordUsageResult(wordUsageListRes, homonym, filters.author, filters.textWork)
+
+      let parsedWordUsageList = await this.parseWordUsageResult(wordUsageListRes, homonym)
       return {
         wordUsageExamples: parsedWordUsageList,
         targetWord: homonym.targetWord,
@@ -117,13 +118,38 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
   * @param {TextWork} textWork - textWork from filter
   * @return {WordUsageExample[]}
   */
-  parseWordUsageResult (jsonObj, homonym, author, textWork) {
+  async parseWordUsageResult (jsonObj, homonym) {
     let wordUsageExamples = []
+    let author, textWork
     for (let jsonObjItem of jsonObj) {
+      if (!author || !textWork) {
+        author = await this.getAuthorByAbbr(jsonObjItem)
+        textWork = this.getTextWorkByAbbr(author, jsonObjItem)
+      }
+
       let wordUsageExample = WordUsageExample.readObject(jsonObjItem, homonym, author, textWork, this.config.sourceTextUrl)
       wordUsageExamples.push(wordUsageExample)
     }
     return wordUsageExamples
+  }
+
+  async getAuthorByAbbr (jsonObj) {
+    if (jsonObj.cit) {
+      let authorAbbr = jsonObj.cit.split('.')[0]
+      if (this.authors.length === 0) {
+        await this.getAuthorsWorks()
+      }
+      return this.authors.find(author => author.abbreviation === authorAbbr)
+    }
+    return null
+  }
+
+  getTextWorkByAbbr (author, jsonObj) {
+    if (jsonObj.cit && author && author.works.length > 0) {
+      let textWorkAbbr = jsonObj.cit.split('.')[1]
+      return author.works.find(textWork => textWork.abbreviation === textWorkAbbr)
+    }
+    return null
   }
 }
 
