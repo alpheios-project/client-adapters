@@ -1,17 +1,17 @@
 /* eslint-env jest */
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
-import { mount } from '@vue/test-utils'
-import { Constants } from 'alpheios-data-models'
+// import { mount } from '@vue/test-utils'
+import { Constants, Author, TextWork, WordUsageExample } from 'alpheios-data-models'
 
 import ClientAdapters from '@/client-adapters.js'
 import AlpheiosConcordanceAdapter from '@/adapters/concordance/adapter.js'
-import Author from '@/adapters/concordance/lib/author'
-import TextWork from '@/adapters/concordance/lib/text-work'
-import WordUsageExample from '@/adapters/concordance/lib/word-usage-example'
+// import Author from '@/adapters/concordance/lib/author'
+// import TextWork from '@/adapters/concordance/lib/text-work'
+// import WordUsageExample from '@/adapters/concordance/lib/word-usage-example'
 
-import WordUsageExamplesBlock from '@/adapters/concordance/vue-components/word-usage-examples-block.vue'
-import WordUsageExampleItem from '@/adapters/concordance/vue-components/word-usage-example-item.vue'
+// import WordUsageExamplesBlock from '@/adapters/concordance/vue-components/word-usage-examples-block.vue'
+// import WordUsageExampleItem from '@/adapters/concordance/vue-components/word-usage-example-item.vue'
 
 describe('concordance.test.js', () => {
   console.error = function () {}
@@ -83,7 +83,7 @@ describe('concordance.test.js', () => {
     return d.textContent;
   }
 
-  it.skip('1 ConcordanceService - getAuthorsWorks returns a list of author with a list of Works', async () => {
+  it('1 ConcordanceService - getAuthorsWorks returns a list of author with a list of Works', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -120,7 +120,7 @@ describe('concordance.test.js', () => {
     return timeoutRes
   }, 50000)
 
-  it.skip('2 ConcordanceService - getWordUsageExamples returns a list of text links with filter by authorID, textID', async () => {
+  it('2 ConcordanceService - getWordUsageExamples returns a list of text links with filter by authorID, textID', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -140,55 +140,55 @@ describe('concordance.test.js', () => {
     // console.info('**********************filterFormatted', testAuthor, testAuthor.ID, filterFormatted)
     let res1 = await adapter.getWordUsageExamples(testHomonym1, filterOptions, paginationOptions) // single usage
 
-    expect(Array.isArray(res1)).toBeTruthy()
-    expect(res1.length).toEqual(1)
+    expect(Array.isArray(res1.wordUsageExamples)).toBeTruthy()
+    expect(res1.wordUsageExamples.length).toEqual(1)
 
-    expect(res1[0]).toBeInstanceOf(WordUsageExample)
+    expect(res1.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
 
     let res2 = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions) // multiple usage
 
-    expect(Array.isArray(res2)).toBeTruthy()
-    expect(res2.length).toEqual(5)
+    expect(Array.isArray(res2.wordUsageExamples)).toBeTruthy()
+    expect(res2.wordUsageExamples.length).toEqual(5)
 
-    expect(res2[0]).toBeInstanceOf(WordUsageExample)
+    expect(res2.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
 
     // multiple usage in different texts of the same author - 1 case - filter by author and text, no pagination
     let res3 = await adapter.getWordUsageExamples(testHomonym3, filterOptions) 
 
     // console.info('*******************res3', res3.length, res3[0])
-    expect(Array.isArray(res3)).toBeTruthy()
-    expect(res3.length).toEqual(62)
+    expect(Array.isArray(res3.wordUsageExamples)).toBeTruthy()
+    expect(res3.wordUsageExamples.length).toEqual(62)
 
-    expect(res3[0]).toBeInstanceOf(WordUsageExample)
+    expect(res3.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
 
     // multiple usage in different texts of the same author - 1 case - filter by author and text, with pagination
     let res4 = await adapter.getWordUsageExamples(testHomonym3, filterOptions, paginationOptions)
-    expect(Array.isArray(res4)).toBeTruthy()
-    expect(res4.length).toBeLessThanOrEqual(5)
+    expect(Array.isArray(res4.wordUsageExamples)).toBeTruthy()
+    expect(res4.wordUsageExamples.length).toBeLessThanOrEqual(5)
 
-    expect(res4[0]).toBeInstanceOf(WordUsageExample)
+    expect(res4.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
 
     // multiple usage in different texts of the same author - 1 case - filter by author, no pagination
     let filterOptionsOnlyAuthor = { author: filterOptions.author }
     let res5 = await adapter.getWordUsageExamples(testHomonym3, filterOptionsOnlyAuthor)
-    expect(Array.isArray(res5)).toBeTruthy()
-    expect(res5.length).toBeGreaterThan(res4.length)
+    expect(Array.isArray(res5.wordUsageExamples)).toBeTruthy()
+    expect(res5.wordUsageExamples.length).toBeGreaterThan(res4.wordUsageExamples.length)
 
-    expect(res5[0]).toBeInstanceOf(WordUsageExample)
+    expect(res5.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
 
     // multiple usage in different texts of the same author - 1 case - no filter, no pagination
     let res6 = await adapter.getWordUsageExamples(testHomonym3)
-    expect(Array.isArray(res6)).toBeTruthy()
-    expect(res6.length).toBeGreaterThan(res5.length)
+    expect(Array.isArray(res6.wordUsageExamples)).toBeTruthy()
+    expect(res6.wordUsageExamples.length).toBeGreaterThan(res5.wordUsageExamples.length)
 
-    expect(res6[0]).toBeInstanceOf(WordUsageExample)
+    expect(res6.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
 
     let timeoutRes = await timeout(3000)
     
     return timeoutRes
   }, 50000)
-
-  it.skip('3 ConcordanceService - wordUsageExamplesBlock - shows all word usage examples', async () => {
+/*
+  it('3 ConcordanceService - wordUsageExamplesBlock - shows all word usage examples', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -229,7 +229,7 @@ describe('concordance.test.js', () => {
     return timeoutRes
   }, 50000)
 
-  it.skip('4 ConcordanceService - WordUsageExampleItem - shows details of one word usage example', async () => {
+  it('4 ConcordanceService - WordUsageExampleItem - shows details of one word usage example', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',
@@ -262,13 +262,6 @@ describe('concordance.test.js', () => {
     let timeoutRes = await timeout(3000)
     return timeoutRes
   }, 50000)
-/*
-  it('5 ConcordanceService - ClientAdapters - init correct adapter method', async () => {
-    let adapterConcordanceRes = await ClientAdapters.wordusageExamples.alpheios({
-      method: 'getAuthorsWorks',
-      params: {}
-    })
-  })
 */
   it('5 ClientAdapters - wordusageExamples executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
@@ -313,8 +306,8 @@ describe('concordance.test.js', () => {
 
     expect(res.errors).toEqual([])
 
-    expect(Array.isArray(res.result)).toBeTruthy()
-    for (let resItem of res.result) {
+    expect(Array.isArray(res.result.wordUsageExamples)).toBeTruthy()
+    for (let resItem of res.result.wordUsageExamples) {
       expect(resItem).toBeInstanceOf(WordUsageExample)
     }
 
@@ -324,8 +317,8 @@ describe('concordance.test.js', () => {
     })
 
     let i = 0
-    for (let resItem of res.result) {
-      expect(resItem.source).toEqual(adapterConcordanceRes.result[i].source)
+    for (let resItem of res.result.wordUsageExamples) {
+      expect(resItem.source).toEqual(adapterConcordanceRes.result.wordUsageExamples[i].source)
       i++
     }
   })
