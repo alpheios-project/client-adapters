@@ -13412,6 +13412,7 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
   *           {WordUsageExample[]} wordUsageExamples - result wordUsageExamples
   *           {String} targetWord - source targetWord
   *           {String} language - source languageCode
+  *           {ResourceProvider} provider - provider data
   *         }
   */
   async getWordUsageExamples (homonym, filters = {}, pagination = {}, sort = {}) {
