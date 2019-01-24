@@ -8518,7 +8518,8 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
       return {
         wordUsageExamples: parsedWordUsageList,
         targetWord: homonym.targetWord,
-        language: homonym.language
+        language: homonym.language,
+        provider: this.provider
       }
     } catch (error) {
       this.addError(this.l10n.messages['CONCORDANCE_WORD_USAGE_FETCH_ERROR'].get(error.message))

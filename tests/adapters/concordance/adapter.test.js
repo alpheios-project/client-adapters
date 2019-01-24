@@ -197,6 +197,7 @@ describe('concordance.test.js', () => {
 
     expect(res1.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
     expect(res1.wordUsageExamples[0].provider).toBeDefined()
+    expect(res1.provider).toBeDefined()
 
     let res2 = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions) // multiple usage
 
@@ -205,6 +206,7 @@ describe('concordance.test.js', () => {
 
     expect(res2.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
     expect(res2.wordUsageExamples[0].provider).toBeDefined()
+    expect(res2.provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - filter by author and text, no pagination
     let res3 = await adapter.getWordUsageExamples(testHomonym3, filterOptions) 
@@ -215,6 +217,7 @@ describe('concordance.test.js', () => {
 
     expect(res3.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
     expect(res3.wordUsageExamples[0].provider).toBeDefined()
+    expect(res3.provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - filter by author and text, with pagination
     let res4 = await adapter.getWordUsageExamples(testHomonym3, filterOptions, paginationOptions)
@@ -223,6 +226,7 @@ describe('concordance.test.js', () => {
 
     expect(res4.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
     expect(res4.wordUsageExamples[0].provider).toBeDefined()
+    expect(res4.provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - filter by author, no pagination
     let filterOptionsOnlyAuthor = { author: filterOptions.author }
@@ -232,6 +236,7 @@ describe('concordance.test.js', () => {
 
     expect(res5.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
     expect(res5.wordUsageExamples[0].provider).toBeDefined()
+    expect(res5.provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - no filter, no pagination
     let res6 = await adapter.getWordUsageExamples(testHomonym3)
@@ -241,6 +246,7 @@ describe('concordance.test.js', () => {
 
     expect(res6.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
     expect(res6.wordUsageExamples[0].provider).toBeDefined()
+    expect(res6.provider).toBeDefined()
 
     expect(adapter.errors.length).toEqual(0)
   })
