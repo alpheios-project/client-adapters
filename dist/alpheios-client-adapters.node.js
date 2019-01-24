@@ -8709,6 +8709,7 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
     wordUsageExample.author = author
     wordUsageExample.textWork = textWork
     wordUsageExample.homonym = homonym
+    wordUsageExample.provider = this.provider
 
     return wordUsageExample
   }
@@ -8737,7 +8738,7 @@ module.exports = {"authors":[{"urn":"urn:cts:latinLit:phi0959","title":[{"@lang"
 /*! exports provided: url, sourceTextUrl, rights, default */
 /***/ (function(module) {
 
-module.exports = {"url":"https://latin.packhum.org/rst/concordance/","sourceTextUrl":"https://latin.packhum.org","rights":"Word usage examples are extracted from data provided under the GNU GPL v3 license by the Concordance Project (https://packhum.org/), which is developed and maintained by The Packard Humanities Institute."};
+module.exports = {"url":"https://latin.packhum.org/rst/concordance/","sourceTextUrl":"https://latin.packhum.org","rights":"Word usage examples are provided by The Packard Humanities Institute (https://packhum.org/). They are to be used only for personal study and are subject to the “Fair Use” principles of U.S. Copyright law."};
 
 /***/ }),
 

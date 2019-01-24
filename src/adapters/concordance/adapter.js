@@ -252,6 +252,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
     wordUsageExample.author = author
     wordUsageExample.textWork = textWork
     wordUsageExample.homonym = homonym
+    wordUsageExample.provider = this.provider
 
     return wordUsageExample
   }

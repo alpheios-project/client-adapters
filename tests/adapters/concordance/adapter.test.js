@@ -196,13 +196,15 @@ describe('concordance.test.js', () => {
     expect(res1.wordUsageExamples.length).toEqual(1)
 
     expect(res1.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
-    
+    expect(res1.wordUsageExamples[0].provider).toBeDefined()
+
     let res2 = await adapter.getWordUsageExamples(testHomonym2, filterOptions, paginationOptions) // multiple usage
 
     expect(Array.isArray(res2.wordUsageExamples)).toBeTruthy()
     expect(res2.wordUsageExamples.length).toEqual(5)
 
     expect(res2.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+    expect(res2.wordUsageExamples[0].provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - filter by author and text, no pagination
     let res3 = await adapter.getWordUsageExamples(testHomonym3, filterOptions) 
@@ -212,6 +214,7 @@ describe('concordance.test.js', () => {
     expect(res3.wordUsageExamples.length).toEqual(62)
 
     expect(res3.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+    expect(res3.wordUsageExamples[0].provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - filter by author and text, with pagination
     let res4 = await adapter.getWordUsageExamples(testHomonym3, filterOptions, paginationOptions)
@@ -219,6 +222,7 @@ describe('concordance.test.js', () => {
     expect(res4.wordUsageExamples.length).toBeLessThanOrEqual(5)
 
     expect(res4.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+    expect(res4.wordUsageExamples[0].provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - filter by author, no pagination
     let filterOptionsOnlyAuthor = { author: filterOptions.author }
@@ -227,6 +231,7 @@ describe('concordance.test.js', () => {
     expect(res5.wordUsageExamples.length).toBeGreaterThan(res4.wordUsageExamples.length)
 
     expect(res5.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+    expect(res5.wordUsageExamples[0].provider).toBeDefined()
 
     // multiple usage in different texts of the same author - 1 case - no filter, no pagination
     let res6 = await adapter.getWordUsageExamples(testHomonym3)
@@ -235,6 +240,7 @@ describe('concordance.test.js', () => {
     expect(res6.wordUsageExamples.length).toBeGreaterThan(res5.wordUsageExamples.length)
 
     expect(res6.wordUsageExamples[0]).toBeInstanceOf(WordUsageExample)
+    expect(res6.wordUsageExamples[0].provider).toBeDefined()
 
     expect(adapter.errors.length).toEqual(0)
   })
@@ -337,6 +343,7 @@ describe('concordance.test.js', () => {
     expect(adapter.createWordUsageExample).toHaveBeenCalled()
     expect(Array.isArray(res)).toBeTruthy()
     expect(res[0]).toBeInstanceOf(WordUsageExample)
+    expect(res[0].provider).toBeDefined()
   })
 
   it('10 AlpheiosConcordanceAdapter - getAuthorByAbbr and getTextWorkByAbbr extracts author and textWork by abbreviation', async () => {
@@ -519,5 +526,7 @@ describe('concordance.test.js', () => {
     expect(wordUsageExample.cit).toEqual(testJsonObj.cit)
     expect(wordUsageExample.author).toEqual(testAuthor)
     expect(wordUsageExample.textWork).toEqual(testTextWork)
+    
+    expect(wordUsageExample.provider).toBeDefined()
   })
 })
