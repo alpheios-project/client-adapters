@@ -8476,16 +8476,19 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
   /**
   * This method retrieves a list of available authors and textWorks.
   * For now it uploads data from json file, but later it will fetch data from cordance api
-  * @return {[Author]}
+  * @param {Boolean} reload - if true - data will be forced to reload from source
+  * @return {Author[]]}
   */
-  async getAuthorsWorks () {
+  async getAuthorsWorks (reload = false) {
     try {
-      this.authorWorkData = await this.uploadConfig({}, _adapters_concordance_author_work_json__WEBPACK_IMPORTED_MODULE_1__)
+      if (reload || this.authors.length === 0) {
+        this.authorWorkData = await this.uploadConfig({}, _adapters_concordance_author_work_json__WEBPACK_IMPORTED_MODULE_1__)
 
-      this.authors = []
-      for (let authorWorkDataItem of Object.values(this.authorWorkData.authors)) {
-        let author = alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["Author"].create(authorWorkDataItem)
-        this.authors.push(author)
+        this.authors = []
+        for (let authorWorkDataItem of Object.values(this.authorWorkData.authors)) {
+          let author = this.createAuthor(authorWorkDataItem)
+          this.authors.push(author)
+        }
       }
       return this.authors
     } catch (error) {
@@ -8511,7 +8514,6 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
     try {
       let url = this.createFetchURL(homonym, filters, pagination, sort)
       let wordUsageListRes = await this.fetch(url)
-
       let parsedWordUsageList = await this.parseWordUsageResult(wordUsageListRes, homonym)
       return {
         wordUsageExamples: parsedWordUsageList,
@@ -8584,19 +8586,16 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
         textWork = this.getTextWorkByAbbr(author, jsonObjItem)
       }
 
-      let wordUsageExample = alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["WordUsageExample"].readObject(jsonObjItem, homonym, author, textWork, this.config.sourceTextUrl)
+      let wordUsageExample = this.createWordUsageExample(jsonObjItem, homonym, author, textWork)
       wordUsageExamples.push(wordUsageExample)
     }
     return wordUsageExamples
   }
 
   async getAuthorByAbbr (jsonObj) {
-    if (jsonObj.cit) {
+    if (jsonObj.cit && this.authors.length > 0) {
       let authorAbbr = jsonObj.cit.split('.')[0]
-      if (this.authors.length === 0) {
-        await this.getAuthorsWorks()
-      }
-      return this.authors.find(author => author.abbreviation === authorAbbr)
+      return this.authors.find(author => author.abbreviation() === authorAbbr)
     }
     return null
   }
@@ -8604,9 +8603,114 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
   getTextWorkByAbbr (author, jsonObj) {
     if (jsonObj.cit && author && author.works.length > 0) {
       let textWorkAbbr = jsonObj.cit.split('.')[1]
-      return author.works.find(textWork => textWork.abbreviation === textWorkAbbr)
+      return author.works.find(textWork => textWork.abbreviation() === textWorkAbbr)
     }
     return null
+  }
+
+  /**
+  * This property is used to define prefix fr extract ID
+  * @returns {String}
+  */
+  get defaultIDPrefix () {
+    return 'phi'
+  }
+
+  /**
+  * Method returns Author for given jsonObj (from concordance API)
+  * @param {Object} jsonObj - json object with data of the Author
+  * @returns {Author}
+  */
+  createAuthor (jsonObj) {
+    let titles = {}
+    jsonObj.title.forEach(titleItem => {
+      titles[titleItem['@lang']] = titleItem['@value']
+    })
+
+    let abbreviations = {}
+    jsonObj.abbreviations.forEach(abbrItem => {
+      abbreviations[abbrItem['@lang']] = abbrItem['@value'].replace('.', '')
+    })
+
+    let author = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["Author"](jsonObj.urn, titles, abbreviations)
+    author.ID = this.extractIDFromURNAuthor(author.urn)
+    let works = []
+
+    jsonObj.works.forEach(workItem => {
+      works.push(this.createTextWork(author, workItem))
+    })
+
+    author.works = works
+    return author
+  }
+
+  /**
+  * Method extracts ID from the urn, if it is correct. Otherwise it returns null.
+  * @returns {Number, null}
+  */
+  extractIDFromURNAuthor (urn) {
+    let partsUrn = urn.split(':')
+    if (Array.isArray(partsUrn) && partsUrn.length >= 4) {
+      let workIDPart = partsUrn[3].indexOf('.') === -1 ? partsUrn[3] : partsUrn[3].substr(0, partsUrn[3].indexOf('.'))
+      return parseInt(workIDPart.replace(this.defaultIDPrefix, ''))
+    }
+    return null
+  }
+
+  /**
+  * Method returns TextWork for given jsonObj (from concordance API)
+  * @param {Author} author - author of the textWork
+  * @param {Object} jsonObj - json object with data of the TextWork
+  * @returns {TextWork}
+  */
+  createTextWork (author, jsonObj) {
+    let titles = {}
+    jsonObj.title.forEach(titleItem => {
+      titles[titleItem['@lang']] = titleItem['@value']
+    })
+
+    let abbreviations = {}
+    jsonObj.abbreviations.forEach(abbrItem => {
+      abbreviations[abbrItem['@lang']] = abbrItem['@value'].replace('.', '')
+    })
+
+    let textWork = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["TextWork"](author, jsonObj.urn, titles, abbreviations)
+    textWork.ID = this.extractIDFromURNTextWork(textWork.urn)
+    return textWork
+  }
+
+  /**
+  * Method extracts ID from the urn, if it is correct. Otherwise it returns null.
+  * @returns {Number, null}
+  */
+  extractIDFromURNTextWork (urn) {
+    let partsUrn = urn.split(':')
+
+    if (Array.isArray(partsUrn) && partsUrn.length >= 4) {
+      let workIDPart = partsUrn[3].indexOf('.') === -1 ? null : partsUrn[3].substr(partsUrn[3].indexOf('.') + 1)
+
+      return parseInt(workIDPart.replace(this.defaultIDPrefix, ''))
+    }
+    return null
+  }
+
+  /**
+  * Creates WordUsageExample object from jsonObj, homonym, author, textWork and link from the adapter config
+  * @param {Object} jsonObj - json object from concordance api
+  * @param {Homonym} homonym - source homonym object
+  * @param {Author} author - source author object, could be undefined
+  * @param {TextWork} textWork - source textWork object, could be undefined
+  * @param {String} sourceLink - sourceTextUrl from the adapter config file
+  * @returns {WordUsageExample}
+  */
+  createWordUsageExample (jsonObj, homonym, author, textWork) {
+    let source = this.config.sourceTextUrl + jsonObj.link
+    let wordUsageExample = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["WordUsageExample"](homonym.language, jsonObj.target, jsonObj.left, jsonObj.right, source, jsonObj.cit)
+    wordUsageExample.author = author
+    wordUsageExample.textWork = textWork
+    wordUsageExample.homonym = homonym
+
+    return wordUsageExample
   }
 }
 
