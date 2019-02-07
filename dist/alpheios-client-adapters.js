@@ -13469,7 +13469,14 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
   * @return {String}
   */
   formatPagination (pagination) {
-    if (pagination && pagination.property && (pagination.property === 'max') && pagination.value) {
+    // the PHI service supports two pagination parameters: authmax and max
+    // authmax sets the max hits to return per author and max sets the max hits to return over alpheios-data-models
+    // max trumps authmax - i.e. only the max number of hits will be returned, and authmax applies after that
+    // given that there a finite number of authors, we want to set the values for these differently depending upon whether
+    // the request is filtered by author or not
+    if (pagination && pagination.property && (pagination.property === 'authmax') && pagination.value) {
+      return `?${pagination.property}=${parseInt(pagination.value)}&max=${this.config.maxResultsOverride}`
+    } else if (pagination && pagination.property && (pagination.property === 'max') && pagination.value) {
       return `?${pagination.property}=${parseInt(pagination.value)}`
     }
     return ''
@@ -13641,10 +13648,10 @@ module.exports = {"authors":[{"urn":"urn:cts:latinLit:phi0959","title":[{"@lang"
 /*!******************************************!*\
   !*** ./adapters/concordance/config.json ***!
   \******************************************/
-/*! exports provided: url, sourceTextUrl, rights, default */
+/*! exports provided: url, sourceTextUrl, rights, maxResultsOverride, default */
 /***/ (function(module) {
 
-module.exports = {"url":"https://latin.packhum.org/rst/concordance/","sourceTextUrl":"https://latin.packhum.org","rights":"Word usage examples are provided by The Packard Humanities Institute (https://packhum.org/). They are to be used only for personal study and are subject to the “Fair Use” principles of U.S. Copyright law."};
+module.exports = {"url":"https://latin.packhum.org/rst/concordance/","sourceTextUrl":"https://latin.packhum.org","rights":"Word usage examples are provided by The Packard Humanities Institute (https://packhum.org/). They are to be used only for personal study and are subject to the “Fair Use” principles of U.S. Copyright law.","maxResultsOverride":10000000};
 
 /***/ }),
 
