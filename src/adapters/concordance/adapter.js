@@ -137,6 +137,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
     if (this.authors.length === 0) {
       await this.getAuthorsWorks()
     }
+
     for (let jsonObjItem of jsonObj) {
       if (!author || !textWork) {
         author = this.getAuthorByAbbr(jsonObjItem)
@@ -145,13 +146,14 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
       let wordUsageExample = this.createWordUsageExample(jsonObjItem, homonym, author, textWork)
       wordUsageExamples.push(wordUsageExample)
     }
+    console.info('*************wordUsageExamples', wordUsageExamples[0])
     return wordUsageExamples
   }
 
   getAuthorByAbbr (jsonObj) {
     if (jsonObj.cit && this.authors.length > 0) {
       let authorAbbr = jsonObj.cit.split('.')[0]
-      return this.authors.find(author => author.abbreviation('lat') === authorAbbr || author.abbreviation('eng') === authorAbbr)
+      return this.authors.find(author => Object.values(author.abbreviations).includes(authorAbbr))
     }
     return null
   }
@@ -159,7 +161,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
   getTextWorkByAbbr (author, jsonObj) {
     if (jsonObj.cit && author && author.works.length > 0) {
       let textWorkAbbr = jsonObj.cit.split('.')[1]
-      return author.works.find(textWork => textWork.abbreviation() === textWorkAbbr)
+      return author.works.find(textWork => Object.values(textWork.abbreviations).includes(textWorkAbbr))
     }
     return null
   }
