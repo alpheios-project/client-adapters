@@ -146,7 +146,6 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
       let wordUsageExample = this.createWordUsageExample(jsonObjItem, homonym, author, textWork)
       wordUsageExamples.push(wordUsageExample)
     }
-    console.info('*************wordUsageExamples', wordUsageExamples[0])
     return wordUsageExamples
   }
 

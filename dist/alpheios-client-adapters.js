@@ -13507,7 +13507,6 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
       let wordUsageExample = this.createWordUsageExample(jsonObjItem, homonym, author, textWork)
       wordUsageExamples.push(wordUsageExample)
     }
-    console.info('*************wordUsageExamples', wordUsageExamples[0])
     return wordUsageExamples
   }
 
