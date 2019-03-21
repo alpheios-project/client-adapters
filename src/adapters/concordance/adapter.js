@@ -151,10 +151,8 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
   getAuthorByAbbr (jsonObj) {
     if (jsonObj.cit && this.authors.length > 0) {
       let authorAbbr = jsonObj.cit.split('.')[0]
-      console.info('***********getAuthorByAbbr', jsonObj.cit, authorAbbr)
       return this.authors.find(author => {
         if (Object.values(author.abbreviations).includes(authorAbbr)) {
-          console.info('**************author', author)
         }
         return Object.values(author.abbreviations).includes(authorAbbr)
       })
