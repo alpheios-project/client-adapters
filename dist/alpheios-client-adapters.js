@@ -13500,10 +13500,9 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
     }
 
     for (let jsonObjItem of jsonObj) {
-      if (!author || !textWork) {
-        author = this.getAuthorByAbbr(jsonObjItem)
-        textWork = this.getTextWorkByAbbr(author, jsonObjItem)
-      }
+      author = this.getAuthorByAbbr(jsonObjItem)
+      textWork = this.getTextWorkByAbbr(author, jsonObjItem)
+
       let wordUsageExample = this.createWordUsageExample(jsonObjItem, homonym, author, textWork)
       wordUsageExamples.push(wordUsageExample)
     }
@@ -13513,7 +13512,13 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
   getAuthorByAbbr (jsonObj) {
     if (jsonObj.cit && this.authors.length > 0) {
       let authorAbbr = jsonObj.cit.split('.')[0]
-      return this.authors.find(author => Object.values(author.abbreviations).includes(authorAbbr))
+      console.info('***********getAuthorByAbbr', jsonObj.cit, authorAbbr)
+      return this.authors.find(author => {
+        if (Object.values(author.abbreviations).includes(authorAbbr)) {
+          console.info('**************author', author)
+        }
+        return Object.values(author.abbreviations).includes(authorAbbr)
+      })
     }
     return null
   }
