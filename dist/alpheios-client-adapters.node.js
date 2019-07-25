@@ -8733,8 +8733,14 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
 
   getTextWorkByAbbr (author, jsonObj) {
     if (jsonObj.cit && author && author.works.length > 0) {
-      let textWorkAbbr = jsonObj.cit.split('.')[1]
-      return author.works.find(textWork => Object.values(textWork.abbreviations).includes(textWorkAbbr))
+      let parts = jsonObj.cit.split('.')
+      // if we have only 2 parts in the citation, it's probably an author without a work
+      // which in the phi data is really when the author and work are referenced as the same thing
+      // as in an anonymous work
+      if (parts.length > 2) {
+        let textWorkAbbr = parts[1]
+        return author.works.find(textWork => Object.values(textWork.abbreviations).includes(textWorkAbbr))
+      }
     }
     return null
   }
