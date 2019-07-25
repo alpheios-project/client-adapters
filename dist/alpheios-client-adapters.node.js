@@ -8923,7 +8923,7 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
   * @param {Object} options - options
   */
   async fetchFullDefs (homonym, options = {}) {
-    await this.fetchDefinitions(homonym, options,"full")
+    await this.fetchDefinitions(homonym, options,'full')
   }
 
   /**
@@ -8962,19 +8962,16 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
     let resCheckCached = this.checkCachedData(url)
     return resCheckCached.then(
       async (result) => {
-        console.info("HERE3")
         if (result) {
           let fullDefsRequests = this.collectFullDefURLs(cachedDefinitions.get(url), homonym, this.config[urlKey])
           let resFullDefs = this.updateFullDefs(fullDefsRequests, this.config[urlKey], homonym)
           resFullDefs.catch(error => {
-            console.info("HERE4")
             this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
             this.prepareFailedCallback(requestType, homonym)
           })
         }
       },
       error => {
-        console.info("HERE5")
         this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error.message))
         this.prepareFailedCallback(requestType, homonym)
       }
@@ -9030,7 +9027,6 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
         this.prepareShortDefPromise(homonym, urlKey, lookupFunction)
       }
       if (lookupFunction === 'full') {
-        console.info("HERE2")
         this.prepareFullDefPromise(homonym, urlKey, lookupFunction)
       }
     }
@@ -9131,7 +9127,6 @@ class AlpheiosLexiconsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
 
       fullDefDataRes.then(
         async (fullDefData) => {
-          console.info("FDD", fullDefData)
           if (fullDefData && fullDefData.match(/alph:error|alpheios-lex-error/)) {
             let error = fullDefData.match(/no entries found/i) ? 'No entries found.' : fullDefData
             this.addError(this.l10n.messages['LEXICONS_FAILED_CACHED_DATA'].get(error))
