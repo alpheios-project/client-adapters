@@ -526,9 +526,10 @@ describe('concordance.test.js', () => {
     let testHomonym = { language: 'lat', targetWord: 'usque' }
     let testAuthor = 'fooAuthor'
     let testTextWork = 'fooTextWork'
+    let testPassage = '1.1.1'
     let testSourceLink = 'https://latin.packhum.org'
 
-    let wordUsageExample = adapter.createWordUsageExample(testJsonObj, testHomonym, testAuthor, testTextWork)
+    let wordUsageExample = adapter.createWordUsageExample(testJsonObj, testHomonym, testAuthor, testTextWork, testPassage)
 
     expect(wordUsageExample.languageCode).toEqual('lat')
     expect(wordUsageExample.prefix).toEqual(testJsonObj.left)
@@ -537,6 +538,7 @@ describe('concordance.test.js', () => {
     expect(wordUsageExample.cit).toEqual(testJsonObj.cit)
     expect(wordUsageExample.author).toEqual(testAuthor)
     expect(wordUsageExample.textWork).toEqual(testTextWork)
+    expect(wordUsageExample.passage).toEqual(testPassage)
 
     expect(wordUsageExample.provider).toBeDefined()
   })
@@ -574,5 +576,6 @@ describe('concordance.test.js', () => {
 
     let methodTextWork = adapter.getTextWorkByAbbr(methodAuthor, testJsonObj)
     expect(methodTextWork).toBeNull()
+    expect(adapter.getPassage(testJsonObj)).toEqual('213')
   })
 })
