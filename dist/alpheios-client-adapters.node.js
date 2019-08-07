@@ -8861,7 +8861,7 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
   */
   createWordUsageExample (jsonObj, homonym, author, textWork, passage) {
     let source = this.config.sourceTextUrl + jsonObj.link
-    let wordUsageExample = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["WordUsageExample"](homonym.language, jsonObj.target, jsonObj.left, jsonObj.right, source, jsonObj.cit)
+    let wordUsageExample = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["WordUsageExample"](alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["LanguageModelFactory"].getLanguageCodeFromId(homonym.languageID), jsonObj.target, jsonObj.left, jsonObj.right, source, jsonObj.cit)
     wordUsageExample.author = author
     wordUsageExample.textWork = textWork
     wordUsageExample.passage =  passage
