@@ -8502,19 +8502,16 @@ class BaseAdapter {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.info(error.response.data)
-      console.info(error.response.status)
-      console.info(error.response.headers)
+      console.warn('Unexpected response retrieving data from an Alpheios service', error)
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      console.info(error.request)
+      console.warn('No response from an Alpheios service', error)
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.info('Error', error.message)
+      console.warn('Unexpected error requesting data from an Alpheios service', error.message)
     }
-    console.info(error.config)
   }
 
   /**
@@ -9916,7 +9913,6 @@ class ImportData {
         } else {
           let message = `Unknown value "${providerValue}" of feature "${featureName}" for ${model.languageCode} (allowed = ${allowUnknownValues})`
           if (allowUnknownValues) {
-            console.log(message)
             mappedValue = model.typeFeature(featureName).createFeature(providerValue, sortOrder)
           } else {
             throw new Error(message)
@@ -9955,7 +9951,6 @@ class ImportData {
         } else {
           let message = `Unknown value "${item.providerValue}" of feature "${featureName}" for ${model.languageCode} (allowed = ${allowUnknownValues})`
           if (allowUnknownValues) {
-            console.log(message)
             values.push([item.providerValue, item.sortOrder])
           } else {
             throw new Error(message)
@@ -10274,7 +10269,7 @@ class TransformAdapter {
             mappingData.mapFeature(inflection, inflectionJSON, ...f, this.config.allowUnknownValues)
             mappingData.overrideInflectionFeatureIfRequired(f[1], inflection, lemmas)
           } catch (e) {
-            console.log(`Unable to map ${f[0]}`, e)
+            // quietly continue
           }
         }
         // we only use the inflection if it tells us something the dictionary details do not
@@ -10629,7 +10624,7 @@ class AdapterError extends Error {
     try {
       Error.captureStackTrace(this, AdapterError)
     } catch (e) {
-      console.log('Error.captureStackTrace is not supported here')
+      // quietly continue
     }
   }
 
@@ -10806,8 +10801,6 @@ class L10n {
   setLocale (locale) {
     if (this.bundles.has(locale)) {
       this.selectedLocale = locale
-    } else {
-      console.error(`Cannot set locale to "${locale}" because there is no message bundle for it`)
     }
     return this
   }
@@ -10879,8 +10872,6 @@ class MessageBundle {
         let message = new _message_js__WEBPACK_IMPORTED_MODULE_0__["default"](messageObj, this._locale)
         this[key] = message
         message.defineProperties(this.messages, key)
-      } else {
-        console.warn(`A key name "${key}" is reserved or already used. A message will be ignored"`)
       }
     }
   }
