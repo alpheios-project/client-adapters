@@ -63,7 +63,7 @@ class AlpheiosConcordanceAdapter extends BaseAdapter {
         return {
           wordUsageExamples: parsedWordUsageList,
           targetWord: homonym.targetWord,
-          language: homonym.language,
+          language: LanguageModelFactory.getLanguageCodeFromId(homonym.languageID),
           provider: this.provider
         }
       } else {

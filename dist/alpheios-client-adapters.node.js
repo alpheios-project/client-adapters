@@ -8635,7 +8635,7 @@ class AlpheiosConcordanceAdapter extends _adapters_base_adapter__WEBPACK_IMPORTE
         return {
           wordUsageExamples: parsedWordUsageList,
           targetWord: homonym.targetWord,
-          language: homonym.language,
+          language: alpheios_data_models__WEBPACK_IMPORTED_MODULE_2__["LanguageModelFactory"].getLanguageCodeFromId(homonym.languageID),
           provider: this.provider
         }
       } else {
