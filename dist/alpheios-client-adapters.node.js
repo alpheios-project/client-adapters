@@ -9445,7 +9445,6 @@ class AlpheiosTuftsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODU
         this.engines[langID] = engineConfig[langCode]
       }
     })
-    console.info("ENGINES",this.engines)
   }
 
   /**
