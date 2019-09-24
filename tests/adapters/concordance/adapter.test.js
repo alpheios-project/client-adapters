@@ -172,7 +172,7 @@ describe('concordance.test.js', () => {
     expect(adapter.uploadConfig).toHaveBeenCalledTimes(2)
   })
 
-  it.skip('6 AlpheiosConcordanceAdapter - getWordUsageExamples method fetches data from concordance API and converts it to WordUsageExamplesObject', async () => {
+  it('6 AlpheiosConcordanceAdapter - getWordUsageExamples method fetches data from concordance API and converts it to WordUsageExamplesObject', async () => {
     let adapter = new AlpheiosConcordanceAdapter({
       category: 'wordUsage',
       adapterName: 'concordance',

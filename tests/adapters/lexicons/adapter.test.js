@@ -126,7 +126,7 @@ describe('lexicons/adapter.test.js', () => {
     return timeoutRes
   }, 25000)
 
-  it.skip('6 AlpheiosLexiconsAdapter - prepareFullDefPromise, if success - it executes collectFullDefURLs, updateFullDefs, prepareSuccessCallback', async () => {
+  it('6 AlpheiosLexiconsAdapter - prepareFullDefPromise, if success - it executes collectFullDefURLs, updateFullDefs, prepareSuccessCallback', async () => {
     let adapter = new AlpheiosLexiconsAdapter({
       category: 'lexicon',
       adapterName: 'alpheios',
