@@ -83,7 +83,7 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   extractFeatures (rawLexeme) {
     let featuresArr = [
       { checkAttribute: 'pinyin', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.pronunciation },
-      { checkAttribute: 'format', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.dialect },
+      { checkAttribute: 'format', method: this.defineFeatureFormat.bind(this), featureType: Feature.types.dialect },
       { checkAttribute: 'mandarin', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.mandarin },
       { checkAttribute: 'cantonese', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.cantonese },
       { checkAttribute: 'tang', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.tang },
@@ -104,6 +104,22 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   defineSimpleFeature (featureConfig, rawLexeme) {
     if (rawLexeme[featureConfig.checkAttribute]) {
       return new Feature(featureConfig.featureType, rawLexeme[featureConfig.checkAttribute], this.languageID)
+    }
+  }
+
+  defineFeatureFormat (featureConfig, rawLexeme) {
+    if (rawLexeme[featureConfig.checkAttribute]) {
+      let value = null
+      if (rawLexeme[featureConfig.checkAttribute] === 'simp') {
+        value = 'simple'
+      }
+      if (rawLexeme[featureConfig.checkAttribute] === 'trad') {
+        value = 'traditional'
+      }
+
+      if (value) {
+        return new Feature(featureConfig.featureType, value, this.languageID)
+      }
     }
   }
 

@@ -63,5 +63,8 @@ describe('chinese.test.js', () => {
       }
     })
     console.info('result', result)
+
+    // 愛好者    - traditional
+    // 北京市    - simple
   })
 })
