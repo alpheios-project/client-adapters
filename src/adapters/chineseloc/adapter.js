@@ -40,7 +40,7 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   transformData (rawLexemes, targetWord) {
     let lexemes = []
     rawLexemes.forEach(rawLexeme => {
-      let lemma = new Lemma(rawLexeme.dictEntry, this.languageID)
+      let lemma = new Lemma(targetWord, this.languageID, [rawLexeme.dictEntry])
 
       let features = this.extractFeatures(rawLexeme)
       lemma.addFeatures(features)
@@ -53,8 +53,28 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
       lexemes.push(lexmodel)
     })
 
-    if (lexemes.length > 0) {
-      return new Homonym(lexemes, targetWord)
+    let finalLexemes = []
+    lexemes.forEach(lex => {
+      let check = finalLexemes.filter(checkLex => {
+        let check1 = checkLex.lemma.principalParts[0] === lex.lemma.principalParts[0]
+        // console.info('checkLex 1 - ', check1, checkLex.lemma.principalParts, lex.lemma.principalParts)
+
+        let check2 = checkLex.lemma.features[Feature.types.pronunciation].value === lex.lemma.features[Feature.types.pronunciation].value
+        // console.info('checkLex 2 - ', check2, checkLex.lemma.features[Feature.types.pronunciation], lex.lemma.features[Feature.types.pronunciation])
+
+        let check3 = checkLex.meaning.shortDefs[0].text === lex.meaning.shortDefs[0].text
+        // console.info('checkLex 3 - ', check3, checkLex.meaning.shortDefs, lex.meaning.shortDefs)
+
+        return check1 && check2 && check3
+      })
+
+      if (check.length === 0) {
+        finalLexemes.push(lex)
+      }
+    })
+
+    if (finalLexemes.length > 0) {
+      return new Homonym(finalLexemes, targetWord)
     } else {
       return undefined
     }
@@ -90,6 +110,7 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   extractShortDefinitions (rawLexeme) {
     let shortdefs = []
     shortdefs.push(new Definition(rawLexeme.shortDef, 'eng', 'text/plain', rawLexeme.word))
+    return shortdefs
   }
 }
 

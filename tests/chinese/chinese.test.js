@@ -34,7 +34,7 @@ describe('chinese.test.js', () => {
     */
   })
 
-  it.skip('Chinese test - lookup prototype', () => {
+  it('Chinese test - lookup prototype', () => {
     // const targetWord = '一夫多妻主义者'
 
     const targetWord = '阿摩尼亚'
@@ -47,11 +47,11 @@ describe('chinese.test.js', () => {
     // adapter.fetchChineseData = (targetWord) => ChineseHelp.lookupChinese(targetWord, dWordIndexSimp, dWordIndexTrad, dWordDict, dHanziDict)
     let result = adapter.getHomonym(targetWord)
     console.info('adapter', adapter.errors)
-    console.info('result', result)
+    console.info('result', result.lexemes)
     
   })
 
-  it('Chinese test - ClientAdapters prototype', async () => {
+  it.skip('Chinese test - ClientAdapters prototype', async () => {
     const targetWord = '阿摩尼亚'
 
     let result = await ClientAdapters.morphology.chineseloc({
