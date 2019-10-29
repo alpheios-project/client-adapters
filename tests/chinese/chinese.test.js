@@ -2,14 +2,18 @@
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
 
+/*
 import SIMPIDX from './json/simp-idx.json'
 import TRADIDX from './json/trad-idx.json'
 import ADSODAT from './json/adsolines.json'
 import HANZIDAT from './json/hanzi-dat.json'
 
 import ChineseHelp from './chinese-help.js'
+*/
 
+import ClientAdapters from '@/client-adapters'
 import AlpheiosChineseLocAdapter from '@/adapters/chineseloc/adapter.js'
+import { Constants } from 'alpheios-data-models'
 
 describe('chinese.test.js', () => {
   let dWordIndexSimp, dWordIndexTrad, dWordDict, dHanziDict
@@ -21,14 +25,16 @@ describe('chinese.test.js', () => {
   let newDate
 
   beforeAll(async () => {
+    /*
     dWordIndexSimp = ChineseHelp.convertIDX(SIMPIDX)
     dWordIndexTrad = ChineseHelp.convertIDX(TRADIDX)
     dWordDict = ChineseHelp.convertAdso2(ADSODAT)
 
     dHanziDict = ChineseHelp.convertHanzi(HANZIDAT)
+    */
   })
 
-  it('Chinese test - lookup prototype', () => {
+  it.skip('Chinese test - lookup prototype', () => {
     // const targetWord = '一夫多妻主义者'
 
     const targetWord = '阿摩尼亚'
@@ -43,5 +49,19 @@ describe('chinese.test.js', () => {
     console.info('adapter', adapter.errors)
     console.info('result', result)
     
+  })
+
+  it('Chinese test - ClientAdapters prototype', async () => {
+    const targetWord = '阿摩尼亚'
+
+    let result = await ClientAdapters.morphology.chineseloc({
+      method: 'getHomonym',
+      clientId: 'testClientID',
+      params: {
+        languageID: Constants.LANG_CHINESE,
+        word: targetWord
+      }
+    })
+    console.info('result', result)
   })
 })

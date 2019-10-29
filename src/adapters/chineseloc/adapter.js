@@ -6,11 +6,7 @@ import { ChineseLanguageModel, Lemma, Lexeme, Homonym, Feature, Definition } fro
 class AlpheiosChineseLocAdapter extends BaseAdapter {
   constructor (config = {}) {
     super()
-    this.config = {
-      category: 'morphology',
-      adapterName: 'chineseloc',
-      method: 'getHomonym'
-    }
+    this.config = config
   }
 
   get languageID () { return ChineseLanguageModel.languageID }
@@ -22,6 +18,7 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   }
 
   getHomonym (targetWord) {
+    console.info('chineseAdapter ', targetWord)
     // try {
     const res = this.fetchChineseData(targetWord)
     if (res) {
