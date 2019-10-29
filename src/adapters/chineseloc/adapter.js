@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import BaseAdapter from '@/adapters/base-adapter'
+import ChineseSource from '@/adapters/chineseloc/chinese-source/chinese-source.js'
 import { ChineseLanguageModel, Lemma, Lexeme, Homonym, Feature, Definition } from 'alpheios-data-models'
 
 class AlpheiosChineseLocAdapter extends BaseAdapter {
@@ -15,24 +16,28 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   get languageID () { return ChineseLanguageModel.languageID }
 
   fetchChineseData (targetWord) {
-    return {}
+    ChineseSource.collectData()
+
+    return ChineseSource.lookupChinese(targetWord)
   }
 
   getHomonym (targetWord) {
-    try {
-      const res = this.fetchChineseData(targetWord)
-      if (res) {
-        let homonym = this.transformData(res, targetWord)
+    // try {
+    const res = this.fetchChineseData(targetWord)
+    if (res) {
+      let homonym = this.transformData(res, targetWord)
 
-        if (!homonym) {
-          this.addError(this.l10n.messages['MORPH_TUFTS_NO_HOMONYM'].get(targetWord, this.languageID.toString()))
-          return
-        }
-        return homonym
+      if (!homonym) {
+        this.addError(this.l10n.messages['MORPH_TUFTS_NO_HOMONYM'].get(targetWord, this.languageID.toString()))
+        return
       }
+      return homonym
+    }
+    /*
     } catch (error) {
       this.addError(this.l10n.messages['MORPH_TUFTS_UNKNOWN_ERROR'].get(error.mesage))
     }
+    */
   }
 
   transformData (rawLexemes, targetWord) {

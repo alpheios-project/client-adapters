@@ -38,7 +38,7 @@ describe('chinese.test.js', () => {
 
     const adapter = new AlpheiosChineseLocAdapter()
 
-    adapter.fetchChineseData = (targetWord) => ChineseHelp.lookupChinese(targetWord, dWordIndexSimp, dWordIndexTrad, dWordDict, dHanziDict)
+    // adapter.fetchChineseData = (targetWord) => ChineseHelp.lookupChinese(targetWord, dWordIndexSimp, dWordIndexTrad, dWordDict, dHanziDict)
     let result = adapter.getHomonym(targetWord)
     console.info('adapter', adapter.errors)
     console.info('result', result)
