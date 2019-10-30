@@ -13,6 +13,8 @@ import ChineseHelp from './chinese-help.js'
 
 import ClientAdapters from '@/client-adapters'
 import AlpheiosChineseLocAdapter from '@/adapters/chineseloc/adapter.js'
+import ChineseSource from '@/adapters/chineseloc/chinese-source/chinese-source.js'
+
 import { Constants } from 'alpheios-data-models'
 
 describe('chinese.test.js', () => {
@@ -34,7 +36,7 @@ describe('chinese.test.js', () => {
     */
   })
 
-  it('Chinese test - lookup prototype', () => {
+  it.skip('Chinese test - lookup prototype', () => {
     // const targetWord = '一夫多妻主义者'
 
     const targetWord = '阿摩尼亚'
@@ -66,5 +68,20 @@ describe('chinese.test.js', () => {
 
     // 愛好者    - traditional
     // 北京市    - simple
+  })
+
+  it('Chinese test - format chinese source', async () => {
+    // const targetWord = '愛好者'
+
+    // const adapter = new AlpheiosChineseLocAdapter()
+    // let result = adapter.fetchChineseData(targetWord)
+    ChineseSource.collectData()
+    
+    let pinyin
+    // pinyin = 'guan3li3ji1gou4'
+    pinyin = 'guan3li3bu4men2'
+    
+    let result = ChineseSource.formatPinyin(pinyin)
+    console.info('result', result)
   })
 })

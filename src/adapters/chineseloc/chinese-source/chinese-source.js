@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import SIMPIDX from './json/simp-idx.json'
 import TRADIDX from './json/trad-idx.json'
 import ADSODAT from './json/adsolines.json'
@@ -23,34 +24,6 @@ export default class ChineseSource {
       dHanziDict = ChineseSource.convertHanzi(HANZIDAT)
       // console.info('lookupChinese collectData 4', dHanziDict.size)
     }
-  }
-
-  static convertAdso (rawData) {
-    let formattedData = new Map()
-
-    rawData.forEach(rawElement => {
-      let word = ''
-      let pinyin
-      let value = ''
-      let hasWord = false
-
-      rawElement.forEach(rawPart => {
-        if (!hasWord && rawPart.substr(0, 1) !== '[') {
-          word = word + ' ' + rawPart
-        } else if (!hasWord && rawPart.substr(0, 1) === '[') {
-          hasWord = true
-          pinyin = rawPart
-        } else if (rawPart.length > 0) {
-          value = value + ' ' + rawPart
-        }
-      })
-      value = value.trim().replace('/', '').replace('/', '')
-      word = word.trim()
-      let finalElement = { word, pinyin, value }
-
-      formattedData.set(word, finalElement)
-    })
-    return formattedData
   }
 
   static convertAdso2 (rawData) {
@@ -184,6 +157,7 @@ export default class ChineseSource {
 
           ChineseSource.formatDictionaryEntry(rs[count - 1])
           ChineseSource.formatCharacterInfo(rs[count - 1], dHanziDict)
+          rs[count - 1].pinyin = ChineseSource.formatPinyin(rs[count - 1].pinyin)
         })
       }
       cpWord = cpWord.substring(0, cpWord.length - 1)
@@ -247,5 +221,71 @@ export default class ChineseSource {
         hex[(u >>> 8) & 15] +
         hex[(u >>> 4) & 15] +
         hex[u & 15]
+  }
+
+  static formatPinyin (aPinyin) {
+    console.info('formatPinyin - ', aPinyin)
+    // pinyin info
+    const _a = ['\u0101', '\u00E1', '\u01CE', '\u00E0', 'a']
+    const _e = ['\u0113', '\u00E9', '\u011B', '\u00E8', 'e']
+    const _i = ['\u012B', '\u00ED', '\u01D0', '\u00EC', 'i']
+    const _o = ['\u014D', '\u00F3', '\u01D2', '\u00F2', 'o']
+    const _u = ['\u016B', '\u00FA', '\u01D4', '\u00F9', 'u']
+    const _v = ['\u01D6', '\u01D8', '\u01DA', '\u01DC', '\u00FC']
+
+    aPinyin = aPinyin.split(/(\d)/)
+
+    let formatedPinyin = []
+
+    let toneFormat = {
+      1: 0, 2: 1, 3: 2, 4: 3
+    }
+
+    for (var j = 0; j < aPinyin.length; j++) {
+      if (j % 2 === 0) {
+        let pin = aPinyin[j]
+        let tone = toneFormat[aPinyin[j + 1]] ? toneFormat[aPinyin[j + 1]] : 4
+
+        if (pin.indexOf('a') !== -1) {
+          pin = pin.replace('a', _a[tone])
+        } else if (pin.indexOf('e') !== -1) {
+          pin = pin.replace('e', _e[tone])
+        } else if (pin.indexOf('ou') !== -1) {
+          pin = pin.replace('o', _o[tone])
+        } else {
+          for (var k = pin.length - 1; k >= 0; k--) {
+            if (ChineseSource.isVowel(pin[k])) {
+              switch (pin[k]) {
+                case 'i':
+                  pin = pin.replace('i', _i[tone])
+                  break
+                case 'o':
+                  pin = pin.replace('o', _o[tone])
+                  break
+                case 'u':
+                  if (k + 1 < pin.length - 1 && pin[k + 1] === ':') { pin = pin.replace('u:', _v[tone]) } else { pin = pin.replace('u', _u[tone]) }
+                  break
+                default:
+                  console.info('some kind of weird vowel')
+              }
+              break
+            }
+          }
+        }
+
+        formatedPinyin.push(pin)
+      }
+    }
+
+    return formatedPinyin.join(' ')
+  }
+
+  static isVowel (aLetter) {
+    return (aLetter === 'a' ||
+            aLetter === 'e' ||
+            aLetter === 'i' ||
+            aLetter === 'o' ||
+            aLetter === 'u'
+    )
   }
 }
