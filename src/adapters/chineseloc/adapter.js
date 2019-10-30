@@ -18,9 +18,10 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   }
 
   getHomonym (targetWord) {
-    console.info('chineseAdapter ', targetWord)
+    // console.info('chineseAdapter ', targetWord)
     // try {
     const res = this.fetchChineseData(targetWord)
+    console.info('getHomonym res', res)
     if (res) {
       let homonym = this.transformData(res, targetWord)
 
@@ -82,23 +83,39 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
 
   extractFeatures (rawLexeme) {
     let featuresArr = [
-      { checkAttribute: 'pinyin', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.pronunciation },
-      { checkAttribute: 'format', method: this.defineFeatureFormat.bind(this), featureType: Feature.types.dialect },
-      { checkAttribute: 'mandarin', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.mandarin },
-      { checkAttribute: 'cantonese', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.cantonese },
-      { checkAttribute: 'tang', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.tang },
+      { checkAttribute: 'pinyin', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 4 },
+      { checkAttribute: 'format', method: this.defineFeatureFormat.bind(this), featureType: Feature.types.note },
+      { checkAttribute: 'mandarin', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 3 },
+      { checkAttribute: 'cantonese', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 2 },
+      { checkAttribute: 'tang', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 1 },
       { checkAttribute: 'frequency', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.frequency },
-      { checkAttribute: 'radical', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.radical }
+      { checkAttribute: 'unicode', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.radical }
     ]
     let features = []
 
     featuresArr.forEach(featureConfig => {
-      let featureVal = featureConfig.method(featureConfig, rawLexeme)
+      let featureVal = featureConfig.method(featureConfig, rawLexeme, features)
       if (featureVal) {
         features.push(featureVal)
       }
     })
     return features
+  }
+
+  defineMultipleFeature (featureConfig, rawLexeme, features) {
+    if (!rawLexeme[featureConfig.checkAttribute]) {
+      return
+    }
+
+    let featType = featureConfig.featureType
+    let featObj = features.filter(feat => feat.type === featType)
+
+    if (featObj.length === 0) {
+      return new Feature(featureConfig.featureType, [[rawLexeme[featureConfig.checkAttribute], featureConfig.featOrder]], this.languageID)
+    } else {
+      featObj[0].addValue(rawLexeme[featureConfig.checkAttribute], featureConfig.featOrder)
+    }
+    // console.info('featObj - ', rawLexeme[featureConfig.checkAttribute], featObj[0])
   }
 
   defineSimpleFeature (featureConfig, rawLexeme) {

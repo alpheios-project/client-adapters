@@ -53,7 +53,7 @@ describe('chinese.test.js', () => {
     
   })
 
-  it.skip('Chinese test - ClientAdapters prototype', async () => {
+  it('Chinese test - ClientAdapters prototype', async () => {
     const targetWord = '阿摩尼亚'
 
     let result = await ClientAdapters.morphology.chineseloc({
@@ -64,13 +64,13 @@ describe('chinese.test.js', () => {
         word: targetWord
       }
     })
-    console.info('result', result)
+    console.info('result', result.result.lexemes[0].lemma)
 
     // 愛好者    - traditional
     // 北京市    - simple
   })
 
-  it('Chinese test - format chinese source', async () => {
+  it.skip('Chinese test - format chinese source', async () => {
     // const targetWord = '愛好者'
 
     // const adapter = new AlpheiosChineseLocAdapter()
