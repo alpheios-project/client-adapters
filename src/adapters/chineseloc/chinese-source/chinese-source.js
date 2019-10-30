@@ -193,7 +193,7 @@ export default class ChineseSource {
       // console.info('hanziDatElement inside')
 
       if (hanziDatElement.kMandarin) {
-        resItem.mandarin = hanziDatElement.kMandarin
+        resItem.mandarin = ChineseSource.formatPinyin(hanziDatElement.kMandarin.toLowerCase)
       }
       if (hanziDatElement.kDefinition) {
         resItem.definition = hanziDatElement.kDefinition
