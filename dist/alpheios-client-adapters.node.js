@@ -9504,7 +9504,7 @@ class AlpheiosTuftsAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_MODU
 
     if (engine) {
       let code = engine.engine
-      return this.config.url.replace('r_WORD', word).replace('r_ENGINE', code).replace('r_LANG', langCode).replace('r_CLIENT', this.config.clientId)
+      return this.config.url.replace('r_WORD', encodeURIComponent(word)).replace('r_ENGINE', code).replace('r_LANG', langCode).replace('r_CLIENT', this.config.clientId)
     } else {
       return null
     }
