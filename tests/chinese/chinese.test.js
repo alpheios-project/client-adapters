@@ -48,8 +48,8 @@ describe('chinese.test.js', () => {
 
     // adapter.fetchChineseData = (targetWord) => ChineseHelp.lookupChinese(targetWord, dWordIndexSimp, dWordIndexTrad, dWordDict, dHanziDict)
     let result = adapter.getHomonym(targetWord)
-    console.info('adapter', adapter.errors)
-    console.info('result', result.lexemes)
+    // console.info('adapter', adapter.errors)
+    // console.info('result', result.lexemes)
     
   })
 
@@ -64,7 +64,7 @@ describe('chinese.test.js', () => {
         word: targetWord
       }
     })
-    console.info('result', result.result.lexemes[0].lemma)
+    // console.info('result', result.result.lexemes[0].lemma)
 
     // 愛好者    - traditional
     // 北京市    - simple
@@ -82,6 +82,6 @@ describe('chinese.test.js', () => {
     pinyin = 'guan3li3bu4men2'
     
     let result = ChineseSource.formatPinyin(pinyin)
-    console.info('result', result)
+    // console.info('result', result)
   })
 })

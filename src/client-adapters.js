@@ -147,8 +147,7 @@ class ClientAdapters {
     let localChineseAdapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
       adapterName: 'chineseloc',
-      method: options.method,
-      clientId: options.clientId
+      method: options.method
     })
 
     if (options.method === 'getHomonym') {

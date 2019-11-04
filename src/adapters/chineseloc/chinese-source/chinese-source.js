@@ -288,7 +288,7 @@ export default class ChineseSource {
       }
     }
 
-    return formatedPinyin.join(' ')
+    return formatedPinyin.join(' ').trim()
   }
 
   static isVowel (aLetter) {

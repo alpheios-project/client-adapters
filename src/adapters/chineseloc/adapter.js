@@ -18,24 +18,20 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   }
 
   getHomonym (targetWord) {
-    // console.info('chineseAdapter ', targetWord)
-    // try {
-    const res = this.fetchChineseData(targetWord)
-    console.info('getHomonym res', res)
-    if (res) {
-      let homonym = this.transformData(res, targetWord)
+    try {
+      const res = this.fetchChineseData(targetWord)
+      if (res) {
+        let homonym = this.transformData(res, targetWord)
 
-      if (!homonym) {
-        this.addError(this.l10n.messages['MORPH_TUFTS_NO_HOMONYM'].get(targetWord, this.languageID.toString()))
-        return
+        if (!homonym) {
+          this.addError(this.l10n.messages['MORPH_TUFTS_NO_HOMONYM'].get(targetWord, this.languageID.toString()))
+          return
+        }
+        return homonym
       }
-      return homonym
-    }
-    /*
     } catch (error) {
       this.addError(this.l10n.messages['MORPH_TUFTS_UNKNOWN_ERROR'].get(error.mesage))
     }
-    */
   }
 
   transformData (rawLexemes, targetWord) {
@@ -58,13 +54,10 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
     lexemes.forEach(lex => {
       let check = finalLexemes.filter(checkLex => {
         let check1 = checkLex.lemma.principalParts[0] === lex.lemma.principalParts[0]
-        // console.info('checkLex 1 - ', check1, checkLex.lemma.principalParts, lex.lemma.principalParts)
 
         let check2 = checkLex.lemma.features[Feature.types.pronunciation].value === lex.lemma.features[Feature.types.pronunciation].value
-        // console.info('checkLex 2 - ', check2, checkLex.lemma.features[Feature.types.pronunciation], lex.lemma.features[Feature.types.pronunciation])
 
         let check3 = checkLex.meaning.shortDefs[0].text === lex.meaning.shortDefs[0].text
-        // console.info('checkLex 3 - ', check3, checkLex.meaning.shortDefs, lex.meaning.shortDefs)
 
         return check1 && check2 && check3
       })
@@ -115,7 +108,6 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
     } else {
       featObj[0].addValue(rawLexeme[featureConfig.checkAttribute], featureConfig.featOrder)
     }
-    // console.info('featObj - ', rawLexeme[featureConfig.checkAttribute], featObj[0])
   }
 
   defineSimpleFeature (featureConfig, rawLexeme) {
@@ -142,7 +134,9 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
 
   extractShortDefinitions (rawLexeme) {
     let shortdefs = []
-    shortdefs.push(new Definition(rawLexeme.shortDef, 'eng', 'text/plain', rawLexeme.word))
+    if (rawLexeme.shortDef) {
+      shortdefs.push(new Definition(rawLexeme.shortDef, 'eng', 'text/plain', rawLexeme.dictEntry))
+    }
     return shortdefs
   }
 }
