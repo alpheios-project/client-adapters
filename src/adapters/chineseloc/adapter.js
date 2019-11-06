@@ -24,13 +24,13 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
         let homonym = this.transformData(res, targetWord)
 
         if (!homonym) {
-          this.addError(this.l10n.messages['MORPH_TUFTS_NO_HOMONYM'].get(targetWord, this.languageID.toString()))
+          this.addError(this.l10n.messages['MORPH_NO_HOMONYM'].get(targetWord, this.languageID.toString()))
           return
         }
         return homonym
       }
     } catch (error) {
-      this.addError(this.l10n.messages['MORPH_TUFTS_UNKNOWN_ERROR'].get(error.mesage))
+      this.addError(this.l10n.messages['MORPH_UNKNOWN_ERROR'].get(error.mesage))
     }
   }
 
