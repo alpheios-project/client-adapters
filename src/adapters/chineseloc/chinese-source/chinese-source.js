@@ -3,7 +3,6 @@ import SIMPIDX from './json/simp-idx.json'
 import TRADIDX from './json/trad-idx.json'
 import ADSODAT from './json/adsolines.json'
 import HANZIDAT from './json/hanzi-dat.json'
-// import RADICALSDAT from './json/radicals.json'
 
 let dWordIndexSimp, dWordIndexTrad, dWordDict, dHanziDict // , dRadicals
 
@@ -11,26 +10,16 @@ export default class ChineseSource {
   static collectData () {
     if (!dWordIndexSimp) {
       dWordIndexSimp = ChineseSource.convertIDX(SIMPIDX)
-      // console.info('lookupChinese collectData 1', dWordIndexSimp.size)
     }
     if (!dWordIndexTrad) {
       dWordIndexTrad = ChineseSource.convertIDX(TRADIDX)
-      // console.info('lookupChinese collectData 2', dWordIndexTrad.size)
     }
     if (!dWordDict) {
       dWordDict = ChineseSource.convertAdso2(ADSODAT)
-      // console.info('lookupChinese collectData 3', dWordDict.size)
     }
     if (!dHanziDict) {
       dHanziDict = ChineseSource.convertHanzi(HANZIDAT)
-      // console.info('lookupChinese collectData 4', dHanziDict.size)
     }
-    /*
-    if (!dRadicals) {
-      dRadicals = ChineseSource.convertRadicals(RADICALSDAT)
-      // console.info('lookupChinese collectData 4', dHanziDict.size)
-    }
-    */
   }
 
   static convertAdso2 (rawData) {
@@ -38,7 +27,6 @@ export default class ChineseSource {
     let parsedLength = 0
     let currentIndex = 0
 
-    //     let data = rawData.slice(0, 10)
     rawData.forEach(rawElement => {
       currentIndex = parsedLength
       parsedLength = parsedLength + rawElement.length + 2
@@ -64,17 +52,12 @@ export default class ChineseSource {
   static convertIDX (rawData) {
     let formattedData = new Map()
 
-    // let data = rawData.slice(40, 50)
     rawData.forEach(rawElement => {
       let codes = []
       let checkEl = formattedData.get(rawElement[0])
 
-      // console.info('checkEl - ', checkEl)
-
       if (checkEl) {
-        // console.info('checkEl codes before - ', codes)
         codes.push(checkEl.codes[0])
-        // console.info('checkEl codes after - ', codes)
       }
 
       codes.push(rawElement[1])
@@ -84,14 +67,12 @@ export default class ChineseSource {
       })
     })
 
-    // console.info('formattedData - ', formattedData)
     return formattedData
   }
 
   static convertHanzi (rawData) {
     let formattedData = new Map()
 
-    // let data = rawData.slice(0, 10)
     rawData.forEach(rawElement => {
       let character = rawElement[0]
       let typeCh = rawElement[1]
@@ -112,7 +93,6 @@ export default class ChineseSource {
       formattedData.set(character, element)
     })
     return formattedData
-    // console.info('formattedData - ', formattedData)
   }
 
   static convertRadicals (rawData) {
@@ -123,11 +103,8 @@ export default class ChineseSource {
     let searchedIdxElement = wordIDX.get(targetWord)
 
     if (searchedIdxElement) {
-      // console.info('serchedIdxElement.codes - ', searchedIdxElement.codes)
       if (searchedIdxElement.codes && searchedIdxElement.codes.length > 0) {
-        // console.info('serchedIdxElement.codes - ', searchedIdxElement.codes)
         return searchedIdxElement.codes.map(code => {
-          // console.info('findWord code - ', code, wordDict.get(code))
           return wordDict.get(code)
         })
       }
@@ -137,7 +114,6 @@ export default class ChineseSource {
   }
 
   static lookupChinese (targetWord) {
-    // console.info('lookupChinese dHanziDict - ', dHanziDict.size)
     let cpWord = targetWord
     let count = 0
     let format = 'simp'
@@ -145,8 +121,7 @@ export default class ChineseSource {
     let rs = []
 
     let result
-    while (cpWord.length > 1) {
-      // console.info('cpWord - ', cpWord)
+    while (cpWord.length > 0) {
       if (format === 'simp') {
         result = ChineseSource.findWord(cpWord, dWordIndexSimp, dWordDict)
         if (!result) {
@@ -163,12 +138,13 @@ export default class ChineseSource {
 
       if (result) {
         result.forEach(resItem => {
-          rs[count++] = resItem
-          rs[count - 1].format = format
+          let finalResItem = resItem
+          ChineseSource.updateFormat(format, finalResItem)
+          ChineseSource.formatDictionaryEntry(finalResItem)
+          ChineseSource.formatCharacterInfo(finalResItem, dHanziDict)
+          finalResItem.pinyin = ChineseSource.formatPinyin(finalResItem.pinyin)
 
-          ChineseSource.formatDictionaryEntry(rs[count - 1])
-          ChineseSource.formatCharacterInfo(rs[count - 1], dHanziDict)
-          rs[count - 1].pinyin = ChineseSource.formatPinyin(rs[count - 1].pinyin)
+          rs[count++] = finalResItem
         })
       }
       cpWord = cpWord.substring(0, cpWord.length - 1)
@@ -177,16 +153,23 @@ export default class ChineseSource {
     return rs
   }
 
+  static updateFormat (format, resItem) {
+    if (format === 'trad') {
+      resItem.format = 'traditional'
+    } else if (format === 'simp') {
+      resItem.format = 'simplified'
+    }
+  }
+
   static formatDictionaryEntry (resItem) {
-    if (resItem.format === 'trad') {
+    if (resItem.format === 'traditional') {
       resItem.dictEntry = resItem.word.split(' ')[0]
-    } else if (resItem.format === 'simp') {
+    } else if (resItem.format === 'simplified') {
       resItem.dictEntry = resItem.word.split(' ')[1]
     }
   }
 
   static formatCharacterInfo (resItem) {
-    // console.info('formatCharacterInfo dHanziDict - ', dHanziDict)
     const freqName =
       [
         'least frequent',
@@ -198,11 +181,8 @@ export default class ChineseSource {
 
     let unicode = ChineseSource.unicodeInfo(resItem.dictEntry)
     let hanziDatElement = dHanziDict.get(unicode)
-    // console.info('hanziDatElement - ', hanziDatElement)
 
     if (hanziDatElement) {
-      // console.info('hanziDatElement inside')
-
       if (hanziDatElement.kMandarin) {
         resItem.mandarin = 'mandarin - ' + ChineseSource.formatPinyin(hanziDatElement.kMandarin.toLowerCase())
       }
@@ -235,8 +215,6 @@ export default class ChineseSource {
   }
 
   static formatPinyin (aPinyin) {
-    // console.info('formatPinyin - ', aPinyin)
-    // pinyin info
     const _a = ['\u0101', '\u00E1', '\u01CE', '\u00E0', 'a']
     const _e = ['\u0113', '\u00E9', '\u011B', '\u00E8', 'e']
     const _i = ['\u012B', '\u00ED', '\u01D0', '\u00EC', 'i']

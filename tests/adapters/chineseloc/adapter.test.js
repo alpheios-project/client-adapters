@@ -44,11 +44,11 @@ describe('chineseloc.test.js', () => {
 
     const result = adapter.fetchChineseData('而今')
 
-    expect(result.length).toEqual(1)
+    expect(result.length).toEqual(3)
     expect(result[0].dictEntry).toEqual('而今')
     expect(result[0].pinyin).toEqual('ér jin')
     expect(result[0].shortDef).toEqual('now; at the present (time)')
-    expect(result[0].format).toEqual('simp')
+    expect(result[0].format).toEqual('simplified')
     expect(result[0].mandarin).toEqual('mandarin - ér  néng')
     expect(result[0].cantonese).toEqual('cantonese - ji4')
     expect(result[0].tang).toEqual('tang - *njiə')
@@ -67,7 +67,7 @@ describe('chineseloc.test.js', () => {
 
     expect(homonym).toBeDefined()
 
-    expect(homonym.lexemes.length).toEqual(1)
+    expect(homonym.lexemes.length).toEqual(3)
     expect(homonym.targetWord).toEqual('而今')
 
     expect(homonym.lexemes[0].lemma.languageID).toEqual(Constants.LANG_CHINESE)
@@ -75,7 +75,7 @@ describe('chineseloc.test.js', () => {
     expect(homonym.lexemes[0].lemma.word).toEqual('而今')
     expect(homonym.lexemes[0].lemma.principalParts).toEqual(['而今'])
     expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['ér jin', 'mandarin - ér  néng', 'cantonese - ji4', 'tang - *njiə'])
-    expect(homonym.lexemes[0].lemma.features.note.value).toEqual('simple')
+    expect(homonym.lexemes[0].lemma.features.note.value).toEqual('simplified')
     expect(homonym.lexemes[0].lemma.features.frequency.value).toEqual('least frequent')
     expect(homonym.lexemes[0].lemma.features.radical.value).toEqual('而')
 
@@ -107,21 +107,20 @@ describe('chineseloc.test.js', () => {
 
     const rawLexemes = adapter.fetchChineseData('而今')
 
-    adapter.defineMultipleFeature = jest.fn(() => 'fooFeature')
-    adapter.defineFeatureFormat = jest.fn(() => 'fooFeature')
-    adapter.defineSimpleFeature = jest.fn(() => 'fooFeature')
+    adapter.defineMultipleFeature = jest.fn((val) => val.checkAttribute)
+    adapter.defineSimpleFeature = jest.fn((val) => val.checkAttribute)
 
-    let result = adapter.extractFeatures(rawLexemes)
+    let result = adapter.extractFeatures(rawLexemes[0])
 
     expect(result.length).toEqual(7)
-    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'tang' }), rawLexemes, expect.anything())
-    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'mandarin' }), rawLexemes, expect.anything())
-    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'cantonese' }), rawLexemes, expect.anything())
-    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'pinyin' }), rawLexemes, expect.anything())
+    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'tang' }), rawLexemes[0], expect.anything())
+    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'mandarin' }), rawLexemes[0], expect.anything())
+    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'cantonese' }), rawLexemes[0], expect.anything())
+    expect(adapter.defineMultipleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'pinyin' }), rawLexemes[0], expect.anything())
 
-    expect(adapter.defineFeatureFormat).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'format' }), rawLexemes, expect.anything())
-    expect(adapter.defineSimpleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'frequency' }), rawLexemes, expect.anything())
-    expect(adapter.defineSimpleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'unicode' }), rawLexemes, expect.anything())
+    expect(adapter.defineSimpleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'format' }), rawLexemes[0], expect.anything())
+    expect(adapter.defineSimpleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'frequency' }), rawLexemes[0], expect.anything())
+    expect(adapter.defineSimpleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'unicode' }), rawLexemes[0], expect.anything())
   })
 
   it('6 AlpheiosChineseLocAdapter - method defineMultipleFeature returns undefined if there is no such feature in rawLexeme', () => {
@@ -153,36 +152,6 @@ describe('chineseloc.test.js', () => {
     let featureVal2 = adapter.defineMultipleFeature(featureConfig, { mandarin: 'mandarin - ér  néng' }, [ featureVal1 ])
 
     expect(featureVal1.values).toEqual(['ér jin', 'mandarin - ér  néng'])
-  })
-
-  it('8 AlpheiosChineseLocAdapter - method defineFeatureFormat returns undefined if there is no such feature in rawLexeme', () => {
-    let adapter = new AlpheiosChineseLocAdapter({
-        category: 'morphology',
-        adapterName: 'chineseloc',
-        method: 'getHomonym'
-    })
-
-    let featureVal = adapter.defineFeatureFormat({ checkAttribute: 'fooAttr' }, { fooAttr1: 'test' }, [])
-
-    expect(featureVal).toBeUndefined()
-  })
-
-  it('9 AlpheiosChineseLocAdapter - method defineFeatureFormat creates feature with passed value in rawLexemes ', () => {
-    let adapter = new AlpheiosChineseLocAdapter({
-        category: 'morphology',
-        adapterName: 'chineseloc',
-        method: 'getHomonym'
-    })
-
-   
-    let featureConfig = { checkAttribute: 'format', featureType: Feature.types.note }
-    let featureVal1 = adapter.defineFeatureFormat(featureConfig, { format: 'simp' }, [])
-
-    expect(featureVal1.value).toEqual('simple')
-
-    let featureVal2 = adapter.defineFeatureFormat(featureConfig, { format: 'trad' }, [])
-
-    expect(featureVal2.value).toEqual('traditional')
   })
 
   it('10 AlpheiosChineseLocAdapter - method defineSimpleFeature returns undefined if there is no such feature in rawLexeme', () => {

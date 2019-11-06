@@ -77,7 +77,7 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   extractFeatures (rawLexeme) {
     let featuresArr = [
       { checkAttribute: 'pinyin', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 4 },
-      { checkAttribute: 'format', method: this.defineFeatureFormat.bind(this), featureType: Feature.types.note },
+      { checkAttribute: 'format', method: this.defineSimpleFeature.bind(this), featureType: Feature.types.note },
       { checkAttribute: 'mandarin', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 3 },
       { checkAttribute: 'cantonese', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 2 },
       { checkAttribute: 'tang', method: this.defineMultipleFeature.bind(this), featureType: Feature.types.pronunciation, featOrder: 1 },
@@ -113,22 +113,6 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   defineSimpleFeature (featureConfig, rawLexeme) {
     if (rawLexeme[featureConfig.checkAttribute]) {
       return new Feature(featureConfig.featureType, rawLexeme[featureConfig.checkAttribute], this.languageID)
-    }
-  }
-
-  defineFeatureFormat (featureConfig, rawLexeme) {
-    if (rawLexeme[featureConfig.checkAttribute]) {
-      let value = null
-      if (rawLexeme[featureConfig.checkAttribute] === 'simp') {
-        value = 'simple'
-      }
-      if (rawLexeme[featureConfig.checkAttribute] === 'trad') {
-        value = 'traditional'
-      }
-
-      if (value) {
-        return new Feature(featureConfig.featureType, value, this.languageID)
-      }
     }
   }
 
