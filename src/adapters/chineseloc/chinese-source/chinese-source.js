@@ -270,12 +270,7 @@ export default class ChineseSource {
   }
 
   static isVowel (aLetter) {
-    return (aLetter === 'a' ||
-            aLetter === 'e' ||
-            aLetter === 'i' ||
-            aLetter === 'o' ||
-            aLetter === 'u'
-    )
+    return ['a', 'e', 'i', 'o', 'u'].includes(aLetter)
   }
 
   static radicalIndexToChar (aRadical) {
