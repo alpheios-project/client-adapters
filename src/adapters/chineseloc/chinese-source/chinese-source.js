@@ -204,6 +204,7 @@ export default class ChineseSource {
     }
   }
 
+  // TODO (from review) Are we dealing with surrogate pairs here? If so, can we benefit from using a newer codePointAt()
   static unicodeInfo (word) {
     const hex = '0123456789ABCDEF'
     const u = word.charCodeAt(0)
