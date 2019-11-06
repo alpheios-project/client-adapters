@@ -141,7 +141,6 @@ class ClientAdapters {
   }
 
   static async chineseAdapter (options) {
-    console.info('chineseAdapter ', options)
     ClientAdapters.checkMethodParam('morphology', 'chineseloc', options)
 
     let localChineseAdapter = new AlpheiosChineseLocAdapter({
