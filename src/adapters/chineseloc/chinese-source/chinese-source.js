@@ -155,10 +155,8 @@ export default class ChineseSource {
 
           rs[count++] = finalResItem
         })
-        checkedWords = checkWords.length
-      } else {
-        checkedWords = checkedWords + 1
       }
+      checkedWords = checkedWords + 1
     }
 
     return rs
@@ -267,7 +265,7 @@ export default class ChineseSource {
                   if (k + 1 < pin.length - 1 && pin[k + 1] === ':') { pin = pin.replace('u:', _v[tone]) } else { pin = pin.replace('u', _u[tone]) }
                   break
                 default:
-                  console.warn('some kind of weird vowel')
+                  console.warn('some kind of weird vowel - ', pin[k])
               }
               break
             }
