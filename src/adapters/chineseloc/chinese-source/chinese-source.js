@@ -128,7 +128,6 @@ export default class ChineseSource {
 
     let result
     let checkedWords = 0
-
     while (checkedWords < checkWords.length) {
       const checkWord = checkWords[checkedWords]
       if (format === 'simp') {
@@ -265,7 +264,7 @@ export default class ChineseSource {
                   if (k + 1 < pin.length - 1 && pin[k + 1] === ':') { pin = pin.replace('u:', _v[tone]) } else { pin = pin.replace('u', _u[tone]) }
                   break
                 default:
-                  console.warn('some kind of weird vowel - ', pin[k])
+                  console.warn('some kind of weird vowel', pin[k])
               }
               break
             }
