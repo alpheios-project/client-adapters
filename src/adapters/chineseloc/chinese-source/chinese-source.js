@@ -23,7 +23,7 @@ export default class ChineseSource {
   }
 
   static convertAdso2 (rawData) {
-    let formattedData = new Map()
+    let formattedData = new Map() // eslint-disable-line prefer-const
     let parsedLength = 0
     let currentIndex = 0
 
@@ -32,10 +32,10 @@ export default class ChineseSource {
       parsedLength = parsedLength + rawElement.length + 2
 
       let parsedElement = rawElement
-      let word = parsedElement.substr(0, parsedElement.indexOf('[')).trim()
+      const word = parsedElement.substr(0, parsedElement.indexOf('[')).trim()
       parsedElement = parsedElement.substr(parsedElement.indexOf('[') + 1)
 
-      let pinyin = parsedElement.substr(0, parsedElement.indexOf(']'))
+      const pinyin = parsedElement.substr(0, parsedElement.indexOf(']'))
       parsedElement = parsedElement.substr(parsedElement.indexOf(']') + 1)
 
       let shortDef = parsedElement.trim().substr(1)
@@ -50,11 +50,11 @@ export default class ChineseSource {
   }
 
   static convertIDX (rawData) {
-    let formattedData = new Map()
+    let formattedData = new Map() // eslint-disable-line prefer-const
 
     rawData.forEach(rawElement => {
-      let codes = []
-      let checkEl = formattedData.get(rawElement[0])
+      let codes = [] // eslint-disable-line prefer-const
+      const checkEl = formattedData.get(rawElement[0])
 
       if (checkEl) {
         codes.push(checkEl.codes[0])
@@ -71,19 +71,19 @@ export default class ChineseSource {
   }
 
   static convertHanzi (rawData) {
-    let formattedData = new Map()
+    let formattedData = new Map() // eslint-disable-line prefer-const
 
     rawData.forEach(rawElement => {
-      let character = rawElement[0]
-      let typeCh = rawElement[1]
-      let typeText = rawElement[2]
+      const character = rawElement[0]
+      const typeCh = rawElement[1]
+      const typeText = rawElement[2]
 
-      let element = {
+      let element = { // eslint-disable-line prefer-const
         character
       }
       element[typeCh] = typeText
 
-      let prevElement = formattedData.get(rawElement[0])
+      const prevElement = formattedData.get(rawElement[0])
 
       if (prevElement) {
         Object.keys(prevElement).filter(key => key !== 'character').forEach(key => {
@@ -100,7 +100,7 @@ export default class ChineseSource {
   }
 
   static findWord (targetWord, wordIDX, wordDict) {
-    let searchedIdxElement = wordIDX.get(targetWord)
+    const searchedIdxElement = wordIDX.get(targetWord)
 
     if (searchedIdxElement) {
       if (searchedIdxElement.codes && searchedIdxElement.codes.length > 0) {
@@ -114,17 +114,17 @@ export default class ChineseSource {
   }
 
   static lookupChinese (targetWord, checkContextForward = '') {
-    let checkWords = [ targetWord ]
+    let checkWords = [targetWord] // eslint-disable-line prefer-const
 
     for (let i = 1; i <= checkContextForward.length; i++) {
-      let cpWord = targetWord + checkContextForward.substr(0, i)
+      const cpWord = targetWord + checkContextForward.substr(0, i)
       checkWords.push(cpWord)
     }
 
     let count = 0
     let format = 'simp'
 
-    let rs = []
+    let rs = [] // eslint-disable-line prefer-const
 
     let result
     let checkedWords = 0
@@ -146,7 +146,7 @@ export default class ChineseSource {
 
       if (result) {
         result.forEach(resItem => {
-          let finalResItem = resItem
+          let finalResItem = resItem // eslint-disable-line prefer-const
           ChineseSource.updateFormat(format, finalResItem)
           ChineseSource.formatDictionaryEntry(finalResItem)
           ChineseSource.formatCharacterInfo(finalResItem, dHanziDict)
@@ -187,8 +187,8 @@ export default class ChineseSource {
         'most frequent'
       ]
 
-    let unicode = ChineseSource.unicodeInfo(resItem.dictEntry)
-    let hanziDatElement = dHanziDict.get(unicode)
+    const unicode = ChineseSource.unicodeInfo(resItem.dictEntry)
+    const hanziDatElement = dHanziDict.get(unicode)
 
     if (hanziDatElement) {
       if (hanziDatElement.kMandarin) {
@@ -233,16 +233,16 @@ export default class ChineseSource {
 
     aPinyin = aPinyin.split(/(\d)/)
 
-    let formatedPinyin = []
+    const formatedPinyin = []
 
-    let toneFormat = {
+    const toneFormat = {
       1: 0, 2: 1, 3: 2, 4: 3
     }
 
     for (var j = 0; j < aPinyin.length; j++) {
       if (j % 2 === 0) {
         let pin = aPinyin[j]
-        let tone = toneFormat[aPinyin[j + 1]] ? toneFormat[aPinyin[j + 1]] : 4
+        const tone = toneFormat[aPinyin[j + 1]] ? toneFormat[aPinyin[j + 1]] : 4
 
         if (pin.indexOf('a') !== -1) {
           pin = pin.replace('a', _a[tone])
@@ -251,7 +251,7 @@ export default class ChineseSource {
         } else if (pin.indexOf('ou') !== -1) {
           pin = pin.replace('o', _o[tone])
         } else {
-          for (var k = pin.length - 1; k >= 0; k--) {
+          for (let k = pin.length - 1; k >= 0; k--) {
             if (ChineseSource.isVowel(pin[k])) {
               switch (pin[k]) {
                 case 'i':
@@ -348,7 +348,7 @@ export default class ChineseSource {
     ]
 
     // if last char is quote, this is simplified radical
-    var traditional = true
+    let traditional = true
     if (aRadical[aRadical.length - 1] === "'") {
       aRadical = aRadical.substr(0, aRadical.length - 1)
       traditional = false

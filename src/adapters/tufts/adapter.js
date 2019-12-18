@@ -28,7 +28,7 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
       this.engines = {}
     }
     Object.keys(engineConfig).forEach(langCode => {
-      let langID = LMF.getLanguageIdFromCode(langCode)
+      const langID = LMF.getLanguageIdFromCode(langCode)
 
       if (langID !== Constants.LANG_UNDEFINED && this.engines[langID] === undefined) {
         this.engines[langID] = engineConfig[langCode]
@@ -45,23 +45,23 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
    *      - {undefined} - if failed
   */
   async getHomonym (languageID, word) {
-    let url = this.prepareRequestUrl(languageID, word)
+    const url = this.prepareRequestUrl(languageID, word)
     if (!url) {
-      this.addError(this.l10n.messages['MORPH_TUFTS_NO_ENGINE_FOR_LANGUAGE'].get(languageID.toString()))
+      this.addError(this.l10n.messages.MORPH_TUFTS_NO_ENGINE_FOR_LANGUAGE.get(languageID.toString()))
       return
     }
     try {
-      let res = await this.fetch(url)
+      const res = await this.fetch(url)
       if (res.constructor.name === 'AdapterError') {
         return
       }
       if (res) {
-        let transformAdapter = new TransformAdapter(this)
+        const transformAdapter = new TransformAdapter(this)
 
-        let homonym = transformAdapter.transformData(res, word)
+        let homonym = transformAdapter.transformData(res, word) // eslint-disable-line prefer-const
 
         if (!homonym) {
-          this.addError(this.l10n.messages['MORPH_NO_HOMONYM'].get(word, languageID.toString()))
+          this.addError(this.l10n.messages.MORPH_NO_HOMONYM.get(word, languageID.toString()))
           return
         }
 
@@ -72,7 +72,7 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
         return homonym
       }
     } catch (error) {
-      this.addError(this.l10n.messages['MORPH_UNKNOWN_ERROR'].get(error.mesage))
+      this.addError(this.l10n.messages.MORPH_UNKNOWN_ERROR.get(error.mesage))
     }
   }
 
@@ -85,11 +85,11 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
    *     - {null} - if engine is not correct
   */
   prepareRequestUrl (languageID, word) {
-    let langCode = LMF.getLanguageCodeFromId(languageID)
-    let engine = this.engineSet.getEngineByCode(languageID)
+    const langCode = LMF.getLanguageCodeFromId(languageID)
+    const engine = this.engineSet.getEngineByCode(languageID)
 
     if (engine) {
-      let code = engine.engine
+      const code = engine.engine
       return this.config.url.replace('r_WORD', encodeURIComponent(word)).replace('r_ENGINE', code).replace('r_LANG', langCode).replace('r_CLIENT', this.config.clientId)
     } else {
       return null
