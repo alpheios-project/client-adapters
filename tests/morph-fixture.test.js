@@ -31,10 +31,10 @@ describe('client-adapters.test.js', () => {
     ClientAdapters.init()
   
     let sourceJson = Fixture.getFixtureRes({
-      langCode: 'lat', adapter: 'tufts', word: 'foo'
+      langCode: 'lat', adapter: 'tufts', word: 'cepit'
     })
 
-    console.info(sourceJson)
+    // console.info(sourceJson)
     let res = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {

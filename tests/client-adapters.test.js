@@ -23,7 +23,7 @@ describe('client-adapters.test.js', () => {
     jest.clearAllMocks()
   })
 
-  it.skip('1 ClientAdapters - morphology executes init and returns object with tufts and alpheiosTreebank', () => {
+  it('1 ClientAdapters - morphology executes init and returns object with tufts and alpheiosTreebank', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let morphRes = ClientAdapters.morphology
@@ -36,7 +36,7 @@ describe('client-adapters.test.js', () => {
     expect(morphRes.alpheiosTreebank).toBeInstanceOf(Function)
   })
 
-  it.skip('2 ClientAdapters - lexicon executes init and returns object with alpheios', () => {
+  it('2 ClientAdapters - lexicon executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let lexiconRes = ClientAdapters.lexicon
@@ -46,7 +46,7 @@ describe('client-adapters.test.js', () => {
     expect(lexiconRes.alpheios).toBeInstanceOf(Function)
   })
 
-  it.skip('3 ClientAdapters - lemmatranslation executes init and returns object with alpheios', () => {
+  it('3 ClientAdapters - lemmatranslation executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let translationRes = ClientAdapters.lemmatranslation
@@ -56,7 +56,7 @@ describe('client-adapters.test.js', () => {
     expect(translationRes.alpheios).toBeInstanceOf(Function)
   })
 
-  it.skip('4 ClientAdapters - checkMethod checks if given method registered inside adapter, if no raise an error', () => {
+  it('4 ClientAdapters - checkMethod checks if given method registered inside adapter, if no raise an error', () => {
     ClientAdapters.init()
     expect(() => {
       let l = ClientAdapters.checkMethod('morphology', 'tufts', 'getHomonym')
@@ -67,7 +67,7 @@ describe('client-adapters.test.js', () => {
     }).toThrowError()
   })
 
-  it.skip('5 ClientAdapters - checkParam checks if all registered parameters are given', () => {
+  it('5 ClientAdapters - checkParam checks if all registered parameters are given', () => {
     ClientAdapters.init()
     expect(() => {
       let l = ClientAdapters.checkParam({ word: 'cepit', languageID: Constants.LANG_LATIN }, 'morphology', 'tufts', 'getHomonym')
@@ -78,7 +78,7 @@ describe('client-adapters.test.js', () => {
     }).toThrowError()
   })
 
-  it.skip('6 ClientAdapters - checkMethodParam executes checkMethod and checkParam', () => {
+  it('6 ClientAdapters - checkMethodParam executes checkMethod and checkParam', () => {
     ClientAdapters.init()
     jest.spyOn(ClientAdapters, 'checkMethod')
     jest.spyOn(ClientAdapters, 'checkParam')
@@ -88,7 +88,7 @@ describe('client-adapters.test.js', () => {
     expect(ClientAdapters.checkParam).toHaveBeenCalledWith({ word: 'cepit', languageID: Constants.LANG_LATIN }, 'morphology', 'tufts', 'getHomonym')
   })
 
-  it.skip('7 ClientAdapters - maAdapter executes checkMethodParam and returns null if some problems', async () => {
+  it('7 ClientAdapters - maAdapter executes checkMethodParam and returns null if some problems', async () => {
     ClientAdapters.init()
     ClientAdapters.checkMethodParam = jest.fn()
     let res = await ClientAdapters.maAdapter({
@@ -138,7 +138,7 @@ describe('client-adapters.test.js', () => {
     expect(res.result).toBeUndefined()
   }, 20000)
 
-  it.skip('10 ClientAdapters - tbAdapter returns homonym and empty errors if adapter returns correct data', async () => {
+  it('10 ClientAdapters - tbAdapter returns homonym and empty errors if adapter returns correct data', async () => {
     ClientAdapters.init()
 
     let res = await ClientAdapters.tbAdapter({
@@ -153,7 +153,7 @@ describe('client-adapters.test.js', () => {
     expect(res.result).toBeInstanceOf(Homonym)
   })
 
-  it.skip('11 ClientAdapters - tbAdapter returns empty homonym and errors if adapter doesn\'t return correct data', async () => {
+  it('11 ClientAdapters - tbAdapter returns empty homonym and errors if adapter doesn\'t return correct data', async () => {
     ClientAdapters.init()
 
     let res = await ClientAdapters.tbAdapter({
@@ -277,7 +277,7 @@ describe('client-adapters.test.js', () => {
     expect(res.errors.length).toBeGreaterThan(0)
   })
 
-  it.skip('16 ClientAdapters - wordusageExamples executes init and returns object with alpheios', () => {
+  it('16 ClientAdapters - wordusageExamples executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let concordanceRes = ClientAdapters.wordusageExamples
@@ -287,7 +287,7 @@ describe('client-adapters.test.js', () => {
     expect(concordanceRes.concordance).toBeInstanceOf(Function)
   })
 
-  it.skip('17 ClientAdapters - wordusageExamples - getAuthorsWorks returns array of authors with wordTexts', async () => {
+  it('17 ClientAdapters - wordusageExamples - getAuthorsWorks returns array of authors with wordTexts', async () => {
     ClientAdapters.init()
 
     let res = await ClientAdapters.wordUsageExamples({
