@@ -1,0 +1,194 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <oac:Annotation xmlns:oac="http://www.openannotation.org/ns/" rdf:about="urn:TuftsMorphologyService:mare:whitakerLat">
+    <dcterms:creator xmlns:dcterms="http://purl.org/dc/terms/">
+      <foaf:Agent xmlns:foaf="http://xmlns.com/foaf/0.1/" rdf:about="net.alpheios:tools:wordsxml.v1"/>
+    </dcterms:creator>
+    <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/">2019-12-19T02:00:25.136392</dcterms:created>
+    <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Short definitions and morphology from Words by William Whitaker, Copyright 1993-2007.</dc:rights>
+    <oac:hasTarget>
+      <rdf:Description rdf:about="urn:word:mare"/>
+    </oac:hasTarget>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"/>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154440031376"/>
+    <oac:Body rdf:about="urn:uuid:idm140154440031376">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mare</stem>
+            </term>
+            <pofs order="4">adjective</pofs>
+            <decl>3rd</decl>
+            <var>1st</var>
+            <case order="7">nominative</case>
+            <num>singular</num>
+            <gend>neuter</gend>
+            <comp>positive</comp>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">mare</hdwd>
+            <freq order="1">very rare</freq>
+            <src>Ox.Lat.Dict.</src>
+          </dict>
+          <mean>male; masculine, of the male sex; manly, virile, brave, noble; G:masculine;
+</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154433597040"/>
+    <oac:Body rdf:about="urn:uuid:idm140154433597040">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mare</stem>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>4th</var>
+            <case order="7">nominative</case>
+            <num>singular</num>
+            <gend>neuter</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mare</stem>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>4th</var>
+            <case order="1">vocative</case>
+            <num>singular</num>
+            <gend>neuter</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mar</stem>
+              <suff>e</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>4th</var>
+            <case order="2">locative</case>
+            <num>singular</num>
+            <gend>neuter</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mar</stem>
+              <suff>e</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>4th</var>
+            <case order="5">dative</case>
+            <num>singular</num>
+            <gend>neuter</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mare</stem>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>4th</var>
+            <case order="4">accusative</case>
+            <num>singular</num>
+            <gend>neuter</gend>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">mare, maris</hdwd>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <gend>neuter</gend>
+            <freq order="6">very frequent</freq>
+          </dict>
+          <mean>sea; sea water;</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154429465696"/>
+    <oac:Body rdf:about="urn:uuid:idm140154429465696">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mar</stem>
+              <suff>e</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>3rd</var>
+            <case order="2">locative</case>
+            <num>singular</num>
+            <gend>masculine</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mar</stem>
+              <suff>e</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>3rd</var>
+            <case order="5">dative</case>
+            <num>singular</num>
+            <gend>masculine</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mar</stem>
+              <suff>e</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <var>3rd</var>
+            <case order="3">ablative</case>
+            <num>singular</num>
+            <gend>masculine</gend>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">mas, maris</hdwd>
+            <pofs order="5">noun</pofs>
+            <decl>3rd</decl>
+            <gend>masculine</gend>
+            <freq order="4">common</freq>
+            <src>Ox.Lat.Dict.</src>
+          </dict>
+          <mean>male (human/animal/plant); man;</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154432160656"/>
+    <oac:Body rdf:about="urn:uuid:idm140154432160656">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>mar</stem>
+              <suff>e</suff>
+            </term>
+            <pofs order="4">adjective</pofs>
+            <decl>3rd</decl>
+            <var>1st</var>
+            <case order="3">ablative</case>
+            <num>singular</num>
+            <gend>all</gend>
+            <comp>positive</comp>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">mas, (gen.), maris</hdwd>
+            <pofs order="4">adjective</pofs>
+            <freq order="4">common</freq>
+            <src>Ox.Lat.Dict.</src>
+          </dict>
+          <mean>male; masculine, of the male sex; manly, virile, brave, noble; G:masculine;</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+  </oac:Annotation>
+</rdf:RDF>

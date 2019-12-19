@@ -1,0 +1,101 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <oac:Annotation xmlns:oac="http://www.openannotation.org/ns/" rdf:about="urn:TuftsMorphologyService:palmaque:whitakerLat">
+    <dcterms:creator xmlns:dcterms="http://purl.org/dc/terms/">
+      <foaf:Agent xmlns:foaf="http://xmlns.com/foaf/0.1/" rdf:about="net.alpheios:tools:wordsxml.v1"/>
+    </dcterms:creator>
+    <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/">2019-12-18T01:23:23.790311</dcterms:created>
+    <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Short definitions and morphology from Words by William Whitaker, Copyright 1993-2007.</dc:rights>
+    <oac:hasTarget>
+      <rdf:Description rdf:about="urn:word:palmaque"/>
+    </oac:hasTarget>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"/>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154428676800"/>
+    <oac:Body rdf:about="urn:uuid:idm140154428676800">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>Two words</stem>
+            </term>
+          </infl>
+          <mean>May be 2 words combined (palma+que) If not obvious, probably incorrect</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154436558768"/>
+    <oac:Body rdf:about="urn:uuid:idm140154436558768">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>palm</stem>
+              <suff>a</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>1st</decl>
+            <var>1st</var>
+            <case order="7">nominative</case>
+            <num>singular</num>
+            <gend>feminine</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>palm</stem>
+              <suff>a</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>1st</decl>
+            <var>1st</var>
+            <case order="1">vocative</case>
+            <num>singular</num>
+            <gend>feminine</gend>
+          </infl>
+          <infl>
+            <term xml:lang="lat">
+              <stem>palm</stem>
+              <suff>a</suff>
+            </term>
+            <pofs order="5">noun</pofs>
+            <decl>1st</decl>
+            <var>1st</var>
+            <case order="3">ablative</case>
+            <num>singular</num>
+            <gend>feminine</gend>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">palma, palmae</hdwd>
+            <pofs order="5">noun</pofs>
+            <decl>1st</decl>
+            <gend>feminine</gend>
+            <freq order="6">very frequent</freq>
+            <src>Ox.Lat.Dict.</src>
+          </dict>
+          <mean>palm/width of the hand; hand; palm tree/branch; date; palm award/first place;</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154432593872"/>
+    <oac:Body rdf:about="urn:uuid:idm140154432593872">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>que</stem>
+            </term>
+            <pofs>conjunction</pofs>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">que</hdwd>
+            <pofs>conjunction</pofs>
+            <age order="6">medieval</age>
+            <freq order="2">uncommon</freq>
+          </dict>
+          <mean>and; (while properly attached as enclitic sometimes copyists make mistakes);</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+  </oac:Annotation>
+</rdf:RDF>
