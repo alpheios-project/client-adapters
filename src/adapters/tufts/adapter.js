@@ -17,7 +17,6 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
     this.uploadEngines(this.config.engine)
     this.engineSet = new EnginesSet(this.engines)
     this.sourceData = config.sourceData
-    console.info('this.sourceData - ', this.sourceData)
   }
 
   /**
@@ -51,7 +50,6 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
     try {
       if (this.sourceData) {
         res = this.sourceData
-        console.info('from sourceData')
       } else {
         let url = this.prepareRequestUrl(languageID, word)
         if (!url) {

@@ -5,7 +5,7 @@ import LatTuftsMare from '@tests/fixture/localJson/lat-tufts-mare.xml'
 import LatTuftsCepit from '@tests/fixture/localJson/lat-tufts-cepit.xml'
 import LatTuftsDefault from '@tests/fixture/localJson/lat-tufts-default.xml'
 import LatTuftsSubmersasque from '@tests/fixture/localJson/lat-tufts-submersasque.xml'
-
+import LatTuftsPlacito from '@tests/fixture/localJson/lat-tufts-placito.xml'
 
 const library = {
   lat: {
@@ -14,7 +14,8 @@ const library = {
       'palmaque': LatTuftsPalmaque,
       'mare': LatTuftsMare,
       'cepit': LatTuftsCepit,
-      'submersasque': LatTuftsSubmersasque
+      'submersasque': LatTuftsSubmersasque,
+      'placito': LatTuftsPlacito
     }
   }
 }
