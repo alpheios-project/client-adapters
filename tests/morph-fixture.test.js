@@ -6,8 +6,8 @@ import parser from 'fast-xml-parser'
 import ClientAdapters from '@/client-adapters.js'
 
 import { Constants, Homonym, Author, WordUsageExample } from 'alpheios-data-models'
-// import testData from '@/localJson/lat-morph-whitakerLat-palmaque.xml'
-import testData from '@/localJson/lat-morph-whitakerLat-mare.xml'
+import testData from '@/localJson/lat-morph-whitakerLat-palmaque.xml'
+// import testData from '@/localJson/lat-morph-whitakerLat-mare.xml'
 
 describe('client-adapters.test.js', () => {
   /*
@@ -39,17 +39,33 @@ describe('client-adapters.test.js', () => {
       textNodeName : "$"
     }
     const testJson = parser.parse(testData, options)
-    console.info('testJson - ', testJson)
-    /*
+    testJson.RDF.Annotation.Body.forEach(bodyItem => {
+      // console.info('rest - ', rest)
+      if (bodyItem.rest.entry && bodyItem.rest.entry.infl.term && bodyItem.rest.entry.infl.term.stem) {
+        bodyItem.rest.entry.infl.term.stem = { '$': bodyItem.rest.entry.infl.term.stem }
+      }
+      if (bodyItem.rest.entry && bodyItem.rest.entry.infl.term && bodyItem.rest.entry.infl.term.suff) {
+        bodyItem.rest.entry.infl.term.suff = { '$': bodyItem.rest.entry.infl.term.suff }
+      }
+      if (bodyItem.rest.entry && bodyItem.rest.entry.infl.term && bodyItem.rest.entry.infl.term.pref) {
+        bodyItem.rest.entry.infl.term.pref = { '$': bodyItem.rest.entry.infl.term.pref }
+      }
+
+      if (bodyItem.rest.entry && bodyItem.rest.entry.xmpl) {
+        bodyItem.rest.entry.xmpl = { '$': bodyItem.rest.entry.xmpl }
+      }
+    })
+    // console.info('testJson - ', testJson.RDF.Annotation.Body[0].rest.entry.infl)
+    
     let res = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
-        word: 'mare'
+        word: 'palmaque'
       },
       sourceData: testJson
     })
-    console.info(res.result)
-    */
+    console.info(res.result.lexemes[0].lemma)
+    
   })
 })
