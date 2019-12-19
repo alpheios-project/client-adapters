@@ -1,0 +1,78 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <oac:Annotation xmlns:oac="http://www.openannotation.org/ns/" rdf:about="urn:TuftsMorphologyService:submersasque:whitakerLat">
+    <dcterms:creator xmlns:dcterms="http://purl.org/dc/terms/">
+      <foaf:Agent xmlns:foaf="http://xmlns.com/foaf/0.1/" rdf:about="net.alpheios:tools:wordsxml.v1"/>
+    </dcterms:creator>
+    <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/">2019-12-19T11:14:03.668495</dcterms:created>
+    <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Short definitions and morphology from Words by William Whitaker, Copyright 1993-2007.</dc:rights>
+    <oac:hasTarget>
+      <rdf:Description rdf:about="urn:word:submersasque"/>
+    </oac:hasTarget>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"/>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154439578528"/>
+    <oac:Body rdf:about="urn:uuid:idm140154439578528">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>Two words</stem>
+            </term>
+          </infl>
+          <mean>May be 2 words combined (submersas+que) If not obvious, probably incorrect</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154432838336"/>
+    <oac:Body rdf:about="urn:uuid:idm140154432838336">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>que</stem>
+            </term>
+            <pofs>conjunction</pofs>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">que</hdwd>
+            <pofs>conjunction</pofs>
+            <age order="6">medieval</age>
+            <freq order="2">uncommon</freq>
+          </dict>
+          <mean>and; (while properly attached as enclitic sometimes copyists make mistakes);</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+    <oac:hasBody rdf:resource="urn:uuid:idm140154432961664"/>
+    <oac:Body rdf:about="urn:uuid:idm140154432961664">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>submers</stem>
+              <suff>as</suff>
+            </term>
+            <pofs>verb participle</pofs>
+            <conj>3rd</conj>
+            <var>1st</var>
+            <case order="4">accusative</case>
+            <num>plural</num>
+            <gend>feminine</gend>
+            <tense>perfect</tense>
+            <voice>passive</voice>
+            <mood>participle</mood>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">submergo, submergere, submersi, submersus</hdwd>
+            <pofs order="3">verb</pofs>
+            <conj>3rd</conj>
+            <freq order="3">lesser</freq>
+          </dict>
+          <mean>plunge under, submerge;</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+  </oac:Annotation>
+</rdf:RDF>

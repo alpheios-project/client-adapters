@@ -6,6 +6,8 @@
   "scripts": {
     "test": "eslint --fix src/**/*.js && jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-c": "eslint --fix src/**/*.js && jest tests/morph-fixture.test.js",
+    "test-u": "eslint --fix src/**/*.js && jest tests/client-adapters.test.js",
+    
     "build": "npm run build-lib && npm run build-node",
     "build-lib": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all vue config.mjs",
     "build-node": "eslint --fix src/**/*.js && node --experimental-modules ./node_modules/alpheios-node-build/dist/build.mjs all all node-lib config-node.mjs",
@@ -62,7 +64,8 @@
       "!node_modules/alpheios-data-models/"
     ],
     "moduleNameMapper": {
-      "^@[/](.+)": "<rootDir>/src/$1"
+      "^@[/](.+)": "<rootDir>/src/$1",
+      "^@tests[/](.+)": "<rootDir>/tests/$1"
     },
     "moduleFileExtensions": [
       "js",

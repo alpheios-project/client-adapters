@@ -1,0 +1,44 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <oac:Annotation xmlns:oac="http://www.openannotation.org/ns/" rdf:about="urn:TuftsMorphologyService:cepit:whitakerLat">
+    <dcterms:creator xmlns:dcterms="http://purl.org/dc/terms/">
+      <foaf:Agent xmlns:foaf="http://xmlns.com/foaf/0.1/" rdf:about="net.alpheios:tools:wordsxml.v1"/>
+    </dcterms:creator>
+    <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/">2019-12-19T10:57:11.078215</dcterms:created>
+    <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Short definitions and morphology from Words by William Whitaker, Copyright 1993-2007.</dc:rights>
+    <oac:hasTarget>
+      <rdf:Description rdf:about="urn:word:cepit"/>
+    </oac:hasTarget>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"/>
+    <oac:hasBody rdf:resource="urn:uuid:idm140440213258136"/>
+    <oac:Body rdf:about="urn:uuid:idm140440213258136">
+      <rdf:type rdf:resource="cnt:ContentAsXML"/>
+      <cnt:rest xmlns:cnt="http://www.w3.org/2008/content#">
+        <entry>
+          <infl>
+            <term xml:lang="lat">
+              <stem>cep</stem>
+              <suff>it</suff>
+            </term>
+            <pofs order="3">verb</pofs>
+            <conj>3rd</conj>
+            <var>1st</var>
+            <tense>perfect</tense>
+            <voice>active</voice>
+            <mood>indicative</mood>
+            <pers>3rd</pers>
+            <num>singular</num>
+          </infl>
+          <dict>
+            <hdwd xml:lang="lat">capio, capere, cepi, captus</hdwd>
+            <pofs order="3">verb</pofs>
+            <conj>3rd</conj>
+            <kind>transitive</kind>
+            <freq order="6">very frequent</freq>
+            <src>Ox.Lat.Dict.</src>
+          </dict>
+          <mean>take hold, seize; grasp; take bribe; arrest/capture; put on; occupy; captivate;</mean>
+        </entry>
+      </cnt:rest>
+    </oac:Body>
+  </oac:Annotation>
+</rdf:RDF>

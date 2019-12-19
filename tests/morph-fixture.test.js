@@ -1,13 +1,11 @@
 /* eslint-env jest */
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
-import parser from 'fast-xml-parser'
 
 import ClientAdapters from '@/client-adapters.js'
+import Fixture from '@tests/fixture/fixture.js'
 
 import { Constants, Homonym, Author, WordUsageExample } from 'alpheios-data-models'
-import testData from '@/localJson/lat-morph-whitakerLat-palmaque.xml'
-// import testData from '@/localJson/lat-morph-whitakerLat-mare.xml'
 
 describe('client-adapters.test.js', () => {
   /*
@@ -31,41 +29,26 @@ describe('client-adapters.test.js', () => {
   it('Test Morph Fixture', async () => {
 
     ClientAdapters.init()
-    
-    const options = {
-      ignoreNameSpace : true,
-      ignoreAttributes : false,
-      attributeNamePrefix : "",
-      textNodeName : "$"
-    }
-    const testJson = parser.parse(testData, options)
-    testJson.RDF.Annotation.Body.forEach(bodyItem => {
-      // console.info('rest - ', rest)
-      if (bodyItem.rest.entry && bodyItem.rest.entry.infl.term && bodyItem.rest.entry.infl.term.stem) {
-        bodyItem.rest.entry.infl.term.stem = { '$': bodyItem.rest.entry.infl.term.stem }
-      }
-      if (bodyItem.rest.entry && bodyItem.rest.entry.infl.term && bodyItem.rest.entry.infl.term.suff) {
-        bodyItem.rest.entry.infl.term.suff = { '$': bodyItem.rest.entry.infl.term.suff }
-      }
-      if (bodyItem.rest.entry && bodyItem.rest.entry.infl.term && bodyItem.rest.entry.infl.term.pref) {
-        bodyItem.rest.entry.infl.term.pref = { '$': bodyItem.rest.entry.infl.term.pref }
-      }
-
-      if (bodyItem.rest.entry && bodyItem.rest.entry.xmpl) {
-        bodyItem.rest.entry.xmpl = { '$': bodyItem.rest.entry.xmpl }
-      }
+  
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'foo'
     })
-    // console.info('testJson - ', testJson.RDF.Annotation.Body[0].rest.entry.infl)
-    
+
+    console.info(sourceJson)
     let res = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
-        word: 'palmaque'
+        word: 'foo'
       },
-      sourceData: testJson
+      sourceData: sourceJson
     })
-    console.info(res.result.lexemes[0].lemma)
+    if (sourceJson) {
+      console.info('From Fixture - lexemes length - ', res.result)
+    } else {
+      console.info('From Remote Service - lexemes length - ', res.result.lexemes.length)
+    }
     
+
   })
 })

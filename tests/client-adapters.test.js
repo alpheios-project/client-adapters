@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
 import ClientAdapters from '@/client-adapters.js'
+import Fixture from '@tests/fixture/fixture.js'
 
 import { Constants, Homonym, Author, WordUsageExample } from 'alpheios-data-models'
 
@@ -22,7 +23,7 @@ describe('client-adapters.test.js', () => {
     jest.clearAllMocks()
   })
 
-  it('1 ClientAdapters - morphology executes init and returns object with tufts and alpheiosTreebank', () => {
+  it.skip('1 ClientAdapters - morphology executes init and returns object with tufts and alpheiosTreebank', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let morphRes = ClientAdapters.morphology
@@ -35,7 +36,7 @@ describe('client-adapters.test.js', () => {
     expect(morphRes.alpheiosTreebank).toBeInstanceOf(Function)
   })
 
-  it('2 ClientAdapters - lexicon executes init and returns object with alpheios', () => {
+  it.skip('2 ClientAdapters - lexicon executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let lexiconRes = ClientAdapters.lexicon
@@ -45,7 +46,7 @@ describe('client-adapters.test.js', () => {
     expect(lexiconRes.alpheios).toBeInstanceOf(Function)
   })
 
-  it('3 ClientAdapters - lemmatranslation executes init and returns object with alpheios', () => {
+  it.skip('3 ClientAdapters - lemmatranslation executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let translationRes = ClientAdapters.lemmatranslation
@@ -55,7 +56,7 @@ describe('client-adapters.test.js', () => {
     expect(translationRes.alpheios).toBeInstanceOf(Function)
   })
 
-  it('4 ClientAdapters - checkMethod checks if given method registered inside adapter, if no raise an error', () => {
+  it.skip('4 ClientAdapters - checkMethod checks if given method registered inside adapter, if no raise an error', () => {
     ClientAdapters.init()
     expect(() => {
       let l = ClientAdapters.checkMethod('morphology', 'tufts', 'getHomonym')
@@ -66,7 +67,7 @@ describe('client-adapters.test.js', () => {
     }).toThrowError()
   })
 
-  it('5 ClientAdapters - checkParam checks if all registered parameters are given', () => {
+  it.skip('5 ClientAdapters - checkParam checks if all registered parameters are given', () => {
     ClientAdapters.init()
     expect(() => {
       let l = ClientAdapters.checkParam({ word: 'cepit', languageID: Constants.LANG_LATIN }, 'morphology', 'tufts', 'getHomonym')
@@ -77,7 +78,7 @@ describe('client-adapters.test.js', () => {
     }).toThrowError()
   })
 
-  it('6 ClientAdapters - checkMethodParam executes checkMethod and checkParam', () => {
+  it.skip('6 ClientAdapters - checkMethodParam executes checkMethod and checkParam', () => {
     ClientAdapters.init()
     jest.spyOn(ClientAdapters, 'checkMethod')
     jest.spyOn(ClientAdapters, 'checkParam')
@@ -87,7 +88,7 @@ describe('client-adapters.test.js', () => {
     expect(ClientAdapters.checkParam).toHaveBeenCalledWith({ word: 'cepit', languageID: Constants.LANG_LATIN }, 'morphology', 'tufts', 'getHomonym')
   })
 
-  it('7 ClientAdapters - maAdapter executes checkMethodParam and returns null if some problems', async () => {
+  it.skip('7 ClientAdapters - maAdapter executes checkMethodParam and returns null if some problems', async () => {
     ClientAdapters.init()
     ClientAdapters.checkMethodParam = jest.fn()
     let res = await ClientAdapters.maAdapter({
@@ -99,13 +100,17 @@ describe('client-adapters.test.js', () => {
 
   it('8 ClientAdapters - maAdapter returns homonym and empty errors if adapter returns correct data', async () => {
     ClientAdapters.init()
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'cepit'
+    })
 
     let res = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
         word: 'cepit'
-      }
+      },
+      sourceData: sourceJson
     })
 
     expect(res.errors).toEqual([])
@@ -115,19 +120,25 @@ describe('client-adapters.test.js', () => {
   it('9 ClientAdapters - maAdapter returns empty homonym and errors if adapter doesn\'t return correct data', async () => {
     ClientAdapters.init()
 
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'foo'
+    })
+
+
     let res = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
         word: 'foo'
-      }
+      },
+      sourceData: sourceJson
     })
 
     expect(res.errors.length).toBeGreaterThan(0)
     expect(res.result).toBeUndefined()
   }, 20000)
 
-  it('10 ClientAdapters - tbAdapter returns homonym and empty errors if adapter returns correct data', async () => {
+  it.skip('10 ClientAdapters - tbAdapter returns homonym and empty errors if adapter returns correct data', async () => {
     ClientAdapters.init()
 
     let res = await ClientAdapters.tbAdapter({
@@ -142,7 +153,7 @@ describe('client-adapters.test.js', () => {
     expect(res.result).toBeInstanceOf(Homonym)
   })
 
-  it('11 ClientAdapters - tbAdapter returns empty homonym and errors if adapter doesn\'t return correct data', async () => {
+  it.skip('11 ClientAdapters - tbAdapter returns empty homonym and errors if adapter doesn\'t return correct data', async () => {
     ClientAdapters.init()
 
     let res = await ClientAdapters.tbAdapter({
@@ -160,12 +171,17 @@ describe('client-adapters.test.js', () => {
   it('12 ClientAdapters - lemmaTranslations returns empty errors if adapter returns correct data', async () => {
     ClientAdapters.init()
 
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'cepit'
+    })
+
     let reHomonym = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
         word: 'cepit'
-      }
+      },
+      sourceData: sourceJson
     })
 
     let res = await ClientAdapters.lemmaTranslations({
@@ -182,7 +198,11 @@ describe('client-adapters.test.js', () => {
   it('13 ClientAdapters - lemmaTranslations returns errors if adapter doesn\'t return correct data', async () => {
     ClientAdapters.init()
 
-    let reHomonym = await ClientAdapters.maAdapter({
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'foo'
+    })
+
+    let resHomonym = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
@@ -193,8 +213,8 @@ describe('client-adapters.test.js', () => {
     let res = await ClientAdapters.lemmaTranslations({
       method: 'fetchTranslations',
       params: {
-        homonym: reHomonym.result,
-        browserLang: 'spa'
+        homonym: resHomonym.result,
+        browserLang: 'bla'
       }
     })
 
@@ -204,12 +224,17 @@ describe('client-adapters.test.js', () => {
   it('14 ClientAdapters - lexicons returns empty errors if adapter returns correct data', async () => {
     ClientAdapters.init()
 
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'cepit'
+    })
+
     let reHomonym = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
         word: 'cepit'
-      }
+      },
+      sourceData: sourceJson
     })
 
     let res = await ClientAdapters.lexicons({
@@ -228,12 +253,17 @@ describe('client-adapters.test.js', () => {
   it('15 ClientAdapters - lexicons returns errors if adapter doesn\'t return correct data', async () => {
     ClientAdapters.init()
 
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'cepit'
+    })
+
     let reHomonym = await ClientAdapters.maAdapter({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
         word: 'cepit'
-      }
+      },
+      sourceData: sourceJson
     })
 
     let res = await ClientAdapters.lexicons({
@@ -247,7 +277,7 @@ describe('client-adapters.test.js', () => {
     expect(res.errors.length).toBeGreaterThan(0)
   })
 
-  it('16 ClientAdapters - wordusageExamples executes init and returns object with alpheios', () => {
+  it.skip('16 ClientAdapters - wordusageExamples executes init and returns object with alpheios', () => {
     jest.spyOn(ClientAdapters, 'init')
 
     let concordanceRes = ClientAdapters.wordusageExamples
@@ -257,7 +287,7 @@ describe('client-adapters.test.js', () => {
     expect(concordanceRes.concordance).toBeInstanceOf(Function)
   })
 
-  it('17 ClientAdapters - wordusageExamples - getAuthorsWorks returns array of authors with wordTexts', async () => {
+  it.skip('17 ClientAdapters - wordusageExamples - getAuthorsWorks returns array of authors with wordTexts', async () => {
     ClientAdapters.init()
 
     let res = await ClientAdapters.wordUsageExamples({
@@ -283,12 +313,17 @@ describe('client-adapters.test.js', () => {
   it('18 ClientAdapters - wordusageExamples - getWordUsageExamples returns array of wordUsageExample', async () => {
     ClientAdapters.init()
 
+    let sourceJson = Fixture.getFixtureRes({
+      langCode: 'lat', adapter: 'tufts', word: 'submersasque'
+    })
+
     let testHomonymRes1 = await ClientAdapters.morphology.tufts({
       method: 'getHomonym',
       params: {
         languageID: Constants.LANG_LATIN,
         word: 'submersasque'
-      }
+      },
+      sourceData: sourceJson
     })
 
     let res = await ClientAdapters.wordUsageExamples({
