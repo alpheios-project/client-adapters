@@ -178,7 +178,6 @@ class ImportData {
    */
   mapFeature (model, inputElem, inputName, featureName, allowUnknownValues) {
     let inputItem = inputElem[inputName]
-
     if (inputItem && (Array.isArray(inputItem) || inputItem.$)) {
       let values = []
       if (Array.isArray(inputItem)) {
