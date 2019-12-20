@@ -214,6 +214,7 @@ class TransformAdapter {
             // quietly continue
           }
         }
+
         // we only use the inflection if it tells us something the dictionary details do not
         if (inflection[Feature.types.grmCase] ||
           inflection[Feature.types.tense] ||
@@ -228,6 +229,7 @@ class TransformAdapter {
           inflection[Feature.types.example]) {
           inflections.push(inflection)
         }
+
         // inflection can provide lemma decl, pofs, conj
         for (let lemma of lemmas) {
           if (!lemma.features[Feature.types.part]) {
@@ -246,6 +248,7 @@ class TransformAdapter {
         }
       }
       let aggregated = mappingData.aggregateLexemes(lexemeSet, inflections)
+
       lexemes.push(...aggregated)
     }
     if (lexemes.length > 0) {

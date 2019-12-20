@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import 'whatwg-fetch'
 import ClientAdapters from '@/client-adapters.js'
-import Fixture from '@tests/fixture/fixture.js'
+import { Fixture } from 'alpheios-fixtures'
 
 import { Constants, Homonym, Author, WordUsageExample } from 'alpheios-data-models'
 

@@ -4,7 +4,7 @@ import 'whatwg-fetch'
 import AlpheiosTuftsAdapter from '@/adapters/tufts/adapter'
 import { Constants, Homonym } from 'alpheios-data-models'
 
-import Fixture from '@tests/fixture/fixture.js'
+import { Fixture } from 'alpheios-fixtures'
 
 describe('tufts/adapter.test.js', () => {
   console.error = function () {}
