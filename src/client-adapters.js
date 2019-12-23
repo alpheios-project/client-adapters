@@ -133,7 +133,8 @@ class ClientAdapters {
       category: 'morphology',
       adapterName: 'tufts',
       method: options.method,
-      clientId: options.clientId
+      clientId: options.clientId,
+      sourceData: options.sourceData
     })
 
     if (options.method === 'getHomonym') {
