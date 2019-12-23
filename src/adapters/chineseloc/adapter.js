@@ -14,10 +14,13 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
   fetchChineseData (targetWord, checkContextForward) {
     ChineseSource.collectData()
 
-    return ChineseSource.lookupChinese(targetWord, checkContextForward)
+    const result = ChineseSource.lookupChinese(targetWord, checkContextForward)
+    console.info('fetchChineseData result is', result)
+    return result
   }
 
   getHomonym (targetWord, checkContextForward) {
+    console.info('getHomonym has been called', targetWord, checkContextForward)
     try {
       const res = this.fetchChineseData(targetWord, checkContextForward)
       if (res) {

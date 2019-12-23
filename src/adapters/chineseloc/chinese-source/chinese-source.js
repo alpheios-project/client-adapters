@@ -100,12 +100,15 @@ export default class ChineseSource {
   }
 
   static findWord (targetWord, wordIDX, wordDict) {
+    console.info(`find word ${targetWord}`, wordIDX, wordDict)
     const searchedIdxElement = wordIDX.get(targetWord)
 
     if (searchedIdxElement) {
       if (searchedIdxElement.codes && searchedIdxElement.codes.length > 0) {
         return searchedIdxElement.codes.map(code => {
-          return wordDict.get(code)
+          const result = wordDict.get(code)
+          console.info('Result is', result)
+          return result
         })
       }
     }
