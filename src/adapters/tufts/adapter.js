@@ -51,9 +51,9 @@ class AlpheiosTuftsAdapter extends BaseAdapter {
       if (this.sourceData) {
         res = this.sourceData
       } else {
-        let url = this.prepareRequestUrl(languageID, word)
+        const url = this.prepareRequestUrl(languageID, word)
         if (!url) {
-          this.addError(this.l10n.messages['MORPH_TUFTS_NO_ENGINE_FOR_LANGUAGE'].get(languageID.toString()))
+          this.addError(this.l10n.messages.MORPH_TUFTS_NO_ENGINE_FOR_LANGUAGE.get(languageID.toString()))
           return
         }
         res = await this.fetch(url)
