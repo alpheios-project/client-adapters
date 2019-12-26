@@ -7,11 +7,11 @@ const webpack = {
     externals: {
       'alpheios-data-models': 'alpheios-data-models'
     },
-    target: "node"
+    target: 'node'
   },
 
   production: {
-    output: {filename: 'alpheios-client-adapters.node.min.js'},
+    output: { filename: 'alpheios-client-adapters.node.min.js' },
     resolve: {
       alias: {
         'alpheios-data-models': path.join(projectRoot, 'node_modules/alpheios-data-models/dist/alpheios-data-models.node.min.js'),
@@ -20,7 +20,7 @@ const webpack = {
     }
   },
   development: {
-    output: {filename: 'alpheios-client-adapters.node.js'},
+    output: { filename: 'alpheios-client-adapters.node.js' },
     resolve: {
       alias: {
         'alpheios-data-models': path.join(projectRoot, 'node_modules/alpheios-data-models/dist/alpheios-data-models.node.js'),
