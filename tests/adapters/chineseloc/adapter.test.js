@@ -6,88 +6,12 @@ import AlpheiosChineseLocAdapter from '@/adapters/chineseloc/adapter'
 
 import { Constants, Feature } from 'alpheios-data-models'
 
+import { CedictFixture } from 'alpheios-fixtures'
+
 describe('chineseloc.test.js', () => {
   console.error = function () {}
   console.log = function () {}
   console.warn = function () {}
-
-  // A stub that imitates LexisCS CEDICT service response
-  const sendRequestToStub = async (destName, request) => {
-    // If no records are found for the target word, CEDICT service will return an empty object
-    let body = {}
-    const targetWord = request.body.getWords.words[0]
-
-    if (targetWord === '而今') {
-      body = {
-        traditional: {
-          [targetWord]: [
-            {
-              index: 83686,
-              type: 'not specified',
-              traditional: {
-                headword: '而今'
-              },
-              simplified: {
-                headword: '而今'
-              },
-              pinyin: 'er2 jin1',
-              definitions: [
-                'now',
-                'at the present (time)'
-              ]
-            }
-          ]
-        }
-      }
-    }
-
-    if (targetWord === '眠') {
-      body = {
-        traditional: {
-          [targetWord]: [
-            {
-              index: 73893,
-              type: 'not specified',
-              traditional: {
-                headword: '眠',
-                cantonese: 'min4',
-                mandarin: 'mián',
-                tang: '*men',
-                codePoint: 'U+7720',
-                radical: {
-                  index: 109,
-                  additionalStrokes: 5,
-                  character: '目'
-                },
-                frequency: 4,
-                totalStrokes: 10
-              },
-              simplified: {
-                headword: '眠',
-                cantonese: 'min4',
-                mandarin: 'mián',
-                tang: '*men',
-                codePoint: 'U+7720',
-                radical: {
-                  index: 109,
-                  additionalStrokes: 5,
-                  character: '目'
-                },
-                frequency: 4,
-                totalStrokes: 10
-              },
-              pinyin: 'mian2',
-              definitions: [
-                'to sleep',
-                'to hibernate'
-              ]
-            }
-          ]
-        }
-      }
-    }
-    return { body }
-  }
 
   beforeEach(() => {
     jest.spyOn(console, 'error')
@@ -136,7 +60,7 @@ describe('chineseloc.test.js', () => {
     expect(result[0].unicode).toEqual('而')
   })
 
-  it('3 AlpheiosChineseLocAdapter: getHomonym with a single-character word returns homonym if fetch was successful', async () => {
+  it('3 AlpheiosChineseLocAdapter: getHomonym returns a single-character traditional word', async () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -144,7 +68,7 @@ describe('chineseloc.test.js', () => {
       method: 'getHomonym'
     })
     // Stub the messaging service method
-    adapter._messagingService.sendRequestTo = sendRequestToStub
+    adapter._messagingService.sendRequestTo = CedictFixture.lexisCedictRequest
 
     const homonym = await adapter.getHomonym('眠')
 
@@ -169,7 +93,7 @@ describe('chineseloc.test.js', () => {
     expect(adapter.errors.length).toEqual(0)
   })
 
-  it('4 AlpheiosChineseLocAdapter - method getHomonym with a multi-character word returns homonym if fetch was successful', async () => {
+  it('4 AlpheiosChineseLocAdapter: getHomonym returns a single-character simplified word', async () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -177,7 +101,84 @@ describe('chineseloc.test.js', () => {
       method: 'getHomonym'
     })
     // Stub the messaging service method
-    adapter._messagingService.sendRequestTo = sendRequestToStub
+    adapter._messagingService.sendRequestTo = CedictFixture.lexisCedictRequest
+
+    const homonym = await adapter.getHomonym('杠')
+
+    expect(homonym).toBeDefined()
+
+    expect(homonym.lexemes.length).toEqual(1)
+    expect(homonym.targetWord).toEqual('杠')
+
+    expect(homonym.lexemes[0].lemma.languageID).toEqual(Constants.LANG_CHINESE)
+    expect(homonym.lexemes[0].lemma.languageCode).toEqual(Constants.STR_LANG_CODE_ZHO)
+    expect(homonym.lexemes[0].lemma.word).toEqual('杠')
+    expect(homonym.lexemes[0].lemma.principalParts).toEqual([])
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['mandarin - gāng', 'cantonese - gong1 gong3', 'gàng'])
+    expect(homonym.lexemes[0].lemma.features.note.value).toEqual('simplified')
+    expect(homonym.lexemes[0].lemma.features.frequency).toBeUndefined()
+    expect(homonym.lexemes[0].lemma.features.radical.value).toBe('木')
+
+    expect(homonym.lexemes[0].meaning.shortDefs.length).toEqual(7)
+    expect(homonym.lexemes[0].meaning.shortDefs.map(shortDef => shortDef.text)).toEqual([
+      'thick pole',
+      'bar',
+      'rod',
+      'thick line',
+      'to mark with a thick line',
+      'to sharpen (knife)',
+      '(old) coffin-bearing pole'
+    ])
+
+    expect(adapter.errors.length).toEqual(0)
+  })
+
+  it('5 AlpheiosChineseLocAdapter: getHomonym with context forward must return value from context forward if value for selection is not found', async () => {
+    // eslint-disable-next-line prefer-const
+    let adapter = new AlpheiosChineseLocAdapter({
+      category: 'morphology',
+      adapterName: 'chineseloc',
+      method: 'getHomonym'
+    })
+    // Stub the messaging service method
+    adapter._messagingService.sendRequestTo = CedictFixture.lexisCedictRequest
+
+    const homonym = await adapter.getHomonym('眠', '21三體綜合症')
+
+    expect(homonym).toBeDefined()
+
+    expect(homonym.lexemes.length).toEqual(1)
+    expect(homonym.targetWord).toEqual('眠')
+
+    expect(homonym.lexemes[0].lemma.languageID).toEqual(Constants.LANG_CHINESE)
+    expect(homonym.lexemes[0].lemma.languageCode).toEqual(Constants.STR_LANG_CODE_ZHO)
+    expect(homonym.lexemes[0].lemma.word).toEqual('眠')
+    expect(homonym.lexemes[0].lemma.principalParts).toEqual([])
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['tang - *men', 'mandarin - mián', 'cantonese - min4', 'mián'])
+    expect(homonym.lexemes[0].lemma.features.note.value).toEqual('traditional')
+    expect(homonym.lexemes[0].lemma.features.frequency.singleValue).toEqual(4)
+    expect(homonym.lexemes[0].lemma.features.radical.value).toEqual('目')
+
+    expect(homonym.lexemes[0].meaning.shortDefs.length).toEqual(2)
+    expect(homonym.lexemes[0].meaning.shortDefs[0].text).toEqual('to sleep')
+    expect(homonym.lexemes[0].meaning.shortDefs[1].text).toEqual('to hibernate')
+
+    expect(adapter.errors.length).toEqual(0)
+  })
+
+  /*
+  Multi-character words do not have tang, mandarin or cantonese pronunciations as well as frequency and radical values.
+  Those values exist for single-character words only.
+   */
+  it('6 AlpheiosChineseLocAdapter - method getHomonym with a multi-character word returns homonym if fetch was successful', async () => {
+    // eslint-disable-next-line prefer-const
+    let adapter = new AlpheiosChineseLocAdapter({
+      category: 'morphology',
+      adapterName: 'chineseloc',
+      method: 'getHomonym'
+    })
+    // Stub the messaging service method
+    adapter._messagingService.sendRequestTo = CedictFixture.lexisCedictRequest
 
     const homonym = await adapter.getHomonym('而今')
 
@@ -200,7 +201,39 @@ describe('chineseloc.test.js', () => {
     expect(adapter.errors.length).toEqual(0)
   })
 
-  it('5 AlpheiosChineseLocAdapter - method getHomonym  returns undefined if fetch was not successfull and adds an error to adapter', async () => {
+  it('7 AlpheiosChineseLocAdapter: getHomonym returns a simplified multi-character word', async () => {
+    // eslint-disable-next-line prefer-const
+    let adapter = new AlpheiosChineseLocAdapter({
+      category: 'morphology',
+      adapterName: 'chineseloc',
+      method: 'getHomonym'
+    })
+    // Stub the messaging service method
+    adapter._messagingService.sendRequestTo = CedictFixture.lexisCedictRequest
+
+    const homonym = await adapter.getHomonym('21三体综合症')
+
+    expect(homonym).toBeDefined()
+
+    expect(homonym.lexemes.length).toEqual(1)
+    expect(homonym.targetWord).toEqual('21三体综合症')
+
+    expect(homonym.lexemes[0].lemma.languageID).toEqual(Constants.LANG_CHINESE)
+    expect(homonym.lexemes[0].lemma.languageCode).toEqual(Constants.STR_LANG_CODE_ZHO)
+    expect(homonym.lexemes[0].lemma.word).toEqual('21三体综合症')
+    expect(homonym.lexemes[0].lemma.principalParts).toEqual([])
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['èr shí yi san tǐ zong hé zhèng'])
+    expect(homonym.lexemes[0].lemma.features.note.value).toEqual('simplified')
+    expect(homonym.lexemes[0].lemma.features.frequency).toBeUndefined()
+
+    expect(homonym.lexemes[0].meaning.shortDefs.length).toEqual(2)
+    expect(homonym.lexemes[0].meaning.shortDefs[0].text).toEqual('trisomy')
+    expect(homonym.lexemes[0].meaning.shortDefs[1].text).toEqual('Down\'s syndrome')
+
+    expect(adapter.errors.length).toEqual(0)
+  })
+
+  it('8 AlpheiosChineseLocAdapter - method getHomonym  returns undefined if fetch was not successfull and adds an error to adapter', async () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -214,7 +247,7 @@ describe('chineseloc.test.js', () => {
     expect(adapter.errors.length).toEqual(1)
   })
 
-  it('6 AlpheiosChineseLocAdapter - method extractFeatures executes methods to extract each feature from rawLexeme', () => {
+  it('9 AlpheiosChineseLocAdapter - method extractFeatures executes methods to extract each feature from rawLexeme', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -240,7 +273,7 @@ describe('chineseloc.test.js', () => {
     expect(adapter.defineSimpleFeature).toHaveBeenCalledWith(expect.objectContaining({ checkAttribute: 'unicode' }), rawLexemes[0], expect.anything())
   })
 
-  it('7 AlpheiosChineseLocAdapter - method defineMultipleFeature returns undefined if there is no such feature in rawLexeme', () => {
+  it('10 AlpheiosChineseLocAdapter - method defineMultipleFeature returns undefined if there is no such feature in rawLexeme', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -253,7 +286,7 @@ describe('chineseloc.test.js', () => {
     expect(featureVal).toBeUndefined()
   })
 
-  it('8 AlpheiosChineseLocAdapter - method defineMultipleFeature creates feature with passed value in rawLexemes and adds value if it is already existed', () => {
+  it('11 AlpheiosChineseLocAdapter - method defineMultipleFeature creates feature with passed value in rawLexemes and adds value if it is already existed', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -272,7 +305,7 @@ describe('chineseloc.test.js', () => {
     expect(featureVal1.values).toEqual(['ér jin', 'mandarin - ér  néng'])
   })
 
-  it('9 AlpheiosChineseLocAdapter - method defineSimpleFeature returns undefined if there is no such feature in rawLexeme', () => {
+  it('12 AlpheiosChineseLocAdapter - method defineSimpleFeature returns undefined if there is no such feature in rawLexeme', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -285,7 +318,7 @@ describe('chineseloc.test.js', () => {
     expect(featureVal).toBeUndefined()
   })
 
-  it('10 AlpheiosChineseLocAdapter - method defineSimpleFeature creates feature with passed value in rawLexemes ', () => {
+  it('13 AlpheiosChineseLocAdapter - method defineSimpleFeature creates feature with passed value in rawLexemes ', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -299,7 +332,7 @@ describe('chineseloc.test.js', () => {
     expect(featureVal1.value).toEqual('least frequent')
   })
 
-  it('11 AlpheiosChineseLocAdapter - method extractShortDefinitions returns empty array if shortdefinitions are not defined', () => {
+  it('14 AlpheiosChineseLocAdapter - method extractShortDefinitions returns empty array if shortdefinitions are not defined', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',
@@ -312,7 +345,7 @@ describe('chineseloc.test.js', () => {
     expect(shortDefs.length).toEqual(0)
   })
 
-  it('12 AlpheiosChineseLocAdapter - method extractShortDefinitions returns array with short definition if it id defined', () => {
+  it('15 AlpheiosChineseLocAdapter - method extractShortDefinitions returns array with short definition if it id defined', () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
       category: 'morphology',

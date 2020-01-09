@@ -93,34 +93,44 @@ class AlpheiosChineseLocAdapter extends BaseAdapter {
     return ChineseSource.lookupChinese(targetWord, checkContextForward)
   }
 
-  async fetchCedictData (targetWord, checkContextForward) {
+  async fetchCedictData (targetWord, contextForward) {
     const requestBody = {
       getWords: {
-        words: [targetWord]
+        words: this.constructor._buildWordList(targetWord, contextForward)
       }
     }
     const responseMessage = await this._messagingService.sendRequestTo(CedictConfig.name, new RequestMessage(requestBody))
     return responseMessage.body
   }
 
-  async getHomonym (targetWord, checkContextForward) {
-    try {
-      const res = await this.fetchChineseData(targetWord, checkContextForward)
-      const cedictRes = await this.fetchCedictData(targetWord, checkContextForward)
-      // TODO: check a format of cedict response
-      if (res) {
-        const homonym = this.transformData(res, targetWord)
-        const cedictHomonym = this.transformCedictData(cedictRes, targetWord)
-
-        if (!cedictHomonym) {
-          this.addError(this.l10n.messages.MORPH_NO_HOMONYM.get(targetWord, this.languageID.toString()))
-          return
-        }
-        return cedictHomonym
+  static _buildWordList (targetWord, contextForward) {
+    const wordList = [targetWord]
+    if (contextForward) {
+      for (let i = 0; i < contextForward.length; i++) {
+        wordList.push(contextForward.slice(0, i + 1))
       }
+    }
+    return wordList
+  }
+
+  async getHomonym (targetWord, contextForward) {
+    try {
+      const cedictRes = await this.fetchCedictData(targetWord, contextForward)
+      // TODO: check a format of cedict response
+      if (Object.keys(cedictRes).length === 0) {
+        this.addError(this.l10n.messages.MORPH_NO_HOMONYM.get(targetWord, this.languageID.toString()))
+        return
+      }
+      // const homonym = this.transformData(res, targetWord)
+      const cedictHomonym = this.transformCedictData(cedictRes, targetWord)
+
+      if (!cedictHomonym) {
+        this.addError(this.l10n.messages.MORPH_NO_HOMONYM.get(targetWord, this.languageID.toString()))
+        return
+      }
+      return cedictHomonym
     } catch (error) {
       this.addError(this.l10n.messages.MORPH_UNKNOWN_ERROR.get(error.mesage))
-      console.info(`Cannot create a homonym: ${error}`)
     }
   }
 
