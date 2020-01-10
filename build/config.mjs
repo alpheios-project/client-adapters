@@ -1,5 +1,4 @@
 import path from 'path'
-
 const projectRoot = process.cwd()
 
 const webpack = {
