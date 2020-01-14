@@ -15624,10 +15624,10 @@ class AlpheiosTreebankAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED_M
         const homonym = this.transform(jsonObj, jsonObj.words[0].word[0].form[0]._text, server.config)
         return homonym
       } else {
-        this.addError(this.l10n.messages.MORPH_TREEBANK_NO_ANSWER_FOR_WORD.get(wordref))
+        this.addError(this.l10n.messages['MORPH_TREEBANK_NO_ANSWER_FOR_WORD'].get(wordref))
       }
     } catch (error) {
-      this.addError(this.l10n.messages.MORPH_TREEBANK_UNKNOWN_ERROR.get(error.mesage))
+      this.addError(this.l10n.messages['MORPH_TREEBANK_UNKNOWN_ERROR'].get(error.mesage))
     }
   }
 
@@ -15977,66 +15977,6 @@ class AlpheiosChineseLocAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED
 
   get languageID () { return alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ChineseLanguageModel"].languageID }
 
-  // region Pinyin formatting functions
-  // TODO: Do these functions really belong in here?
-  static isVowel (aLetter) {
-    return ['a', 'e', 'i', 'o', 'u'].includes(aLetter)
-  }
-
-  static formatPinyin (aPinyin) {
-    const _a = ['\u0101', '\u00E1', '\u01CE', '\u00E0', 'a']
-    const _e = ['\u0113', '\u00E9', '\u011B', '\u00E8', 'e']
-    const _i = ['\u012B', '\u00ED', '\u01D0', '\u00EC', 'i']
-    const _o = ['\u014D', '\u00F3', '\u01D2', '\u00F2', 'o']
-    const _u = ['\u016B', '\u00FA', '\u01D4', '\u00F9', 'u']
-    const _v = ['\u01D6', '\u01D8', '\u01DA', '\u01DC', '\u00FC']
-
-    // Remove spaces before and after split parts; eliminate empty split parts
-    aPinyin = aPinyin.split(/(\d)/).map(el => el.trim()).filter(el => Boolean(el))
-
-    const formatedPinyin = []
-    const toneFormat = {
-      1: 0, 2: 1, 3: 2, 4: 3
-    }
-
-    for (let j = 0; j < aPinyin.length; j++) {
-      if (j % 2 === 0) {
-        let pin = aPinyin[j]
-        const tone = toneFormat[aPinyin[j + 1]] ? toneFormat[aPinyin[j + 1]] : 4
-
-        if (pin.indexOf('a') !== -1) {
-          pin = pin.replace('a', _a[tone])
-        } else if (pin.indexOf('e') !== -1) {
-          pin = pin.replace('e', _e[tone])
-        } else if (pin.indexOf('ou') !== -1) {
-          pin = pin.replace('o', _o[tone])
-        } else {
-          for (let k = pin.length - 1; k >= 0; k--) {
-            if (this.isVowel(pin[k])) {
-              switch (pin[k]) {
-                case 'i':
-                  pin = pin.replace('i', _i[tone])
-                  break
-                case 'o':
-                  pin = pin.replace('o', _o[tone])
-                  break
-                case 'u':
-                  if (k + 1 < pin.length - 1 && pin[k + 1] === ':') { pin = pin.replace('u:', _v[tone]) } else { pin = pin.replace('u', _u[tone]) }
-                  break
-                default:
-                  console.warn('some kind of weird vowel', pin[k])
-              }
-              break
-            }
-          }
-        }
-        formatedPinyin.push(pin)
-      }
-    }
-    return formatedPinyin.join(' ').trim()
-  }
-  // endregion Pinyin formatting functions
-
   async _fetchCedictData (targetWord, contextForward) {
     const requestBody = {
       getWords: {
@@ -16094,7 +16034,7 @@ class AlpheiosChineseLocAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED
         // TODO: Update once we decide on a better format of storing pronunciation in a Feature object.
         if (cfData[i]) arr.push(`${i} - ${cfData[i]}`); return arr
       }, [])
-      if (entry.pinyin) pronunciationValues.push(this.constructor.formatPinyin(entry.pinyin))
+      if (entry.pinyin) pronunciationValues.push(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ChineseLanguageModel"].formatPinyin(entry.pinyin))
       lemma.addFeature(this._createFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.pronunciation, pronunciationValues))
       lemma.addFeature(this._createFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.note, characterForm))
       if (cfData.radical && cfData.radical.character) lemma.addFeature(this._createFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.radical, cfData.radical.character))
