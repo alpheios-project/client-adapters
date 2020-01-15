@@ -247,12 +247,19 @@ class CedictPermanentStorage extends _lexisCs_cedict_service_storage_js__WEBPACK
    */
   connect () {
     return new Promise((resolve, reject) => {
-      // If database does not exist, openRequest will create it and will trigger an onupgradeneeded followed by onsuccess
-      const openRequest = indexedDB.open(this._configuration.name, this._configuration.version) // eslint-disable-line prefer-const
+      let openRequest
+      try {
+        // If database does not exist, openRequest will create it and will trigger an onupgradeneeded followed by onsuccess
+        openRequest = indexedDB.open(this._configuration.name, this._configuration.version) // eslint-disable-line prefer-const
+      } catch (error) {
+        reject(error)
+      }
       openRequest.onupgradeneeded = this._create.bind(this, openRequest)
+      openRequest.onblocked = () => reject(new Error(CedictPermanentStorage.errMsgs.BLOCKED_ON_OPEN))
 
       openRequest.onsuccess = () => {
         this._db = openRequest.result
+        this._db.onversionchange = this._versionchangeHandler.bind(this, reject)
         this._stores.forEach(store => store.associateWith(this._db))
         resolve()
       }
@@ -319,6 +326,12 @@ class CedictPermanentStorage extends _lexisCs_cedict_service_storage_js__WEBPACK
       })
     })
   }
+
+  async _versionchangeHandler (reject) {
+    await this.disconnect()
+    console.error(CedictPermanentStorage.errMsgs.VERSION_CHANGE)
+    reject(new Error(CedictPermanentStorage.errMsgs.VERSION_CHANGE))
+  }
 }
 
 CedictPermanentStorage.errMsgs = {
@@ -328,7 +341,9 @@ CedictPermanentStorage.errMsgs = {
   NO_META: 'Metadata store has no records',
   DESTRUCTION_ERROR: 'Unable to destroy a storage',
   MISSING_STORE: 'The store requested does not exist',
-  CLOSED_CONNECTION: 'Connection to the store is closed'
+  CLOSED_CONNECTION: 'Connection to the store is closed',
+  BLOCKED_ON_OPEN: 'Request to open a database has been blocked',
+  VERSION_CHANGE: 'A database change has occurred. You should refresh this browser window or close it down.'
 }
 
 
@@ -477,7 +492,7 @@ class Cedict {
         .catch(() => {
           // Data in permanent storage needs to be updated
           return this.removePermanentData()
-            // `connect()` will create storage and stores
+          // `connect()` will create storage and stores
             .then(() => this._storage.connect())
             .then(() => this._downloadData())
             .then(({ meta, dictionary }) => {
@@ -499,7 +514,7 @@ class Cedict {
                 })
             })
         })
-        .catch((error) => reject(error))
+        .catch((error) => { console.error(error); reject(error) })
         .then(() => {
           this.isReady = true
           resolve()
@@ -636,7 +651,7 @@ class Cedict {
         } else {
           // Indexes are not available, iterate over an array of values
           this.cedict.dictionary.forEach(entry => {
-            const hw = (characterForm === Cedict.characterForms.SIMPLIFIED) ? entry.simplifiedHeadword : entry.traditionalHeadword
+            const hw = (characterForm === Cedict.characterForms.SIMPLIFIED) ? entry.simplified.headword : entry.traditional.headword
             words.forEach(word => {
               if (hw === word) {
                 result[word].push(entry)
@@ -1096,12 +1111,16 @@ class IndexedDbStore extends _lexisCs_cedict_service_store_js__WEBPACK_IMPORTED_
    *          in a store and is rejected if operation failed.
    */
   count () {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this._assertDb()
-      const transaction = this._db.transaction(this._configuration.name, IndexedDbStore.accessModes.READ)
-      const store = transaction.objectStore(this._configuration.name)
-      const countRequest = store.count()
-      countRequest.onsuccess = () => { resolve(countRequest.result) }
+      try {
+        const transaction = this._db.transaction(this._configuration.name, IndexedDbStore.accessModes.READ)
+        const store = transaction.objectStore(this._configuration.name)
+        const countRequest = store.count()
+        countRequest.onsuccess = () => { resolve(countRequest.result) }
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 }
@@ -1151,7 +1170,7 @@ const messagingServiceName = 'CedictRequestListener'
  */
 const CedictDestinationConfig = {
   name: 'cedict',
-  targetURL: 'http://data-dev.alpheios.net',
+  targetURL: 'https://lexis-dev.alpheios.net',
   targetIframeID: 'alpheios-lexis-cs'
 }
 
@@ -1656,7 +1675,7 @@ const cedict = {
     /*
     A URI where chunks of CEDICT data are located.
      */
-    URI: 'http://data-dev.alpheios.net/cedict',
+    URI: 'https://lexis-dev.alpheios.net/cedict',
 
     /*
     Names of the chunks themselves.
@@ -2235,7 +2254,6 @@ class MessagingService {
     let storedRequest = new _stored_request__WEBPACK_IMPORTED_MODULE_1__["default"](request) // eslint-disable-line prefer-const
     this._messages.set(request.ID, storedRequest)
     storedRequest.timeoutID = window.setTimeout((requestID) => {
-      console.info(`Timeout has been fired for ${requestID}`)
       storedRequest.reject(new Error(`Timeout has been expired for a message with request ID ${request.ID}`))
       this._messages.delete(requestID) // Remove request record from the map
     }, timeout)
