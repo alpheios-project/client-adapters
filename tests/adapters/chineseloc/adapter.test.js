@@ -38,6 +38,20 @@ describe('chineseloc.test.js', () => {
     expect(adapter.languageID).toEqual(Constants.LANG_CHINESE)
   })
 
+  it('AlpheiosChineseLocAdapter: getHomonym returns pronunciation values in a specific order', async () => {
+    // eslint-disable-next-line prefer-const
+    let adapter = new AlpheiosChineseLocAdapter({
+      category: 'morphology',
+      adapterName: 'chineseloc',
+      method: 'getHomonym'
+    })
+    // Stub the messaging service method
+    adapter._messagingService.sendRequestTo = CedictFixture.lexisCedictRequest
+
+    const homonym = await adapter.getHomonym('眠')
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['mián', 'mandarin - mián', 'cantonese - min4', 'tang - *men'])
+  })
+
   it('3 AlpheiosChineseLocAdapter: getHomonym returns a single-character traditional word', async () => {
     // eslint-disable-next-line prefer-const
     let adapter = new AlpheiosChineseLocAdapter({
@@ -59,7 +73,7 @@ describe('chineseloc.test.js', () => {
     expect(homonym.lexemes[0].lemma.languageCode).toEqual(Constants.STR_LANG_CODE_ZHO)
     expect(homonym.lexemes[0].lemma.word).toEqual('眠')
     expect(homonym.lexemes[0].lemma.principalParts).toEqual([])
-    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['tang - *men', 'mandarin - mián', 'cantonese - min4', 'mián'])
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['mián', 'mandarin - mián', 'cantonese - min4', 'tang - *men'])
     expect(homonym.lexemes[0].lemma.features.note.value).toEqual('traditional')
     expect(homonym.lexemes[0].lemma.features.frequency.singleValue).toEqual(4)
     expect(homonym.lexemes[0].lemma.features.radical.value).toEqual('目')
@@ -92,7 +106,7 @@ describe('chineseloc.test.js', () => {
     expect(homonym.lexemes[0].lemma.languageCode).toEqual(Constants.STR_LANG_CODE_ZHO)
     expect(homonym.lexemes[0].lemma.word).toEqual('杠')
     expect(homonym.lexemes[0].lemma.principalParts).toEqual([])
-    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['mandarin - gāng', 'cantonese - gong1 gong3', 'gàng'])
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['gàng', 'mandarin - gāng', 'cantonese - gong1 gong3'])
     expect(homonym.lexemes[0].lemma.features.note.value).toEqual('simplified')
     expect(homonym.lexemes[0].lemma.features.frequency).toBeUndefined()
     expect(homonym.lexemes[0].lemma.features.radical.value).toBe('木')
@@ -132,7 +146,7 @@ describe('chineseloc.test.js', () => {
     expect(homonym.lexemes[0].lemma.languageCode).toEqual(Constants.STR_LANG_CODE_ZHO)
     expect(homonym.lexemes[0].lemma.word).toEqual('眠')
     expect(homonym.lexemes[0].lemma.principalParts).toEqual([])
-    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['tang - *men', 'mandarin - mián', 'cantonese - min4', 'mián'])
+    expect(homonym.lexemes[0].lemma.features.pronunciation.values).toEqual(['mián', 'mandarin - mián', 'cantonese - min4', 'tang - *men'])
     expect(homonym.lexemes[0].lemma.features.note.value).toEqual('traditional')
     expect(homonym.lexemes[0].lemma.features.frequency.singleValue).toEqual(4)
     expect(homonym.lexemes[0].lemma.features.radical.value).toEqual('目')

@@ -3614,7 +3614,6 @@ module.exports = function isAbsoluteURL(url) {
 
 
 var utils = __webpack_require__(/*! ./../utils */ "../node_modules/axios/lib/utils.js");
-var isValidXss = __webpack_require__(/*! ./isValidXss */ "../node_modules/axios/lib/helpers/isValidXss.js");
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -3634,10 +3633,6 @@ module.exports = (
     */
       function resolveURL(url) {
         var href = url;
-
-        if (isValidXss(url)) {
-          throw new Error('URL contains XSS injection attempt');
-        }
 
         if (msie) {
         // IE needs attribute set twice to normalize properties
@@ -3684,25 +3679,6 @@ module.exports = (
       };
     })()
 );
-
-
-/***/ }),
-
-/***/ "../node_modules/axios/lib/helpers/isValidXss.js":
-/*!*******************************************************!*\
-  !*** ../node_modules/axios/lib/helpers/isValidXss.js ***!
-  \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function isValidXss(requestURL) {
-  var xssRegex = /(\b)(on\w+)=|javascript|(<\s*)(\/*)script/gi;
-  return xssRegex.test(requestURL);
-};
-
 
 
 /***/ }),
@@ -16047,12 +16023,12 @@ class AlpheiosChineseLocAdapter extends _adapters_base_adapter__WEBPACK_IMPORTED
       let lemma = new alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Lemma"](headword, this.languageID, []) // eslint-disable-line prefer-const
 
       // eslint-disable-next-line prefer-const
-      let pronunciationValues = ['tang', 'mandarin', 'cantonese'].reduce((arr, i) => {
+      let pronunciationValues = entry.pinyin ? [alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ChineseLanguageModel"].formatPinyin(entry.pinyin)] : []
+      pronunciationValues = ['mandarin', 'cantonese', 'tang'].reduce((arr, i) => {
         // Add all of the values listed above to an array or pronunciation feature. Each feature value will be preceded with its name.
         // TODO: Update once we decide on a better format of storing pronunciation in a Feature object.
         if (cfData[i]) arr.push(`${i} - ${cfData[i]}`); return arr
-      }, [])
-      if (entry.pinyin) pronunciationValues.push(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["ChineseLanguageModel"].formatPinyin(entry.pinyin))
+      }, pronunciationValues)
       lemma.addFeature(this._createFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.pronunciation, pronunciationValues))
       lemma.addFeature(this._createFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.note, characterForm))
       if (cfData.radical && cfData.radical.character) lemma.addFeature(this._createFeature(alpheios_data_models__WEBPACK_IMPORTED_MODULE_1__["Feature"].types.radical, cfData.radical.character))
